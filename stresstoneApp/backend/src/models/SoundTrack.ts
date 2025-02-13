@@ -24,4 +24,7 @@ SoundTrackSchema.index({
   name: 'soundtrack_text_search' 
 });
 
+// This model serves as the primary interface for 
+// interacting with soundtrack documents in the database, 
+// allowing for operations such as creating, reading, updating, and deleting records.
 export default model('SoundTrack', SoundTrackSchema);

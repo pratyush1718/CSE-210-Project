@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import SearchBar from "./components/SearchBar"; // added import for SearchBar
 
 function App() {
   const [message, setMessage] = useState<string>("");
@@ -14,6 +15,7 @@ function App() {
     <div>
       <h1>Stresstone App</h1>
       <p>{message}</p>
+      <SearchBar /> {/* added SearchBar component */}
     </div>
   );
 }

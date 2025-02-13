@@ -1,22 +1,22 @@
 // src/controllers/searchController.ts
-import { Request, Response } from 'express';
+import { Request, Response, RequestHandler } from 'express';
 import SoundTrack from '../models/SoundTrack';
 
+// SearchQuery interface which requires a search term (q) 
+// and may optionally include pagination parameters (page and limit).
 interface SearchQuery {
   q: string;
   page?: string;
   limit?: string;
 }
 
-export const SearchTracks = async (
-  req: Request<{}, {}, {}, SearchQuery>,
-  res: Response
-) => {
+export const SearchController: RequestHandler<{}, any, any, SearchQuery> = async (req, res) => {
   try {
     const { q, page = '1', limit = '10' } = req.query;
     
     if (!q) {
-      return res.status(400).json({ error: 'Search term is required' });
+      res.status(400).json({ error: 'Search term is required' });
+      return;
     }
 
     const pageNum = parseInt(page, 10);
@@ -37,11 +37,12 @@ export const SearchTracks = async (
       pagination: {
         currentPage: pageNum,
         resultsPerPage: limitNum,
-        // if required, you can calculate total pages and total results
       }
     });
+    return;
   } catch (error) {
     console.error('Search error:', error);
     res.status(500).json({ error: 'Internal server error' });
+    return;
   }
 };
