@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import SearchBar from "./components/SearchBar"; // added import for SearchBar
 import Header from "./components/Header";
 import Sider from "./components/Sider";
 import { Box, CssBaseline } from "@mui/material";
@@ -19,30 +20,11 @@ function App() {
   }, []);
 
   return (
-    <>
-      <CssBaseline />
-      <Header height={headerHeight} />
-      <Box sx={{ display: "flex", marginTop: `${headerHeight}px` }}>
-        <Sider drawerWidth={siderWidth} />
-        <Box
-          component="main"
-          sx={{
-            p: 2,
-            width: `calc(100% - ${siderWidth}px)`,
-            height: "100%",
-            overflow: "auto",
-          }}
-        >
-          {/* All module implementation should go here */}
-          <Login></Login>
-          <p>Stresstone App</p>
-          <p>{message}</p>
-        </Box>
-      </Box>
-      <footer>
-        <TonePlayer />
-      </footer>
-    </>
+    <div>
+      <h1>Stresstone App</h1>
+      <p>{message}</p>
+      <SearchBar /> {/* added SearchBar component */}
+    </div>
   );
 }
 
