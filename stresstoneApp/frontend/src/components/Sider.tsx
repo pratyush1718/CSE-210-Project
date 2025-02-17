@@ -1,23 +1,18 @@
-import { Typography } from "@mui/material";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
+import { Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import Toolbar from '@mui/material/Toolbar';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 
-import { 
-  HomeOutlined, 
-  FavoriteBorderOutlined,
-  SearchOutlined,
-  UploadFileOutlined,
-} from "@mui/icons-material";
+import { HomeOutlined, FavoriteBorderOutlined, SearchOutlined, UploadFileOutlined } from '@mui/icons-material';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWandMagicSparkles, faComments } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWandMagicSparkles, faComments } from '@fortawesome/free-solid-svg-icons';
 
 interface MenuProps {
   title: string;
@@ -27,15 +22,15 @@ interface MenuProps {
 
 const MenuMyStressTone: MenuProps[] = [
   {
-    title: "Home",
+    title: 'Home',
     icon: <HomeOutlined />,
     onClick: () => {
       // return to the root page
-      window.location.href = "/";
+      window.location.href = '/';
     },
   },
   {
-    title: "My Playlist",
+    title: 'My Playlist',
     icon: <FavoriteBorderOutlined />,
     onClick: () => {},
   },
@@ -43,12 +38,12 @@ const MenuMyStressTone: MenuProps[] = [
 
 const MenuCommunity: MenuProps[] = [
   {
-    title: "Explore",
+    title: 'Explore',
     icon: <SearchOutlined />,
     onClick: () => {},
   },
   {
-    title: "Discuss",
+    title: 'Discuss',
     icon: <FontAwesomeIcon icon={faComments} />,
     onClick: () => {},
   },
@@ -56,12 +51,12 @@ const MenuCommunity: MenuProps[] = [
 
 const MenuCreator: MenuProps[] = [
   {
-    title: "Tone Creation",
+    title: 'Tone Creation',
     icon: <FontAwesomeIcon icon={faWandMagicSparkles} />,
     onClick: () => {},
   },
   {
-    title: "Upload",
+    title: 'Upload',
     icon: <UploadFileOutlined />,
     onClick: () => {},
   },
@@ -91,46 +86,38 @@ export default function Sider(props: SiderProps) {
         flexShrink: 0,
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
-          boxSizing: "border-box",
+          boxSizing: 'border-box',
         },
       }}
     >
       <Toolbar />
-      <Box sx={{ overflow: "auto" }}>
+      <Box sx={{ overflow: 'auto' }}>
         <ListItem>
           <Typography sx={MenuTitleStyle}>
             <b>My StressTone</b>
           </Typography>
         </ListItem>
         <Divider />
-        <List>
-          {MenuMyStressTone.map((content: MenuProps) =>
-            renderListButton(content)
-          )}
-        </List>
+        <List>{MenuMyStressTone.map((content: MenuProps) => renderListButton(content))}</List>
         <ListItem>
           <Typography sx={MenuTitleStyle}>
             <b>Community</b>
           </Typography>
         </ListItem>
         <Divider />
-        <List>
-          {MenuCommunity.map((content: MenuProps) => renderListButton(content))}
-        </List>
+        <List>{MenuCommunity.map((content: MenuProps) => renderListButton(content))}</List>
         <ListItem>
           <Typography sx={MenuTitleStyle}>
             <b>Creator</b>
           </Typography>
         </ListItem>
         <Divider />
-        <List>
-          {MenuCreator.map((content: MenuProps) => renderListButton(content))}
-        </List>
+        <List>{MenuCreator.map((content: MenuProps) => renderListButton(content))}</List>
       </Box>
     </Drawer>
   );
 }
 
 const MenuTitleStyle = {
-  padding: "6px 0px 6px 0px",
+  padding: '6px 0px 6px 0px',
 };
