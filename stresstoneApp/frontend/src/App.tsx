@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Login from "./components/Login";
 
 function App() {
   const [message, setMessage] = useState<string>("");
@@ -13,6 +14,7 @@ function App() {
   return (
     <div>
       <h1>Stresstone App</h1>
+      <Login></Login>
       <p>{message}</p>
     </div>
   );
