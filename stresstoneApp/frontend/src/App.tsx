@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Login from "./components/Login";
-import SearchBar from "./components/SearchBar"; // added import for SearchBar
 import Header from "./components/Header";
 import Sider from "./components/Sider";
 import { Box, CssBaseline } from "@mui/material";
 import TonePlayer from "./components/TonePlayer";
+import Login from "./components/Login"
 
 const siderWidth = 240;
 const headerHeight = 64;
@@ -35,6 +34,7 @@ function App() {
           }}
         >
           {/* All module implementation should go here */}
+          <Login></Login>
           <p>Stresstone App</p>
           <p>{message}</p>
         </Box>
