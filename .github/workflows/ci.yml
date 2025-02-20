@@ -1,0 +1,60 @@
+name: CI
+
+on: [pull_request]
+
+jobs:
+  lint-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout commit
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Cache npm dependencies for frontend
+        uses: actions/cache@v4
+        id: npm-cache-frontend
+        with:
+          path: stresstoneApp/frontend/node_modules
+          key: npm-frontend-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            npm-frontend-${{ runner.os }}-
+
+      - name: Install frontend dependencies
+        working-directory: stresstoneApp/frontend
+        run: npm ci
+
+      - name: Run linter in frontend
+        working-directory: stresstoneApp/frontend
+        run: npm run lint
+
+  lint-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout commit
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Cache npm dependencies for backend
+        uses: actions/cache@v4
+        id: npm-cache-backend
+        with:
+          path: stresstoneApp/backend/node_modules
+          key: npm-backend-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            npm-backend-${{ runner.os }}-
+
+      - name: Install backend dependencies
+        working-directory: stresstoneApp/backend
+        run: npm ci
+
+      - name: Run linter in backend
+        working-directory: stresstoneApp/backend
+        run: npm run lint
