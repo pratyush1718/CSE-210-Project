@@ -25,7 +25,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: stresstoneApp/frontend
-        run: npm install
+        run: npm ci
 
       - name: Run linter in frontend
         working-directory: stresstoneApp/frontend
@@ -53,7 +53,7 @@ jobs:
 
       - name: Install backend dependencies
         working-directory: stresstoneApp/backend
-        run: npm install
+        run: npm ci
 
       - name: Run linter in backend
         working-directory: stresstoneApp/backend
