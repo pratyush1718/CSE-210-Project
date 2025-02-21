@@ -21,7 +21,7 @@ mongoose
   .catch((err) => console.log(err));
 
 // Mount search routes under /search
-app.use('/search', searchRouter);
+app.use('/api/search', searchRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");

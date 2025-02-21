@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Sider from "./components/Sider";
 import { Box, CssBaseline } from "@mui/material";
 import TonePlayer from "./components/TonePlayer";
-import Login from "./components/Login"
+import Login from "./components/Login";
+import SearchPage from "./pages/SearchPage.tsx";
 
 const siderWidth = 240;
 const headerHeight = 64;
@@ -33,10 +35,17 @@ function App() {
             overflow: "auto",
           }}
         >
-          {/* All module implementation should go here */}
-          <Login></Login>
-          <p>Stresstone App</p>
-          <p>{message}</p>
+          <Routes>
+            <Route path="/" element={
+              <>
+                {/* Existing login and welcome message */}
+                <Login />
+                <p>Stresstone App</p>
+                <p>{message}</p>
+              </>
+            } />
+            <Route path="/search" element={<SearchPage />} />
+          </Routes>
         </Box>
       </Box>
       <footer>

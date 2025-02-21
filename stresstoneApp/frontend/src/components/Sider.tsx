@@ -8,6 +8,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { 
   HomeOutlined, 
@@ -41,36 +42,16 @@ const MenuMyStressTone: MenuProps[] = [
   },
 ];
 
-const MenuCommunity: MenuProps[] = [
-  {
-    title: "Explore",
-    icon: <SearchOutlined />,
-    onClick: () => {},
-  },
-  {
-    title: "Discuss",
-    icon: <FontAwesomeIcon icon={faComments} />,
-    onClick: () => {},
-  },
-];
-
-const MenuCreator: MenuProps[] = [
-  {
-    title: "Tone Creation",
-    icon: <FontAwesomeIcon icon={faWandMagicSparkles} />,
-    onClick: () => {},
-  },
-  {
-    title: "Upload",
-    icon: <UploadFileOutlined />,
-    onClick: () => {},
-  },
-];
-
-function renderListButton(props: MenuProps) {
-  const { title, icon, onClick } = props;
+function renderListButton(props: MenuProps & { active?: boolean }) {
+  const { title, icon, onClick, active } = props;
   return (
-    <ListItemButton onClick={onClick}>
+    <ListItemButton 
+      onClick={onClick}
+      sx={{
+        backgroundColor: active ? "#e0e0e0" : "inherit",
+        "&:hover": { backgroundColor: active ? "#e0e0e0" : "lightgrey" },
+      }}
+    >
       <ListItemIcon>{icon}</ListItemIcon>
       <ListItemText primary={title} />
     </ListItemButton>
@@ -81,8 +62,36 @@ interface SiderProps {
   drawerWidth: number;
 }
 
-export default function Sider(props: SiderProps) {
-  const { drawerWidth } = props;
+export default function Sider({ drawerWidth }: SiderProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const MenuCommunity: MenuProps[] = [
+    {
+      title: "Explore",
+      icon: <SearchOutlined />,
+      onClick: () => navigate("/search"),
+    },
+    {
+      title: "Discuss",
+      icon: <FontAwesomeIcon icon={faComments} />,
+      onClick: () => {},
+    },
+  ];
+
+  const MenuCreator: MenuProps[] = [
+    {
+      title: "Tone Creation",
+      icon: <FontAwesomeIcon icon={faWandMagicSparkles} />,
+      onClick: () => {},
+    },
+    {
+      title: "Upload",
+      icon: <UploadFileOutlined />,
+      onClick: () => {},
+    },
+  ];
+
   return (
     <Drawer
       variant="permanent"
@@ -115,7 +124,12 @@ export default function Sider(props: SiderProps) {
         </ListItem>
         <Divider />
         <List>
-          {MenuCommunity.map((content: MenuProps) => renderListButton(content))}
+          {MenuCommunity.map((item: MenuProps) =>
+            renderListButton({
+              ...item,
+              active: item.title === "Explore" && location.pathname === "/search",
+            })
+          )}
         </List>
         <ListItem>
           <Typography sx={MenuTitleStyle}>
