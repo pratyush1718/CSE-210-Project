@@ -4,15 +4,7 @@ import Header from './components/Header';
 import Sider from './components/Sider';
 import { Box, CssBaseline } from '@mui/material';
 import TonePlayer from './components/TonePlayer';
-import Login from './components/Login';
-
-const siderWidth = 240;
-const headerHeight = 64;
 import { Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
-import Sider from "./components/Sider";
-import { Box, CssBaseline } from "@mui/material";
-import TonePlayer from "./components/TonePlayer";
 import Login from "./components/Login";
 import SearchPage from "./pages/SearchPage.tsx";
 
