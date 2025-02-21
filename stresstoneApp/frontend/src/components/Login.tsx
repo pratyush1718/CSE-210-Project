@@ -2,10 +2,20 @@ import React, { useState } from 'react';
 import { TextField, Button, Card, CardContent, CardHeader, Typography, Box, Link, Divider } from '@mui/material';
 import LoginComponentStyles from './LoginStyles'; // Import styles
 import MusicIcon from '../assets/MusicIcon.png'; // Import your PNG file
+import { signIn } from "../auth";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    const user = await signIn(email, password);
+    if (user) {
+      console.log("Successfully logged in:", user.user);
+    } else {
+      console.log("Login failed.");
+    }
+  };
 
   return (
     <Box sx={LoginComponentStyles.container}>
@@ -50,7 +60,7 @@ const Login: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </Box>
-          <Button fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
+          <Button fullWidth variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleLogin}>
             Login
           </Button>
           <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

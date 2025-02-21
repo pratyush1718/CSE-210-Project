@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+// import { useEffect, useState } from 'react';
+// import axios from 'axios';
 import Header from './components/Header';
 import Sider from './components/Sider';
 import { Box, CssBaseline } from '@mui/material';
@@ -10,14 +10,14 @@ const siderWidth = 240;
 const headerHeight = 64;
 
 function App() {
-  const [message, setMessage] = useState<string>('');
+  // const [message, setMessage] = useState<string>('');
 
-  useEffect(() => {
-    axios
-      .get('http://localhost:3000/')
-      .then((res) => setMessage(res.data))
-      .catch((err) => console.log(err));
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get('http://localhost:3000/')
+  //     .then((res) => setMessage(res.data))
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   return (
     <>
@@ -37,7 +37,7 @@ function App() {
           {/* All module implementation should go here */}
           <Login></Login>
           <p>Stresstone App</p>
-          <p>{message}</p>
+          {/* <p>{message}</p> */}
         </Box>
       </Box>
       <footer>
