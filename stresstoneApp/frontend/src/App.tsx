@@ -1,5 +1,13 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import Header from './components/Header';
+import Sider from './components/Sider';
+import { Box, CssBaseline } from '@mui/material';
+import TonePlayer from './components/TonePlayer';
+import Login from './components/Login';
+
+const siderWidth = 240;
+const headerHeight = 64;
 import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Sider from "./components/Sider";
@@ -12,10 +20,11 @@ const siderWidth = 240;
 const headerHeight = 64;
 
 function App() {
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState<string>('');
 
   useEffect(() => {
-    axios.get("http://localhost:3000/")
+    axios
+      .get('http://localhost:3000/')
       .then((res) => setMessage(res.data))
       .catch((err) => console.log(err));
   }, []);

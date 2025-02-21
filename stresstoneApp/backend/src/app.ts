@@ -1,7 +1,6 @@
-import express, { Application, Request, Response } from "express";
-import dotenv from "dotenv";
-import mongoose from "mongoose";
-import cors from "cors";
+import express, { Application, Request, Response } from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
 import searchRouter from "./routes/SearchRouter";
 
 dotenv.config();
@@ -29,5 +28,7 @@ app.get("/", (req: Request, res: Response) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
+  console.log(`[server]: Server is running at http://localhost:${PORT}`);
+});
   console.log(`[server]: Server is running at http://localhost:${PORT}`);
 });

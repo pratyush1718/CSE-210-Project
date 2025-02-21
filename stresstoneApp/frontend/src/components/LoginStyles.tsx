@@ -1,33 +1,33 @@
-import { SxProps, Theme } from "@mui/material";
+import { SxProps, Theme } from '@mui/material';
 
 const LoginStyles: Record<string, SxProps<Theme>> = {
   container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "100vh",
-   // backgroundColor: "#f3f4f6", // Equivalent to Tailwind's bg-gray-100
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: '100vh',
+    // backgroundColor: "#f3f4f6", // Equivalent to Tailwind's bg-gray-100
   },
   card: {
-    width: "710px", // Fixed width
-    height: "701px", // Fixed height
+    width: '710px', // Fixed width
+    height: '701px', // Fixed height
     padding: 3,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: '#F5F5F5',
     fill: '50%',
     boxShadow: 3,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center", // Centers the content vertically inside the card
-    alignItems: "center", // Centers the content horizontally inside the card
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center', // Centers the content vertically inside the card
+    alignItems: 'center', // Centers the content horizontally inside the card
   },
   iconButton: {
-    position: "absolute",
+    position: 'absolute',
     right: 10,
     top: 30,
   },
   textFieldContainer: {
-    display: "flex",
-    justifyContent: "center", // Centers the input fields horizontally
+    display: 'flex',
+    justifyContent: 'center', // Centers the input fields horizontally
     width: '360px', // Makes sure it takes up full width
   },
   registerButton: {
@@ -48,19 +48,18 @@ const LoginStyles: Record<string, SxProps<Theme>> = {
     },
     marginLeft: 'auto', // Push the button to the right
   },
-  
+
   registerText: {
-    textAlign: "center",
+    textAlign: 'center',
     marginTop: 2,
-    color: "#1976d2",
-    textDecoration: "none",
-    fontWeight: "bold",
-    display: 'flex',          // Enable flexbox
+    color: '#1976d2',
+    textDecoration: 'none',
+    fontWeight: 'bold',
+    display: 'flex', // Enable flexbox
     justifyContent: 'center', // Center horizontally
-    alignItems: 'center',     // Center vertically
-    height: '100%',           // Ensure full height for centering
+    alignItems: 'center', // Center vertically
+    height: '100%', // Ensure full height for centering
   },
-  
 };
 
 export default LoginStyles;
