@@ -1,5 +1,5 @@
 // src/controllers/searchController.ts
-import { Request, Response, RequestHandler } from 'express';
+import { RequestHandler } from 'express';
 import SoundTrack from '../models/SoundTrack';
 
 // SearchQuery interface which requires a search term (q)
@@ -10,7 +10,7 @@ interface SearchQuery {
   limit?: string;
 }
 
-export const SearchController: RequestHandler<object, any, any, SearchQuery> = async (req, res) => {
+export const SearchController: RequestHandler<{}, unknown, {}, SearchQuery> = async (req, res) => {
   try {
     const { q, page = '1', limit = '10' } = req.query;
 
