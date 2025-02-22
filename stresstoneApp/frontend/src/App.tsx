@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Routes, Route } from 'react-router-dom';
-import Explore from './pages/Explore'; 
+import Discuss from './pages/Discuss'; 
 import Header from './components/Header';
 import Sider from './components/Sider';
 import { Box, CssBaseline } from '@mui/material';
@@ -45,7 +45,7 @@ function App() {
                 <p>{message}</p>
               </>
             } />
-            <Route path="/explore" element={<Explore />} />
+            <Route path="/explore" element={<Discuss />} />
           </Routes>
         </Box>
       </Box>
