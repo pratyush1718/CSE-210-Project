@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Routes, Route } from 'react-router-dom';
 import SearchPage from './pages/SearchPage';
-import Discuss from './pages/Discuss'; 
+import Discuss from './pages/DiscussPage'; 
 import Header from './components/Header';
 import Sider from './components/Sider';
 import { Box, CssBaseline } from '@mui/material';
