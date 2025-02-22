@@ -45,7 +45,7 @@ function App() {
                 <p>{message}</p>
               </>
             } />
-            <Route path="/explore" element={<Discuss />} />
+            <Route path="/discuss" element={<Discuss />} />
           </Routes>
         </Box>
       </Box>
