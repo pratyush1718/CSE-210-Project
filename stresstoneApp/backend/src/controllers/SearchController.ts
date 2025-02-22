@@ -10,7 +10,7 @@ interface SearchQuery {
   limit?: string;
 }
 
-export const SearchController: RequestHandler<{}, unknown, {}, SearchQuery> = async (req, res) => {
+export const SearchController: RequestHandler<object, unknown, unknown, SearchQuery> = async (req, res) => {
   try {
     const { q, page = '1', limit = '10' } = req.query;
 
