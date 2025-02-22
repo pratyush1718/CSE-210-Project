@@ -12,7 +12,6 @@ import ListItemText from '@mui/material/ListItemText';
 import { HomeOutlined, FavoriteBorderOutlined, SearchOutlined, UploadFileOutlined } from '@mui/icons-material';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useNavigate } from 'react-router-dom'; 
 import { faWandMagicSparkles, faComments } from '@fortawesome/free-solid-svg-icons';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -43,7 +42,7 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
     {
       title: 'Explore',
       icon: <SearchOutlined />,
-      onClick: () => {}, 
+      onClick: () => navigate('/search'), 
     },
     {
       title: 'Discuss',
@@ -52,18 +51,6 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
     },
   ];
 
-  const MenuCreator: MenuProps[] = [
-    {
-      title: 'Tone Creation',
-      icon: <FontAwesomeIcon icon={faWandMagicSparkles} />,
-      onClick: () => {},
-    },
-    {
-      title: 'Upload',
-      icon: <UploadFileOutlined />,
-      onClick: () => {},
-    },
-  ];
   const MenuCreator: MenuProps[] = [
     {
       title: 'Tone Creation',
@@ -106,7 +93,6 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
           </Typography>
         </ListItem>
         <Divider />
-        <List>{MenuMyStressTone.map((item) => renderListButton(item))}</List>
         <List>{MenuMyStressTone.map((item) => renderListButton(item))}</List>
         <ListItem>
           <Typography sx={MenuTitleStyle}>
