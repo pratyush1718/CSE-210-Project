@@ -4,7 +4,9 @@ import Header from './components/Header';
 import Sider from './components/Sider';
 import { Box, CssBaseline } from '@mui/material';
 import TonePlayer from './components/TonePlayer';
-import Login from './components/Login';
+import { Routes, Route } from "react-router-dom";
+import Login from "./components/Login";
+import SearchPage from "./pages/SearchPage.tsx";
 
 const siderWidth = 240;
 const headerHeight = 64;
@@ -23,21 +25,28 @@ function App() {
     <>
       <CssBaseline />
       <Header height={headerHeight} />
-      <Box sx={{ display: 'flex', marginTop: `${headerHeight}px` }}>
+      <Box sx={{ display: "flex", marginTop: `${headerHeight}px` }}>
         <Sider drawerWidth={siderWidth} />
         <Box
           component="main"
           sx={{
             p: 2,
             width: `calc(100% - ${siderWidth}px)`,
-            height: '100%',
-            overflow: 'auto',
+            height: "100%",
+            overflow: "auto",
           }}
         >
-          {/* All module implementation should go here */}
-          <Login></Login>
-          <p>Stresstone App</p>
-          <p>{message}</p>
+          <Routes>
+            <Route path="/" element={
+              <>
+                {/* Existing login and welcome message */}
+                <Login />
+                <p>Stresstone App</p>
+                <p>{message}</p>
+              </>
+            } />
+            <Route path="/search" element={<SearchPage />} />
+          </Routes>
         </Box>
       </Box>
       <footer>
