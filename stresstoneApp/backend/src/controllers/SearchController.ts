@@ -2,7 +2,7 @@
 import { Request, Response, RequestHandler } from 'express';
 import SoundTrack from '../models/SoundTrack';
 
-// SearchQuery interface which requires a search term (q) 
+// SearchQuery interface which requires a search term (q)
 // and may optionally include pagination parameters (page and limit).
 interface SearchQuery {
   q: string;
@@ -10,10 +10,10 @@ interface SearchQuery {
   limit?: string;
 }
 
-export const SearchController: RequestHandler<{}, any, any, SearchQuery> = async (req, res) => {
+export const SearchController: RequestHandler<object, any, any, SearchQuery> = async (req, res) => {
   try {
     const { q, page = '1', limit = '10' } = req.query;
-    
+
     if (!q) {
       res.status(400).json({ error: 'Search term is required' });
       return;
@@ -23,11 +23,8 @@ export const SearchController: RequestHandler<{}, any, any, SearchQuery> = async
     const limitNum = parseInt(limit, 10);
 
     // Use $text operator to perform text search
-    const results = await SoundTrack.find(
-      { $text: { $search: q } },
-      { score: { $meta: "textScore" } }
-    )
-      .sort({ score: { $meta: "textScore" } })
+    const results = await SoundTrack.find({ $text: { $search: q } }, { score: { $meta: 'textScore' } })
+      .sort({ score: { $meta: 'textScore' } })
       .skip((pageNum - 1) * limitNum)
       .limit(limitNum)
       .collation({ locale: 'en', strength: 2 }); // Case-insensitive search
@@ -37,7 +34,7 @@ export const SearchController: RequestHandler<{}, any, any, SearchQuery> = async
       pagination: {
         currentPage: pageNum,
         resultsPerPage: limitNum,
-      }
+      },
     });
     return;
   } catch (error) {

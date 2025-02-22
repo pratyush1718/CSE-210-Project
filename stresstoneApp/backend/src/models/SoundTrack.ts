@@ -7,24 +7,28 @@ const SoundTrackSchema = new Schema({
   tags: [{ type: String, text: true }],
   creator: { type: Schema.Types.ObjectId, ref: 'User' },
   audioUrl: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
 
 // create text index for title, description, and tags
-SoundTrackSchema.index({
-  title: 'text',
-  description: 'text',
-  tags: 'text'
-}, {
-  weights: {  // set weights for each field
-    title: 3,
-    tags: 2,
-    description: 1
+SoundTrackSchema.index(
+  {
+    title: 'text',
+    description: 'text',
+    tags: 'text',
   },
-  name: 'soundtrack_text_search' 
-});
+  {
+    weights: {
+      // set weights for each field
+      title: 3,
+      tags: 2,
+      description: 1,
+    },
+    name: 'soundtrack_text_search',
+  },
+);
 
-// This model serves as the primary interface for 
-// interacting with soundtrack documents in the database, 
+// This model serves as the primary interface for
+// interacting with soundtrack documents in the database,
 // allowing for operations such as creating, reading, updating, and deleting records.
 export default model('SoundTrack', SoundTrackSchema);
