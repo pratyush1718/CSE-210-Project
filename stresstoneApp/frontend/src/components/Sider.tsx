@@ -14,7 +14,7 @@ import { HomeOutlined, FavoriteBorderOutlined, SearchOutlined, UploadFileOutline
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWandMagicSparkles, faComments } from '@fortawesome/free-solid-svg-icons';
 
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface MenuProps {
   title: string;
