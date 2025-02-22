@@ -33,7 +33,7 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
     {
       title: 'My Playlist',
       icon: <FavoriteBorderOutlined />,
-      onClick: () => navigate('/playlist'),
+      onClick: () => {},
     },
   ];
 
@@ -41,7 +41,7 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
     {
       title: 'Explore',
       icon: <SearchOutlined />,
-      onClick: () => navigate('/explore'), 
+      onClick: () => {}, 
     },
     {
       title: 'Discuss',
@@ -54,12 +54,12 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
     {
       title: 'Tone Creation',
       icon: <FontAwesomeIcon icon={faWandMagicSparkles} />,
-      onClick: () => navigate('/create'),
+      onClick: () => {},
     },
     {
       title: 'Upload',
       icon: <UploadFileOutlined />,
-      onClick: () => navigate('/upload'),
+      onClick: () => {},
     },
   ];
 
