@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Routes, Route } from 'react-router-dom';
+// import Home from './pages/Home'; // create this component
+import Explore from './pages/Explore'; 
+// import Playlist from './pages/Playlist'; // create this component
+// import Discuss from './pages/Discuss'; // create this component
+// import Create from './pages/Create'; // create this component
+// import Upload from './pages/Upload'; // create this component
 import Header from './components/Header';
 import Sider from './components/Sider';
 import { Box, CssBaseline } from '@mui/material';
@@ -34,6 +41,9 @@ function App() {
             overflow: 'auto',
           }}
         >
+          <Routes>
+            <Route path="/explore" element={<Explore />} />
+          </Routes>
           {/* All module implementation should go here */}
           <Login></Login>
           <p>Stresstone App</p>
