@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 
-export default function Explore() {
+export default function Discuss() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
