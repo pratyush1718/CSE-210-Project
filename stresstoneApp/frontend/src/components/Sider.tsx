@@ -12,6 +12,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { HomeOutlined, FavoriteBorderOutlined, SearchOutlined, UploadFileOutlined } from '@mui/icons-material';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useNavigate } from 'react-router-dom'; 
 import { faWandMagicSparkles, faComments } from '@fortawesome/free-solid-svg-icons';
 
 interface MenuProps {
@@ -20,64 +21,57 @@ interface MenuProps {
   onClick: () => void;
 }
 
-const MenuMyStressTone: MenuProps[] = [
-  {
-    title: 'Home',
-    icon: <HomeOutlined />,
-    onClick: () => {
-      // return to the root page
-      window.location.href = '/';
+export default function Sider({ drawerWidth }: { drawerWidth: number }) {
+  const navigate = useNavigate(); 
+
+  const MenuMyStressTone: MenuProps[] = [
+    {
+      title: 'Home',
+      icon: <HomeOutlined />,
+      onClick: () => navigate('/'), 
     },
-  },
-  {
-    title: 'My Playlist',
-    icon: <FavoriteBorderOutlined />,
-    onClick: () => {},
-  },
-];
+    {
+      title: 'My Playlist',
+      icon: <FavoriteBorderOutlined />,
+      onClick: () => navigate('/playlist'),
+    },
+  ];
 
-const MenuCommunity: MenuProps[] = [
-  {
-    title: 'Explore',
-    icon: <SearchOutlined />,
-    onClick: () => {},
-  },
-  {
-    title: 'Discuss',
-    icon: <FontAwesomeIcon icon={faComments} />,
-    onClick: () => {},
-  },
-];
+  const MenuCommunity: MenuProps[] = [
+    {
+      title: 'Explore',
+      icon: <SearchOutlined />,
+      onClick: () => navigate('/explore'), 
+    },
+    {
+      title: 'Discuss',
+      icon: <FontAwesomeIcon icon={faComments} />,
+      onClick: () => navigate('/discuss'),
+    },
+  ];
 
-const MenuCreator: MenuProps[] = [
-  {
-    title: 'Tone Creation',
-    icon: <FontAwesomeIcon icon={faWandMagicSparkles} />,
-    onClick: () => {},
-  },
-  {
-    title: 'Upload',
-    icon: <UploadFileOutlined />,
-    onClick: () => {},
-  },
-];
+  const MenuCreator: MenuProps[] = [
+    {
+      title: 'Tone Creation',
+      icon: <FontAwesomeIcon icon={faWandMagicSparkles} />,
+      onClick: () => navigate('/create'),
+    },
+    {
+      title: 'Upload',
+      icon: <UploadFileOutlined />,
+      onClick: () => navigate('/upload'),
+    },
+  ];
 
-function renderListButton(props: MenuProps) {
-  const { title, icon, onClick } = props;
-  return (
-    <ListItemButton onClick={onClick}>
-      <ListItemIcon>{icon}</ListItemIcon>
-      <ListItemText primary={title} />
-    </ListItemButton>
-  );
-}
+  function renderListButton({ title, icon, onClick }: MenuProps) {
+    return (
+      <ListItemButton onClick={onClick}>
+        <ListItemIcon>{icon}</ListItemIcon>
+        <ListItemText primary={title} />
+      </ListItemButton>
+    );
+  }
 
-interface SiderProps {
-  drawerWidth: number;
-}
-
-export default function Sider(props: SiderProps) {
-  const { drawerWidth } = props;
   return (
     <Drawer
       variant="permanent"
@@ -98,21 +92,21 @@ export default function Sider(props: SiderProps) {
           </Typography>
         </ListItem>
         <Divider />
-        <List>{MenuMyStressTone.map((content: MenuProps) => renderListButton(content))}</List>
+        <List>{MenuMyStressTone.map((item) => renderListButton(item))}</List>
         <ListItem>
           <Typography sx={MenuTitleStyle}>
             <b>Community</b>
           </Typography>
         </ListItem>
         <Divider />
-        <List>{MenuCommunity.map((content: MenuProps) => renderListButton(content))}</List>
+        <List>{MenuCommunity.map((item) => renderListButton(item))}</List>
         <ListItem>
           <Typography sx={MenuTitleStyle}>
             <b>Creator</b>
           </Typography>
         </ListItem>
         <Divider />
-        <List>{MenuCreator.map((content: MenuProps) => renderListButton(content))}</List>
+        <List>{MenuCreator.map((item) => renderListButton(item))}</List>
       </Box>
     </Drawer>
   );
