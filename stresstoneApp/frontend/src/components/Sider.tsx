@@ -15,6 +15,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router-dom'; 
 import { faWandMagicSparkles, faComments } from '@fortawesome/free-solid-svg-icons';
 
+import { useNavigate, useLocation } from 'react-router-dom';
+
 interface MenuProps {
   title: string;
   icon: React.ReactNode;
@@ -62,6 +64,18 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
       onClick: () => {},
     },
   ];
+  const MenuCreator: MenuProps[] = [
+    {
+      title: 'Tone Creation',
+      icon: <FontAwesomeIcon icon={faWandMagicSparkles} />,
+      onClick: () => {},
+    },
+    {
+      title: 'Upload',
+      icon: <UploadFileOutlined />,
+      onClick: () => {},
+    },
+  ];
 
   function renderListButton({ title, icon, onClick }: MenuProps) {
     return (
@@ -92,6 +106,7 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
           </Typography>
         </ListItem>
         <Divider />
+        <List>{MenuMyStressTone.map((item) => renderListButton(item))}</List>
         <List>{MenuMyStressTone.map((item) => renderListButton(item))}</List>
         <ListItem>
           <Typography sx={MenuTitleStyle}>
