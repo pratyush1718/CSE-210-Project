@@ -1,18 +1,21 @@
-import { Box, Fab, Typography, Card, CardContent, Avatar, IconButton, TextField, Button } from '@mui/material';
-import { ThumbUp, ThumbDown, Reply, Send, Add } from '@mui/icons-material';
+import { Box, Fab, Typography, Card, CardContent, Avatar, IconButton, Button, Tooltip } from '@mui/material';
+import { ThumbUp, ThumbDown, Reply, Add } from '@mui/icons-material';
 
 interface Post {
   id: number;
   user: string;
   content: string;
   time: string;
+  likes: number; 
+  dislikes: number;
+  replies: number;
 }
 
 const posts: Post[] = [
-  { id: 1, user: 'Kyrian', content: "Loving this new track by @Bella! It's so chill! Have you guys heard it yet?", time: "3 minutes ago" },
-  { id: 2, user: 'Brian', content: "What should I make for my next track? Trying to decide between Christmas and fall vibes.", time: "10 minutes ago" },
-  { id: 3, user: 'Bella', content: "Hey guys, new track is out! Make sure to check it out!", time: "23 hours ago" },
-  { id: 4, user: 'Angie', content: "Been looking for some new tracks to decompress after work. Any recs?", time: "Feb 10, 2025" },
+  { id: 1, user: 'Kyrian', content: "Loving this new track by @Bella! It's so chill! Have you guys heard it yet?", time: "3 minutes ago", likes: 5, dislikes: 0, replies: 2 },
+  { id: 2, user: 'Brian', content: "What should I make for my next track? Trying to decide between Christmas and fall vibes.", time: "10 minutes ago", likes: 2, dislikes: 0, replies: 1 },
+  { id: 3, user: 'Bella', content: "Hey guys, new track is out! Make sure to check it out!", time: "23 hours ago", likes: 3, dislikes: 0, replies: 0 },
+  { id: 4, user: 'Angie', content: "Been looking for some new tracks to decompress after work. Any recs?", time: "Feb 10, 2025", likes: 1, dislikes: 0, replies: 3 },
 ];
 
 export default function Discuss() {
@@ -25,12 +28,6 @@ export default function Discuss() {
       <Typography variant="h4" gutterBottom>
         Community Discussion
       </Typography>
-
-      {/* Post Button */}
-      {/* <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
-        <TextField fullWidth label="Write a post..." variant="outlined" />
-        <Button variant="contained" startIcon={<Send />}>Post</Button>
-      </Box> */}
 
       {/* Posts List */}
       {posts.map((post) => (
@@ -53,9 +50,16 @@ export default function Discuss() {
 
             {/* Action Buttons */}
             <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-              <IconButton><ThumbUp /></IconButton>
-              <IconButton><ThumbDown /></IconButton>
-              <IconButton><Reply /></IconButton>
+              <Tooltip title = "Like">
+                <IconButton><ThumbUp /></IconButton> 
+              </Tooltip>
+              <Tooltip title = "Dislike">
+                <IconButton><ThumbDown /></IconButton>
+              </Tooltip>
+              <Tooltip title = "Reply">
+                <IconButton><Reply /></IconButton>
+              </Tooltip>
+              <Button variant="outlined">View Replies</Button>
             </Box>
           </CardContent>
         </Card>
@@ -66,8 +70,8 @@ export default function Discuss() {
         color="primary"
         sx={{
           position: "fixed",
-          bottom: 130, // Distance from the bottom
-          right: 24,  // Distance from the right
+          bottom: 130, // distance from the bottom
+          right: 24,  // distance from the right
           zIndex: 1000,
         }}
         onClick={handleCreatePost}
