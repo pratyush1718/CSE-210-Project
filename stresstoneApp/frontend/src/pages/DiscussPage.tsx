@@ -1,5 +1,5 @@
-import { Box, Typography, Card, CardContent, Avatar, IconButton, TextField, Button } from '@mui/material';
-import { ThumbUp, ThumbDown, Reply, Send } from '@mui/icons-material';
+import { Box, Fab, Typography, Card, CardContent, Avatar, IconButton, TextField, Button } from '@mui/material';
+import { ThumbUp, ThumbDown, Reply, Send, Add } from '@mui/icons-material';
 
 interface Post {
   id: number;
@@ -16,6 +16,10 @@ const posts: Post[] = [
 ];
 
 export default function Discuss() {
+  const handleCreatePost = () => {
+    console.log("Open create modal");
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
@@ -23,10 +27,10 @@ export default function Discuss() {
       </Typography>
 
       {/* Post Button */}
-      <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
-        {/* <TextField fullWidth label="Write a post..." variant="outlined" /> */}
+      {/* <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
+        <TextField fullWidth label="Write a post..." variant="outlined" />
         <Button variant="contained" startIcon={<Send />}>Post</Button>
-      </Box>
+      </Box> */}
 
       {/* Posts List */}
       {posts.map((post) => (
@@ -56,6 +60,20 @@ export default function Discuss() {
           </CardContent>
         </Card>
       ))}
+
+      { /* Floating Create Post Button */}
+      <Fab
+        color="primary"
+        sx={{
+          position: "fixed",
+          bottom: 130, // Distance from the bottom
+          right: 24,  // Distance from the right
+          zIndex: 1000,
+        }}
+        onClick={handleCreatePost}
+      >
+        <Add />
+      </Fab>
     </Box>
   );
 }
