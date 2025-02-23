@@ -104,7 +104,7 @@ export default function TonePlayer() {
       </Toolbar>
 
       {/* Progress Bar */}
-      <Box sx={{ width: '70%', padding: '0 16px' }}>
+      <Box sx={{ width: '50%', padding: '0 16px' }}>
         <LinearProgress
           variant="determinate"
           // value={progress}
