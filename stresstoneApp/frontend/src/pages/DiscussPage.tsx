@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Box, Fab, Typography, Card, CardContent, Avatar, IconButton, Button, Tooltip, Modal, TextField } from '@mui/material';
-import { ThumbUp, ThumbDown, Reply, Add, Close } from '@mui/icons-material';
+import { ThumbUp, ThumbDown, Reply, Add, Close, Delete } from '@mui/icons-material';
 
 interface Post {
   id: number;
@@ -22,7 +22,9 @@ const postsData: Post[] = [
 export default function Discuss() {
   const [posts, setPosts] = useState(postsData);
   const [open, setOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [newPostContent, setNewPostContent] = useState("");
+  const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -43,6 +45,24 @@ export default function Discuss() {
     setPosts([newPost, ...posts]); // add new post at the top
     setNewPostContent("");
     handleClose();
+  };
+
+  const handleDeletePost = (post: Post) => {
+    setPostToDelete(post);
+    setDeleteOpen(true);
+  };
+
+  const confirmDeletePost = () => {
+    if (postToDelete) {
+      setPosts(posts.filter(post => post.id !== postToDelete.id));
+    }
+    setDeleteOpen(false);
+    setPostToDelete(null);
+  };
+
+  const cancelDeletePost = () => {
+    setDeleteOpen(false);
+    setPostToDelete(null);
   };
 
   return (
@@ -95,6 +115,15 @@ export default function Discuss() {
 
               {post.reply_count > 0 && (
                 <Button variant="outlined" size="small">View Replies</Button>
+              )}
+
+              {/* Delete Button */}
+              {post.user === 'You' && (  // Only show delete button for the user who created the post
+                <Tooltip title="Delete Post">
+                  <IconButton size="small" onClick={() => handleDeletePost(post)}>
+                    <Delete fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               )}
             </Box>
           </CardContent>
@@ -150,6 +179,34 @@ export default function Discuss() {
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
             <Button onClick={() => { handleCreatePost(); handleClose(); }} variant="contained" color="primary">
               Post
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
+      {/* Confirmation Delete Modal */}
+      <Modal open={deleteOpen} onClose={cancelDeletePost}>
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          bgcolor: 'background.paper',
+          boxShadow: 24,
+          p: 3,
+          borderRadius: 2,
+          width: 400,
+        }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Are you sure you want to delete this post?
+          </Typography>
+
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+            <Button onClick={cancelDeletePost} variant="outlined" color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={confirmDeletePost} variant="contained" color="primary">
+              Confirm
             </Button>
           </Box>
         </Box>
