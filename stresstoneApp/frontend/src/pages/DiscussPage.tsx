@@ -80,18 +80,20 @@ export default function Discuss() {
       ))}
 
       {/* Floating Create Post Button */}
-      <Fab
-        color="primary"
-        sx={{
-          position: "fixed",
-          bottom: 130, // distance from the bottom
-          right: 24, // distance from the right
-          zIndex: 1000,
-        }}
-        onClick={handleCreatePost}
-      >
-        <Add />
-      </Fab>
+      <Tooltip title="Create Post" placement='top'>
+        <Fab
+          color="primary"
+          sx={{
+            position: "fixed",
+            bottom: 130, // distance from the bottom
+            right: 24, // distance from the right
+            zIndex: 1000,
+          }}
+          onClick={handleCreatePost}
+        >
+          <Add />
+        </Fab>
+      </Tooltip>
     </Box>
   );
 }
