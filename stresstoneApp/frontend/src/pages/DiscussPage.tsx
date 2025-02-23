@@ -1,5 +1,6 @@
-import { Box, Fab, Typography, Card, CardContent, Avatar, IconButton, Button, Tooltip } from '@mui/material';
-import { ThumbUp, ThumbDown, Reply, Add } from '@mui/icons-material';
+import { useState } from 'react';
+import { Box, Fab, Typography, Card, CardContent, Avatar, IconButton, Button, Tooltip, Modal, TextField } from '@mui/material';
+import { ThumbUp, ThumbDown, Reply, Add, Close } from '@mui/icons-material';
 
 interface Post {
   id: number;
@@ -11,7 +12,7 @@ interface Post {
   reply_count: number;
 }
 
-const posts: Post[] = [
+const postsData: Post[] = [
   { id: 1, user: 'Kyrian', content: "Loving this new track by @Bella! It's so chill! Have you guys heard it yet?", time: "3 minutes ago", like_count: 5, dislike_count: 0, reply_count: 2 },
   { id: 2, user: 'Brian', content: "What should I make for my next track? Trying to decide between Christmas and fall vibes.", time: "10 minutes ago", like_count: 2, dislike_count: 0, reply_count: 1 },
   { id: 3, user: 'Bella', content: "Hey guys, new track is out! Make sure to check it out!", time: "23 hours ago", like_count: 3, dislike_count: 0, reply_count: 0 },
@@ -19,8 +20,29 @@ const posts: Post[] = [
 ];
 
 export default function Discuss() {
+  const [posts, setPosts] = useState(postsData);
+  const [open, setOpen] = useState(false);
+  const [newPostContent, setNewPostContent] = useState("");
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const handleCreatePost = () => {
-    console.log("Open create modal");
+    if (newPostContent.trim() === "") return;
+    
+    const newPost: Post = {
+      id: posts.length + 1,
+      user: 'You', // replace this with the logged-in user if needed
+      content: newPostContent,
+      time: "Just now",
+      like_count: 0,
+      dislike_count: 0,
+      reply_count: 0,
+    };
+
+    setPosts([newPost, ...posts]); // add new post at the top
+    setNewPostContent("");
+    handleClose();
   };
 
   return (
@@ -89,11 +111,49 @@ export default function Discuss() {
             right: 24, // distance from the right
             zIndex: 1000,
           }}
-          onClick={handleCreatePost}
+          onClick={handleOpen}
         >
           <Add />
         </Fab>
       </Tooltip>
+
+      {/* Post Modal */}
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          bgcolor: 'background.paper',
+          boxShadow: 24,
+          p: 3,
+          borderRadius: 2,
+          width: 400,
+        }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6">Create Post</Typography>
+            <IconButton onClick={handleClose}>
+              <Close />
+            </IconButton>
+          </Box>
+
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            variant="outlined"
+            placeholder="What's on your mind?"
+            value={newPostContent}
+            onChange={(e) => setNewPostContent(e.target.value)}
+          />
+
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+            <Button onClick={() => { handleCreatePost(); handleClose(); }} variant="contained" color="primary">
+              Post
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 }
