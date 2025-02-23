@@ -30,6 +30,14 @@ const seedSoundTracks = async () => {
         createdAt: new Date('2023-08-02T10:00:00Z'),
       },
       {
+        title: 'Sample Track 3',
+        description: 'Third sample wav track',
+        tags: ['test', 'audio'],
+        audioUrl: 'testData/music-stubs/sample3.wav',
+        likes: 10,
+        createdAt: new Date('2023-08-03T10:00:00Z'),
+      },
+      {
         title: 'Amazing Beat',
         description: 'A beat that is amazingly rhythmic',
         tags: ['beat', 'rhythm'],
