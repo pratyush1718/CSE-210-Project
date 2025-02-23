@@ -7,16 +7,16 @@ interface Post {
   user: string;
   content: string;
   time: string;
-  like_count: number;
-  dislike_count: number;
-  reply_count: number;
+  likeCount: number;
+  dislikeCount: number;
+  replyCount: number;
 }
 
 const postsData: Post[] = [
-  { id: 1, user: 'Kyrian', content: "Loving this new track by @Bella! It's so chill! Have you guys heard it yet?", time: "3 minutes ago", like_count: 5, dislike_count: 0, reply_count: 2 },
-  { id: 2, user: 'Brian', content: "What should I make for my next track? Trying to decide between Christmas and fall vibes.", time: "10 minutes ago", like_count: 2, dislike_count: 0, reply_count: 1 },
-  { id: 3, user: 'Bella', content: "Hey guys, new track is out! Make sure to check it out!", time: "23 hours ago", like_count: 3, dislike_count: 0, reply_count: 0 },
-  { id: 4, user: 'Angie', content: "Been looking for some new tracks to decompress after work. Any recs?", time: "Feb 10, 2025", like_count: 1, dislike_count: 0, reply_count: 3 },
+  { id: 1, user: 'Kyrian', content: "Loving this new track by @Bella! It's so chill! Have you guys heard it yet?", time: "3 minutes ago", likeCount: 5, dislikeCount: 0, replyCount: 2 },
+  { id: 2, user: 'Brian', content: "What should I make for my next track? Trying to decide between Christmas and fall vibes.", time: "10 minutes ago", likeCount: 2, dislikeCount: 0, replyCount: 1 },
+  { id: 3, user: 'Bella', content: "Hey guys, new track is out! Make sure to check it out!", time: "23 hours ago", likeCount: 3, dislikeCount: 0, replyCount: 0 },
+  { id: 4, user: 'Angie', content: "Been looking for some new tracks to decompress after work. Any recs?", time: "Feb 10, 2025", likeCount: 1, dislikeCount: 0, replyCount: 3 },
 ];
 
 export default function Discuss() {
@@ -37,9 +37,9 @@ export default function Discuss() {
       user: 'You', // replace this with the logged-in user if needed
       content: newPostContent,
       time: "Just now",
-      like_count: 0,
-      dislike_count: 0,
-      reply_count: 0,
+      likeCount: 0,
+      dislikeCount: 0,
+      replyCount: 0,
     };
 
     setPosts([newPost, ...posts]); // add new post at the top
@@ -96,24 +96,24 @@ export default function Discuss() {
                 <Tooltip title="Like">
                   <IconButton size="small"><ThumbUp fontSize="small" /></IconButton>
                 </Tooltip>
-                <Typography variant="body2">{post.like_count}</Typography>
+                <Typography variant="body2">{post.likeCount}</Typography>
               </Box>
 
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
                 <Tooltip title="Dislike">
                   <IconButton size="small"><ThumbDown fontSize="small" /></IconButton>
                 </Tooltip>
-                <Typography variant="body2">{post.dislike_count}</Typography>
+                <Typography variant="body2">{post.dislikeCount}</Typography>
               </Box>
 
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
                 <Tooltip title="Reply">
                   <IconButton size="small"><Reply fontSize="small" /></IconButton>
                 </Tooltip>
-                <Typography variant="body2">{post.reply_count}</Typography>
+                <Typography variant="body2">{post.replyCount}</Typography>
               </Box>
 
-              {post.reply_count > 0 && (
+              {post.replyCount > 0 && (
                 <Button variant="outlined" size="small">View Replies</Button>
               )}
 
