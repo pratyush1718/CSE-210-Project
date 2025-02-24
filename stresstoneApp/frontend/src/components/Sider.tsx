@@ -22,50 +22,6 @@ interface MenuProps {
   onClick: () => void;
 }
 
-const MenuMyStressTone: MenuProps[] = [
-  {
-    title: 'Home',
-    icon: <HomeOutlined />,
-    onClick: () => {
-      // return to the root page
-      window.location.href = '/';
-    },
-  },
-  {
-    title: 'My Playlist',
-    icon: <FavoriteBorderOutlined />,
-    onClick: () => {},
-  },
-];
-
-const MenuCommunity: MenuProps[] = [
-  {
-    title: 'Explore',
-    icon: <SearchOutlined />,
-    onClick: () => {},
-  },
-  {
-    title: 'Discuss',
-    icon: <FontAwesomeIcon icon={faComments} />,
-    onClick: () => {},
-  },
-];
-
-const MenuCreator: MenuProps[] = [
-  {
-    title: 'Tone Creation',
-    icon: <FontAwesomeIcon icon={faWandMagicSparkles} />,
-    onClick: () => {},
-  },
-  {
-    title: 'Upload',
-    icon: <UploadFileOutlined />,
-    onClick: () => {
-        window.location.href = '/upload';
-    },
-  },
-];
-
 function renderListButton(props: MenuProps & { active?: boolean }) {
   const { title, icon, onClick, active } = props;
   return (
@@ -95,7 +51,9 @@ export default function Sider(props: SiderProps) {
     {
       title: 'Home',
       icon: <HomeOutlined />,
-      onClick: () => navigate('/'),
+      onClick: () => {
+        window.location.href = '/';
+      },
     },
     {
       title: 'My Playlist',
