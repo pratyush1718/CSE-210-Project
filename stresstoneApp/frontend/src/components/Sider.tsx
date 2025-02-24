@@ -58,7 +58,9 @@ const MenuCreator: MenuProps[] = [
   {
     title: 'Upload',
     icon: <UploadFileOutlined />,
-    onClick: () => {},
+    onClick: () => {
+        window.location.href = '/upload';
+    },
   },
 ];
 
