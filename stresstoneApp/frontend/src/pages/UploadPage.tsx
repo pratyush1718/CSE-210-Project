@@ -136,30 +136,38 @@ const UploadPage: React.FC = () => {
                     sx={{ mb: 2 }} 
                 />
 
-                {/* Visibility */}
-                <Typography variant="subtitle1">Visibility:</Typography>
-                <RadioGroup row value={visibility} onChange={(e) => setVisibility(e.target.value)}>
-                    <FormControlLabel value="public" control={<Radio />} label="Public" />
-                    <FormControlLabel value="private" control={<Radio />} label="Private" />
-                </RadioGroup>
+                <Grid container spacing={4}>
+                    <Grid>
+                        {/* Visibility */}
+                        <Typography variant="subtitle1">Visibility:</Typography>
+                        <RadioGroup row value={visibility} onChange={(e) => setVisibility(e.target.value)}>
+                            <FormControlLabel value="public" control={<Radio />} label="Public" />
+                            <FormControlLabel value="private" control={<Radio />} label="Private" />
+                        </RadioGroup>
+                    </Grid>
 
-                {/* Allow Downloads */}
-                <Typography variant="subtitle1">Allow Downloads:</Typography>
-                <RadioGroup row value={allowDownloads} onChange={(e) => setAllowDownloads(e.target.value)}>
-                    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                    <FormControlLabel value="no" control={<Radio />} label="No" />
-                </RadioGroup>
+                    <Grid>
+                        {/* Allow Downloads */}
+                        <Typography variant="subtitle1">Allow Downloads:</Typography>
+                        <RadioGroup row value={allowDownloads} onChange={(e) => setAllowDownloads(e.target.value)}>
+                            <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                            <FormControlLabel value="no" control={<Radio />} label="No" />
+                        </RadioGroup>
+                    </Grid>
 
-                {/* Upload Button */}
-                <Button 
-                    variant="contained" 
-                    color="primary" 
-                    fullWidth 
-                    onClick={handleUpload} 
-                    sx={{ mt: 3 }}
-                >
-                    Upload
-                </Button>
+                    <Grid>
+                        {/* Upload Button */}
+                        <Button 
+                            variant="contained" 
+                            color="primary" 
+                            fullWidth 
+                            onClick={handleUpload} 
+                            sx={{ mt: 3 }}
+                        >
+                            Upload
+                        </Button>
+                    </Grid>
+                </Grid>
             </Grid>
         </Grid>
     </Box>
