@@ -1,23 +1,27 @@
 import express, { Application, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import searchRouter from './routes/SearchRouter';
+import mongoose from 'mongoose';
 
 dotenv.config();
 const app: Application = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:5173' }));
 
 // MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI as string;
 
-app.use(cors({ origin: 'http://localhost:5173' }));
+// Uncomment below once MongoDB is set up
+mongoose
+  .connect(MONGO_URI)
+  .then(() => console.log('MongoDB Connected'))
+  .catch((err) => console.log(err));
 
-// mongoose
-//   .connect(MONGO_URI)
-//   .then(() => console.log("MongoDB Connected"))
-//   .catch((err) => console.log(err));
+// Mount search routes under /search
+app.use('/api/search', searchRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');

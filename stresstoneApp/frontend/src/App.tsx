@@ -8,6 +8,7 @@ import Login from './components/Login';
 import { Route, Routes } from 'react-router-dom';
 import PageLayout from './pages/PageLayout'
 import UploadPage from './pages/UploadPage';
+import SearchPage from "./pages/SearchPage.tsx";
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path='/' element={<PageLayout />} >
             <Route index={true} element={<Login/>} />
             <Route path='/upload' element={<UploadPage/>} />
+            <Route path='/search' element={<SearchPage/>} />
         </Route>
     </Routes>
   );
