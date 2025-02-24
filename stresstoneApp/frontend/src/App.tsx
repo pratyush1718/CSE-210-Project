@@ -5,9 +5,10 @@ import Sider from './components/Sider';
 import { Box, CssBaseline } from '@mui/material';
 import TonePlayer from './components/TonePlayer';
 import Login from './components/Login';
+import { Route, Routes } from 'react-router-dom';
+import PageLayout from './pages/PageLayout'
+import UploadPage from './pages/UploadPage';
 
-const siderWidth = 240;
-const headerHeight = 64;
 
 function App() {
   const [message, setMessage] = useState<string>('');
@@ -20,30 +21,12 @@ function App() {
   }, []);
 
   return (
-    <>
-      <CssBaseline />
-      <Header height={headerHeight} />
-      <Box sx={{ display: 'flex', marginTop: `${headerHeight}px` }}>
-        <Sider drawerWidth={siderWidth} />
-        <Box
-          component="main"
-          sx={{
-            p: 2,
-            width: `calc(100% - ${siderWidth}px)`,
-            height: '100%',
-            overflow: 'auto',
-          }}
-        >
-          {/* All module implementation should go here */}
-          <Login></Login>
-          <p>Stresstone App</p>
-          <p>{message}</p>
-        </Box>
-      </Box>
-      <footer>
-        <TonePlayer />
-      </footer>
-    </>
+    <Routes>
+        <Route path='/' element={<PageLayout />} >
+            <Route index={true} element={<Login/>} />
+            <Route path='/upload' element={<UploadPage/>} />
+        </Route>
+    </Routes>
   );
 }
 
