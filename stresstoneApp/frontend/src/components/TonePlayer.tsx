@@ -33,15 +33,15 @@ export default function TonePlayer() {
   };
 
   useEffect(() => {
-    let interval: number;
+    let interval: NodeJS.Timeout;
     if (isPlaying) {
       interval = setInterval(updateProgress, 100);
     }
     return () => clearInterval(interval);
   }, [isPlaying]);
 
-  const handleVolumeChange = (_: Event, newValue: number) => {
-    setVolume(newValue);
+  const handleVolumeChange = (_: Event, newValue: number | number[]) => {
+    setVolume(newValue as number);
   };
 
   return (
