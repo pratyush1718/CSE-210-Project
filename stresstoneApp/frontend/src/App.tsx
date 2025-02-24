@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Routes, Route } from 'react-router-dom';
+import SearchPage from './pages/SearchPage';
+import Discuss from './pages/DiscussPage'; 
 import Header from './components/Header';
 import Sider from './components/Sider';
 import { Box, CssBaseline } from '@mui/material';
 import TonePlayer from './components/TonePlayer';
-import { Routes, Route } from "react-router-dom";
 import Login from "./components/Login";
-import SearchPage from "./pages/SearchPage.tsx";
 
 const siderWidth = 240;
 const headerHeight = 64;
@@ -46,6 +47,7 @@ function App() {
               </>
             } />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/discuss" element={<Discuss />} />
           </Routes>
         </Box>
       </Box>

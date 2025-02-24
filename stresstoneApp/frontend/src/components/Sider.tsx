@@ -14,7 +14,7 @@ import { HomeOutlined, FavoriteBorderOutlined, SearchOutlined, UploadFileOutline
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWandMagicSparkles, faComments } from '@fortawesome/free-solid-svg-icons';
 
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface MenuProps {
   title: string;
@@ -22,38 +22,14 @@ interface MenuProps {
   onClick: () => void;
 }
 
-function renderListButton(props: MenuProps & { active?: boolean }) {
-  const { title, icon, onClick, active } = props;
-  return (
-    <ListItemButton
-      onClick={onClick}
-      sx={{
-        backgroundColor: active ? '#e0e0e0' : 'inherit',
-        '&:hover': { backgroundColor: active ? '#e0e0e0' : 'lightgrey' },
-      }}
-    >
-      <ListItemIcon>{icon}</ListItemIcon>
-      <ListItemText primary={title} />
-    </ListItemButton>
-  );
-}
-
-interface SiderProps {
-  drawerWidth: number;
-}
-
-export default function Sider(props: SiderProps) {
-  const { drawerWidth } = props;
-  const navigate = useNavigate();
-  const location = useLocation();
+export default function Sider({ drawerWidth }: { drawerWidth: number }) {
+  const navigate = useNavigate(); 
 
   const MenuMyStressTone: MenuProps[] = [
     {
       title: 'Home',
       icon: <HomeOutlined />,
-      onClick: () => {
-        window.location.href = '/';
-      },
+      onClick: () => navigate('/'), 
     },
     {
       title: 'My Playlist',
@@ -66,12 +42,12 @@ export default function Sider(props: SiderProps) {
     {
       title: 'Explore',
       icon: <SearchOutlined />,
-      onClick: () => navigate('/search'),
+      onClick: () => navigate('/search'), 
     },
     {
       title: 'Discuss',
       icon: <FontAwesomeIcon icon={faComments} />,
-      onClick: () => {},
+      onClick: () => navigate('/discuss'),
     },
   ];
 
@@ -87,6 +63,15 @@ export default function Sider(props: SiderProps) {
       onClick: () => {},
     },
   ];
+
+  function renderListButton({ title, icon, onClick }: MenuProps) {
+    return (
+      <ListItemButton onClick={onClick}>
+        <ListItemIcon>{icon}</ListItemIcon>
+        <ListItemText primary={title} />
+      </ListItemButton>
+    );
+  }
 
   return (
     <Drawer
@@ -115,14 +100,7 @@ export default function Sider(props: SiderProps) {
           </Typography>
         </ListItem>
         <Divider />
-        <List>
-          {MenuCommunity.map((item) =>
-            renderListButton({
-              ...item,
-              active: item.title === 'Explore' && location.pathname === '/search',
-            }),
-          )}
-        </List>
+        <List>{MenuCommunity.map((item) => renderListButton(item))}</List>
         <ListItem>
           <Typography sx={MenuTitleStyle}>
             <b>Creator</b>
