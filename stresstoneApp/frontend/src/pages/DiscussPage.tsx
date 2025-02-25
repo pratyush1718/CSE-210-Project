@@ -152,6 +152,10 @@ export default function Discuss() {
               </Tooltip>
               <Typography variant="body2">{post.replyCount}</Typography>
 
+              {post.replyCount > 0 && (
+                <Button size="small">View Replies</Button>
+              )}
+
               {post.user === 'You' && (
                 <Tooltip title="Delete Post">
                   <IconButton size="small" onClick={() => handleDeletePost(post)}>
