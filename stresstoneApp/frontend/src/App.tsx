@@ -13,7 +13,7 @@ const siderWidth = 240;
 const headerHeight = 64;
 
 function App() {
-  const [message, setMessage] = useState<string>('');
+  const [_, setMessage] = useState<string>('');
   const [footerHeight, setFooterHeight] = useState(120); // Default expanded height
 
   useEffect(() => {
