@@ -205,7 +205,7 @@ export default function Discuss() {
             <Button onClick={cancelDeletePost} variant="outlined" color="secondary">
               Cancel
             </Button>
-            <Button onClick={confirmDeletePost} variant="contained" color="primary">
+            <Button onClick={confirmDeletePost} variant="contained" color="error">
               Confirm
             </Button>
           </Box>
