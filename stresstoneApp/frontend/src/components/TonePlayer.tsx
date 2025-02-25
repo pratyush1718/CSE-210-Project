@@ -26,10 +26,7 @@ export default function TonePlayer() {
   const handleToggleExpand = () => setIsExpanded((prev) => !prev);
 
   const updateProgress = () => {
-    setProgress((prev) => {
-      const newProgress = prev + 1;
-      return newProgress <= 100 ? newProgress : 0;
-    });
+    setProgress((prev) => (prev + 1) % 101);
   };
 
   useEffect(() => {
@@ -61,23 +58,6 @@ export default function TonePlayer() {
         transition: 'min-height 0.3s ease-in-out',
       }}
     >
-      {/* Collapse/Expand Button */}
-      <IconButton
-        onClick={handleToggleExpand}
-        sx={{
-          position: 'absolute',
-          top: -28,
-          right: 16,
-          bgcolor: 'white',
-          boxShadow: '0 0 8px rgba(0,0,0,0.2)',
-          '&:hover': {
-            bgcolor: 'white',
-          }
-        }}
-      >
-        {isExpanded ? <ExpandMore /> : <ExpandLess />}
-      </IconButton>
-
       <Toolbar 
         sx={{ 
           width: '100%', 
@@ -142,36 +122,38 @@ export default function TonePlayer() {
           )}
         </Box>
 
-        {/* Right side: Volume Slider */}
-        {isExpanded && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <VolumeUp />
-            <Slider
-              value={volume}
-              onChange={handleVolumeChange}
-              aria-labelledby="volume-slider"
-              min={0}
-              max={100}
-              sx={{ width: 100 }}
-            />
-          </Box>
-        )}
+        {/* Right side: Volume Slider & Expand Button */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {isExpanded && (
+            <>
+              <VolumeUp />
+              <Slider
+                value={volume}
+                onChange={handleVolumeChange}
+                aria-labelledby="volume-slider"
+                min={0}
+                max={100}
+                sx={{ width: 100 }}
+              />
+            </>
+          )}
+          {/* Collapse/Expand Button */}
+          <IconButton onClick={handleToggleExpand} sx={{ ml: 1 }}>
+            {isExpanded ? <ExpandMore /> : <ExpandLess />}
+          </IconButton>
+        </Box>
       </Toolbar>
 
       {/* Progress Bar */}
-      <Box sx={{ 
-        width: '50%', 
-        padding: '0 16px',
-        opacity: isExpanded ? 1 : 0,
-        transition: 'opacity 0.3s ease-in-out',
-        height: isExpanded ? 'auto' : 0
-      }}>
-        <LinearProgress
-          variant="determinate"
-          value={progress}
-          sx={{ height: 5, bgcolor: '#ddd', borderRadius: 2 }}
-        />
-      </Box>
+      {isExpanded && (
+        <Box sx={{ width: '50%', padding: '0 16px' }}>
+          <LinearProgress
+            variant="determinate"
+            value={progress}
+            sx={{ height: 5, bgcolor: '#ddd', borderRadius: 2 }}
+          />
+        </Box>
+      )}
     </AppBar>
   );
 }
