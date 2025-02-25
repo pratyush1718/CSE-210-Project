@@ -23,7 +23,7 @@ export const SearchController: RequestHandler<object, unknown, unknown, SearchQu
     const pageNum = parseInt(page, 10);
     const limitNum = parseInt(limit, 10);
 
-    let sortCriteria: Record<string, unknown> = {};
+    let sortCriteria: any = {};
     if (sort === 'relevance') {
       sortCriteria = { score: { $meta: 'textScore' } };
     } else if (sort === 'likes') {
