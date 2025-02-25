@@ -38,7 +38,7 @@ function App() {
           }}
         >
           <Routes>
-            <Route path="/" element={<><Login /><p>Stresstone App</p><p>{message}</p></>} />
+            <Route path="/" element={<><Login /></>} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/discuss" element={<Discuss />} />
           </Routes>
