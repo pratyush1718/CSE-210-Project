@@ -16,8 +16,8 @@ interface Post {
 }
 
 const postsData: Post[] = [
-  { id: 1, user: 'Kyrian', content: "Loving this new track by @Bella! It's so chill! Have you guys heard it yet?", time: "3 minutes ago", likeCount: 5, dislikeCount: 0, replyCount: 2 },
-  { id: 2, user: 'Brian', content: "What should I make for my next track? Trying to decide between Christmas and fall vibes.", time: "10 minutes ago", likeCount: 2, dislikeCount: 0, replyCount: 1 },
+  { id: 1, user: 'Kyrian', content: "Loving this new track by @Bella! It's so chill! Have you guys heard it yet?", time: "3 minutes ago", likeCount: 5, dislikeCount: 1, replyCount: 2 },
+  { id: 2, user: 'Brian', content: "What should I make for my next track? Trying to decide between Christmas and fall vibes.", time: "10 minutes ago", likeCount: 3, dislikeCount: 2, replyCount: 1 },
   { id: 3, user: 'Bella', content: "Hey guys, new track is out! Make sure to check it out!", time: "23 hours ago", likeCount: 3, dislikeCount: 0, replyCount: 0 },
   { id: 4, user: 'Angie', content: "Been looking for some new tracks to decompress after work. Any recs?", time: "Feb 10, 2025", likeCount: 1, dislikeCount: 0, replyCount: 3 },
 ];
@@ -132,9 +132,9 @@ export default function Discuss() {
                   sx={{ color: likedPosts[post.id] ? "blue" : "inherit" }}
                 >
                   <ThumbUp fontSize="small" />
+                  <Typography variant="body2" paddingLeft={1}>{post.likeCount}</Typography>
                 </IconButton>
               </Tooltip>
-              <Typography variant="body2">{post.likeCount}</Typography>
 
               <Tooltip title="Dislike">
                 <IconButton 
@@ -143,14 +143,15 @@ export default function Discuss() {
                   sx={{ color: dislikedPosts[post.id] ? "red" : "inherit" }}
                 >
                   <ThumbDown fontSize="small" />
+                  <Typography variant="body2" paddingLeft={1}>{post.dislikeCount}</Typography>
                 </IconButton>
               </Tooltip>
-              <Typography variant="body2">{post.dislikeCount}</Typography>
 
               <Tooltip title="Reply">
-                <IconButton size="small"><Reply fontSize="small" /></IconButton>
+                <IconButton size="small"><Reply fontSize="small" />
+                  <Typography variant="body2" paddingLeft={1}>{post.replyCount}</Typography>
+                </IconButton>
               </Tooltip>
-              <Typography variant="body2">{post.replyCount}</Typography>
 
               {post.replyCount > 0 && (
                 <Button size="small">View Replies</Button>
