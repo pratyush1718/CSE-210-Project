@@ -12,7 +12,11 @@ import {
   ExpandMore
 } from '@mui/icons-material';
 
-export default function TonePlayer() {
+interface TonePlayerProps {
+  onHeightChange: (height: number) => void; // Callback function to send height updates
+}
+
+export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [progress, setProgress] = useState(30);
@@ -23,7 +27,13 @@ export default function TonePlayer() {
   const handleShuffle = () => setIsShuffle((prev) => !prev);
   const handleRepeat = () => setIsRepeat((prev) => !prev);
   const handlePlayPause = () => setIsPlaying((prev) => !prev);
-  const handleToggleExpand = () => setIsExpanded((prev) => !prev);
+  const handleToggleExpand = () => {
+    setIsExpanded((prev) => !prev);
+  };
+
+  useEffect(() => {
+    onHeightChange(isExpanded ? 120 : 64); // Update parent with the new height
+  }, [isExpanded, onHeightChange]);
 
   const updateProgress = () => {
     setProgress((prev) => (prev + 1) % 101);
@@ -75,7 +85,7 @@ export default function TonePlayer() {
         }}>
           <Avatar
             alt="Album Cover"
-            src="https://via.placeholder.com/60"
+            src="" // album cover source.
             sx={{ 
               width: isExpanded ? 60 : 40, 
               height: isExpanded ? 60 : 40, 

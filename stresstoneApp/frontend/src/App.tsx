@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Routes, Route } from 'react-router-dom';
+import { Box, CssBaseline } from '@mui/material';
+import axios from 'axios';
 import SearchPage from './pages/SearchPage';
-import Discuss from './pages/DiscussPage'; 
+import Discuss from './pages/DiscussPage';
 import Header from './components/Header';
 import Sider from './components/Sider';
-import { Box, CssBaseline } from '@mui/material';
 import TonePlayer from './components/TonePlayer';
 import Login from "./components/Login";
 
@@ -14,10 +14,10 @@ const headerHeight = 64;
 
 function App() {
   const [message, setMessage] = useState<string>('');
+  const [footerHeight, setFooterHeight] = useState(120); // Default expanded height
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3000/')
+    axios.get('http://localhost:3000/')
       .then((res) => setMessage(res.data))
       .catch((err) => console.log(err));
   }, []);
@@ -26,7 +26,7 @@ function App() {
     <>
       <CssBaseline />
       <Header height={headerHeight} />
-      <Box sx={{ display: "flex", marginTop: `${headerHeight}px` }}>
+      <Box sx={{ display: "flex", marginTop: `${headerHeight}px` , marginBottom: `${footerHeight}px` }}>
         <Sider drawerWidth={siderWidth} />
         <Box
           component="main"
@@ -38,22 +38,15 @@ function App() {
           }}
         >
           <Routes>
-            <Route path="/" element={
-              <>
-                {/* Existing login and welcome message */}
-                <Login />
-                <p>Stresstone App</p>
-                <p>{message}</p>
-              </>
-            } />
+            <Route path="/" element={<><Login /><p>Stresstone App</p><p>{message}</p></>} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/discuss" element={<Discuss />} />
           </Routes>
         </Box>
       </Box>
-      <footer>
-        <TonePlayer />
-      </footer>
+      
+      {/* Footer with dynamic height update */}
+      <TonePlayer onHeightChange={setFooterHeight} />
     </>
   );
 }
