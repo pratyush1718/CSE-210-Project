@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { Box, Fab, Typography, Card, CardContent, Avatar, IconButton, Button, Tooltip, Modal, TextField } from '@mui/material';
+import { 
+  Box, Fab, Typography, Card, CardContent, Avatar, IconButton, 
+  Button, Tooltip, Modal, TextField 
+} from '@mui/material';
 import { ThumbUp, ThumbDown, Reply, Add, Close, Delete } from '@mui/icons-material';
 
 interface Post {
@@ -21,6 +24,8 @@ const postsData: Post[] = [
 
 export default function Discuss() {
   const [posts, setPosts] = useState(postsData);
+  const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
+  const [dislikedPosts, setDislikedPosts] = useState<{ [key: number]: boolean }>({});
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [newPostContent, setNewPostContent] = useState("");
@@ -34,7 +39,7 @@ export default function Discuss() {
     
     const newPost: Post = {
       id: posts.length + 1,
-      user: 'You', // replace this with the logged-in user if needed
+      user: 'You',
       content: newPostContent,
       time: "Just now",
       likeCount: 0,
@@ -42,7 +47,7 @@ export default function Discuss() {
       replyCount: 0,
     };
 
-    setPosts([newPost, ...posts]); // add new post at the top
+    setPosts([newPost, ...posts]);
     setNewPostContent("");
     handleClose();
   };
@@ -65,13 +70,42 @@ export default function Discuss() {
     setPostToDelete(null);
   };
 
+  const handleLike = (postId: number) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId
+          ? { ...post, likeCount: likedPosts[postId] ? post.likeCount - 1 : post.likeCount + 1 }
+          : post
+      )
+    );
+
+    setLikedPosts((prevLikedPosts) => ({
+      ...prevLikedPosts,
+      [postId]: !prevLikedPosts[postId],
+    }));
+  };
+
+  const handleDislike = (postId: number) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId
+          ? { ...post, dislikeCount: dislikedPosts[postId] ? post.dislikeCount - 1 : post.dislikeCount + 1 }
+          : post
+      )
+    );
+
+    setDislikedPosts((prevDislikedPosts) => ({
+      ...prevDislikedPosts,
+      [postId]: !prevDislikedPosts[postId],
+    }));
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         Community Discussion
       </Typography>
 
-      {/* Posts List */}
       {posts.map((post) => (
         <Card key={post.id} sx={{ mb: 2, p: 2 }}>
           <CardContent>
@@ -90,35 +124,35 @@ export default function Discuss() {
               {post.content}
             </Typography>
 
-            {/* Action Buttons with Counters */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
-                <Tooltip title="Like">
-                  <IconButton size="small"><ThumbUp fontSize="small" /></IconButton>
-                </Tooltip>
-                <Typography variant="body2">{post.likeCount}</Typography>
-              </Box>
+              <Tooltip title="Like">
+                <IconButton 
+                  size="small" 
+                  onClick={() => handleLike(post.id)} 
+                  sx={{ color: likedPosts[post.id] ? "blue" : "inherit" }}
+                >
+                  <ThumbUp fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Typography variant="body2">{post.likeCount}</Typography>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
-                <Tooltip title="Dislike">
-                  <IconButton size="small"><ThumbDown fontSize="small" /></IconButton>
-                </Tooltip>
-                <Typography variant="body2">{post.dislikeCount}</Typography>
-              </Box>
+              <Tooltip title="Dislike">
+                <IconButton 
+                  size="small" 
+                  onClick={() => handleDislike(post.id)} 
+                  sx={{ color: dislikedPosts[post.id] ? "red" : "inherit" }}
+                >
+                  <ThumbDown fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Typography variant="body2">{post.dislikeCount}</Typography>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
-                <Tooltip title="Reply">
-                  <IconButton size="small"><Reply fontSize="small" /></IconButton>
-                </Tooltip>
-                <Typography variant="body2">{post.replyCount}</Typography>
-              </Box>
+              <Tooltip title="Reply">
+                <IconButton size="small"><Reply fontSize="small" /></IconButton>
+              </Tooltip>
+              <Typography variant="body2">{post.replyCount}</Typography>
 
-              {post.replyCount > 0 && (
-                <Button variant="outlined" size="small">View Replies</Button>
-              )}
-
-              {/* Delete Button */}
-              {post.user === 'You' && (  // Only show delete button for the user who created the post
+              {post.user === 'You' && (
                 <Tooltip title="Delete Post">
                   <IconButton size="small" onClick={() => handleDeletePost(post)}>
                     <Delete fontSize="small" />
@@ -130,18 +164,8 @@ export default function Discuss() {
         </Card>
       ))}
 
-      {/* Floating Create Post Button */}
       <Tooltip title="Create Post" placement='top'>
-        <Fab
-          color="primary"
-          sx={{
-            position: "fixed",
-            bottom: 130, // distance from the bottom
-            right: 24, // distance from the right
-            zIndex: 1000,
-          }}
-          onClick={handleOpen}
-        >
+        <Fab color="primary" sx={{ position: "fixed", bottom: 130, right: 24 }} onClick={handleOpen}>
           <Add />
         </Fab>
       </Tooltip>
@@ -177,37 +201,20 @@ export default function Discuss() {
           />
 
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
-            <Button onClick={() => { handleCreatePost(); handleClose(); }} variant="contained" color="primary">
+            <Button onClick={() => { handleCreatePost(); handleClose(); }} color="primary">
               Post
             </Button>
           </Box>
         </Box>
       </Modal>
 
-      {/* Confirmation Delete Modal */}
+      {/* Delete Confirmation Modal */}
       <Modal open={deleteOpen} onClose={cancelDeletePost}>
-        <Box sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 3,
-          borderRadius: 2,
-          width: 400,
-        }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Are you sure you want to delete this post?
-          </Typography>
-
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-            <Button onClick={cancelDeletePost} variant="outlined" color="secondary">
-              Cancel
-            </Button>
-            <Button onClick={confirmDeletePost} variant="contained" color="error">
-              Confirm
-            </Button>
+        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', p: 3, borderRadius: 2 }}>
+          <Typography>Are you sure you want to delete this post?</Typography>
+          <Box sx={{ mt: 2, textAlign: "right" }}>
+            <Button onClick={cancelDeletePost} >Cancel</Button>
+            <Button onClick={confirmDeletePost} color="error">Delete</Button>
           </Box>
         </Box>
       </Modal>
