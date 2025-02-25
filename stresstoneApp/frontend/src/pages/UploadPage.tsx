@@ -26,14 +26,35 @@ const UploadPage: React.FC = () => {
     }
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!audioFile || !title || !description) {
       alert("Please upload an audio file and fill in the required fields.");
       return;
     }
     console.log("Uploading data...");
+    console.log("Audio File:", audioFile.name);
+    if (imageFile) {
+        console.log("Image File:", imageFile.name);
+    } else {
+        console.log("No Image File Uploaded.");
+    }
+    console.log("Title:", title);
+    console.log("Description:", description);
+    console.log("Tags:", tags);
+    console.log("Location:", location);
+    console.log("Visibility:", visibility);
+    console.log("Allow Downloads:", allowDownloads);
 
     // upload to backend...
+    try {
+        // timeout for 2s
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        alert("Your music file has been uploaded successfully!");
+        window.location.reload();
+    } catch (error) {
+        console.error("Upload Failed:", error);
+        alert("Upload failed! Please try again.");
+    }
   };
 
   return (
