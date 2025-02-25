@@ -1,0 +1,15 @@
+torch==2.3.0
+colorama==0.4.6
+dill==0.39
+platformdirs==4.3.6
+tomli==2.2.1
+packaging==24.2
+transformers==4.49.0
+scipy==1.13.1
+numpy==1.24.1
+fastapi==0.115.8
+uvicorn==0.34.0
+pytest==8.3.4
+jedi==0.18.2
+ujson==5.10.0
+httpx==0.28.1
