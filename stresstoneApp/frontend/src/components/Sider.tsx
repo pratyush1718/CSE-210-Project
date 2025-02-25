@@ -84,7 +84,7 @@ export default function Sider(props: SiderProps) {
     {
       title: 'Upload',
       icon: <UploadFileOutlined />,
-      onClick: () => {},
+      onClick: () => navigate('/upload'),
     },
   ];
 
