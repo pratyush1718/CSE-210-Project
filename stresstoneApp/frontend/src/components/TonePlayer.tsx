@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Toolbar, AppBar, IconButton, Typography, Slider, Box, LinearProgress, Avatar } from '@mui/material';
+import { Toolbar, AppBar, IconButton, Typography, Slider, Box, Avatar } from '@mui/material';
 import { 
   PlayArrow, 
   Pause, 
