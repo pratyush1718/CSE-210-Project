@@ -226,6 +226,9 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
       </Box> */}
       {isExpanded && (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1, }}>
+          <Typography variant="body2" color="text.secondary">
+            {formatTime(currentTime)}
+          </Typography>
           <Slider
             value={(currentTime / duration) * 100}
             onChange={handleSeek}
@@ -257,9 +260,9 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
               },
             })}
           />
-          {/* <Typography variant="caption" color="text.secondary">
-            {formatTime(currentTime)} / {formatTime(duration)}
-          </Typography> */}
+          <Typography variant="body2" color="text.secondary">
+            {formatTime(duration)}
+          </Typography>
         </Box>
       )}
     </>
