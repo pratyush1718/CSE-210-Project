@@ -1,6 +1,7 @@
 // src/controllers/searchController.ts
 import { RequestHandler } from 'express';
 import SoundTrack from '../models/SoundTrack';
+import { SortOrder } from 'mongoose';
 
 // SearchQuery interface which requires a search term (q)
 // and may optionally include pagination parameters (page and limit).
@@ -23,7 +24,7 @@ export const SearchController: RequestHandler<object, unknown, unknown, SearchQu
     const pageNum = parseInt(page, 10);
     const limitNum = parseInt(limit, 10);
 
-    let sortCriteria: Record<string, unknown> = {};
+    let sortCriteria: Record<string, SortOrder | { $meta: any }> = {};
     if (sort === 'relevance') {
       sortCriteria = { score: { $meta: 'textScore' } };
     } else if (sort === 'likes') {

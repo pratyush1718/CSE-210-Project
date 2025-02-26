@@ -55,7 +55,7 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
     {
       title: 'Tone Creation',
       icon: <FontAwesomeIcon icon={faWandMagicSparkles} />,
-      onClick: () => {},
+      onClick: () => navigate('/toneCreation'),
     },
     {
       title: 'Upload',
