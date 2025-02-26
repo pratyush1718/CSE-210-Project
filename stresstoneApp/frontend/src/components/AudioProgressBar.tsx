@@ -229,10 +229,10 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
                 //     boxShadow: `0px 0px 0px 8px ${'rgb(255 255 255 / 16%)'}`,
                 //   }),
                 // },
-                '&.Mui-active': {
-                  height: 20,
-                  width: 20,
-                },
+                // '&.Mui-active': {
+                //   height: 20,
+                //   width: 20,
+                // },
               },
               '& .MuiSlider-rail': {
                 background: `linear-gradient(to right, rgba(0,0,0,0.87) ${getProgressPercentage()}%, #ddd ${getProgressPercentage()}%)`,

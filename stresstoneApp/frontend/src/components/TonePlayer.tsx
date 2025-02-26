@@ -156,6 +156,7 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
               <VolumeUp />
               <Slider
                 value={volume}
+                track={false}
                 onChange={handleVolumeChange}
                 aria-labelledby="volume-slider"
                 min={0}
@@ -163,6 +164,14 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
                 sx={{
                   width: 100,
                   color: 'rgba(0,0,0,0.87)',
+                  '& .MuiSlider-thumb': {
+                    width: 10,
+                    height: 10,
+                  },
+                  '& .MuiSlider-rail': {
+                    background: `linear-gradient(to right, rgba(0,0,0,0.87) ${volume}%, #ddd ${volume}%)`,
+                    opacity: 1,
+                  },
                 }}
               />
             </>
