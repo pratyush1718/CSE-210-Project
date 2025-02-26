@@ -12,6 +12,10 @@ interface SearchQuery {
   sort?: 'relevance' | 'likes' | 'recent';
 }
 
+interface MetaSort {
+  $meta: 'textScore';
+}
+
 export const SearchController: RequestHandler<object, unknown, unknown, SearchQuery> = async (req, res) => {
   try {
     const { q, page = '1', limit = '10', sort = 'relevance' } = req.query;
@@ -24,7 +28,7 @@ export const SearchController: RequestHandler<object, unknown, unknown, SearchQu
     const pageNum = parseInt(page, 10);
     const limitNum = parseInt(limit, 10);
 
-    let sortCriteria: Record<string, SortOrder | { $meta: any }> = {};
+    let sortCriteria: Record<string, SortOrder | MetaSort> = {};
     if (sort === 'relevance') {
       sortCriteria = { score: { $meta: 'textScore' } };
     } else if (sort === 'likes') {

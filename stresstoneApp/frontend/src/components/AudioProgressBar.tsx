@@ -101,7 +101,8 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
 
   useEffect(() => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioContextRef.current = new (window.AudioContext ||
+        (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)();
     }
 
     if (audioRef.current) {

@@ -27,6 +27,7 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
   const handleShuffle = () => setIsShuffle((prev) => !prev);
   const handleRepeat = () => setIsRepeat((prev) => !prev);
   const handlePlayPause = () => setIsPlaying((prev) => !prev);
+  const handlePlayEnd = (playstate: boolean) => setIsPlaying(playstate);
   const handleToggleExpand = () => {
     setIsExpanded((prev) => !prev);
   };
@@ -173,7 +174,12 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
       {/* Progress Bar */}
       {isExpanded && (
         <Box sx={{ width: '50%', padding: '0 16px' }}>
-          <AudioProgressTracker audioData={audioData} isPlaying={isPlaying} isLooping={isRepeat} />
+          <AudioProgressTracker
+            audioData={audioData}
+            isPlaying={isPlaying}
+            isLooping={isRepeat}
+            onPlayStateChange={handlePlayEnd}
+          />
         </Box>
       )}
     </AppBar>
