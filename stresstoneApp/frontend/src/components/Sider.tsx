@@ -60,7 +60,7 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
     {
       title: 'Upload',
       icon: <UploadFileOutlined />,
-      onClick: () => {},
+      onClick: () => navigate('/upload'),
     },
   ];
 

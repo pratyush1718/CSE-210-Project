@@ -7,6 +7,7 @@ import Header from './components/Header';
 import Sider from './components/Sider';
 import TonePlayer from './components/TonePlayer';
 import Login from './components/Login';
+import UploadPage from './pages/UploadPage';
 import SearchPage from './pages/SearchPage.tsx';
 import ToneCreationPage from './pages/TonecreationPage.tsx';
 
@@ -41,6 +42,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/upload" element={<UploadPage />} />
             <Route path="/discuss" element={<Discuss />} />
             <Route path="/toneCreation" element={<ToneCreationPage />} />
           </Routes>
