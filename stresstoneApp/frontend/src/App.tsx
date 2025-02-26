@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Box, CssBaseline } from '@mui/material';
 import axios from 'axios';
-import SearchPage from './pages/SearchPage';
 import Discuss from './pages/DiscussPage';
 import Header from './components/Header';
 import Sider from './components/Sider';
 import TonePlayer from './components/TonePlayer';
-import Login from "./components/Login";
+import Login from './components/Login';
+import SearchPage from './pages/SearchPage.tsx';
+import ToneCreationPage from './pages/TonecreationPage.tsx';
 
 const siderWidth = 240;
 const headerHeight = 64;
@@ -26,21 +27,22 @@ function App() {
     <>
       <CssBaseline />
       <Header height={headerHeight} />
-      <Box sx={{ display: "flex", marginTop: `${headerHeight}px` , marginBottom: `${footerHeight}px` }}>
+      <Box sx={{ display: 'flex', marginTop: `${headerHeight}px` , marginBottom: `${footerHeight}px` }}>
         <Sider drawerWidth={siderWidth} />
         <Box
           component="main"
           sx={{
             p: 2,
             width: `calc(100% - ${siderWidth}px)`,
-            height: "100%",
-            overflow: "auto",
+            height: '100%',
+            overflow: 'auto',
           }}
         >
           <Routes>
-            <Route path="/" element={<><Login /></>} />
+            <Route path="/" element={<Login />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/discuss" element={<Discuss />} />
+            <Route path="/toneCreation" element={<ToneCreationPage />} />
           </Routes>
         </Box>
       </Box>
@@ -52,3 +54,4 @@ function App() {
 }
 
 export default App;
+
