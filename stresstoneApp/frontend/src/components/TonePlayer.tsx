@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Toolbar, AppBar, IconButton, Typography, Slider, Box, Avatar } from '@mui/material';
+import { Toolbar, AppBar, IconButton, Typography, Slider, Box, LinearProgress, Avatar } from '@mui/material';
 import { 
   PlayArrow, 
   Pause, 
@@ -172,6 +172,18 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
       </Toolbar>
 
       {/* Progress Bar */}
+      {/* {isExpanded && (
+        <Box sx={{ width: '50%', padding: '0 16px' }}>
+          <AudioProgressTracker
+            audioData={audioData}
+            isPlaying={isPlaying}
+            isLooping={isRepeat}
+            isExpanded={isExpanded}
+            onPlayStateChange={handlePlayEnd}
+          />
+        </Box>
+      )}  */}
+
       <Box sx={{ width: '50%', padding: '0 16px' }}>
         <AudioProgressTracker
           audioData={audioData}
