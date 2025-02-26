@@ -36,7 +36,7 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
     onHeightChange(isExpanded ? 120 : 64); // Update parent with the new height
   }, [isExpanded, onHeightChange]);
 
-  const handleVolumeChange = (_: Event, newValue: number | number[]) => {
+  const handleVolumeChange = (_event: Event, newValue: number | number[]) => {
     setVolume(newValue as number);
   };
 
@@ -180,6 +180,7 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
           audioData={audioData}
           isPlaying={isPlaying}
           isLooping={isRepeat}
+          volume = {volume}
           isExpanded={isExpanded}
           onPlayStateChange={handlePlayEnd}
         />

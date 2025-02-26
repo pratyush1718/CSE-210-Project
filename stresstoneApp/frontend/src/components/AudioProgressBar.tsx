@@ -5,6 +5,7 @@ interface AudioProgressTrackerProps {
   audioData: ArrayBuffer | null;
   isPlaying: boolean;
   isLooping: boolean;
+  volume: number;
   isExpanded: boolean;
   onProgressChange?: (progress: number) => void;
   onPlayStateChange?: (isPlaying: boolean) => void;
@@ -14,6 +15,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   audioData,
   isPlaying = false,
   isLooping = false,
+  volume, 
   isExpanded = false,
   onProgressChange,
   onPlayStateChange,
@@ -85,7 +87,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.currentTime = currentTime; // Explicitly set current time
+        audioRef.current.currentTime = currentTime; 
         audioRef.current.play();
         startUpdatingProgress();
       } else {
@@ -94,6 +96,12 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
       }
     }
   }, [isPlaying]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = (volume / 100);
+    }
+  }, [volume]);
 
   const startUpdatingProgress = () => {
     const update = () => {
