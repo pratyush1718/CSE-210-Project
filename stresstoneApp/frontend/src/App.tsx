@@ -1,34 +1,55 @@
 import { useEffect, useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Box, CssBaseline } from '@mui/material';
 import axios from 'axios';
+import SearchPage from './pages/SearchPage';
+import Discuss from './pages/DiscussPage';
 import Header from './components/Header';
 import Sider from './components/Sider';
-import { Box, CssBaseline } from '@mui/material';
 import TonePlayer from './components/TonePlayer';
 import Login from './components/Login';
-import { Route, Routes } from 'react-router-dom';
-import PageLayout from './pages/PageLayout'
 import UploadPage from './pages/UploadPage';
-import SearchPage from "./pages/SearchPage.tsx";
 
+const siderWidth = 240;
+const headerHeight = 64;
 
 function App() {
-  const [message, setMessage] = useState<string>('');
+  const [_, setMessage] = useState<string>('');
+  const [footerHeight, setFooterHeight] = useState(120); // Default expanded height
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3000/')
+    axios.get('http://localhost:3000/')
       .then((res) => setMessage(res.data))
       .catch((err) => console.log(err));
   }, []);
 
   return (
-    <Routes>
-        <Route path='/' element={<PageLayout />} >
-            <Route index={true} element={<Login/>} />
-            <Route path='/upload' element={<UploadPage/>} />
-            <Route path='/search' element={<SearchPage/>} />
-        </Route>
-    </Routes>
+    <>
+      <CssBaseline />
+      <Header height={headerHeight} />
+      <Box sx={{ display: "flex", marginTop: `${headerHeight}px` , marginBottom: `${footerHeight}px` }}>
+        <Sider drawerWidth={siderWidth} />
+        <Box
+          component="main"
+          sx={{
+            p: 2,
+            width: `calc(100% - ${siderWidth}px)`,
+            height: "100%",
+            overflow: "auto",
+          }}
+        >
+          <Routes>
+            <Route path="/" element={<><Login /></>} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/upload" element={<UploadPage />} />
+            <Route path="/discuss" element={<Discuss />} />
+          </Routes>
+        </Box>
+      </Box>
+      
+      {/* Footer with dynamic height update */}
+      <TonePlayer onHeightChange={setFooterHeight} />
+    </>
   );
 }
 
