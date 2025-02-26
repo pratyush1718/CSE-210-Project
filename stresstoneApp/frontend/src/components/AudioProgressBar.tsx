@@ -10,6 +10,7 @@ interface AudioProgressTrackerProps {
   audioData: ArrayBuffer | null; // WAV file data from backend
   isPlaying: boolean,
   isLooping: boolean;
+  isExpanded: boolean;
   onProgressChange?: (progress: number) => void;
   onPlayStateChange?: (isPlaying: boolean) => void;
 }
@@ -18,6 +19,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   audioData,
   isPlaying = false,
   isLooping = false,
+  isExpanded = false,
   onProgressChange,
   onPlayStateChange,
 }) => {
@@ -222,42 +224,44 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
           </IconButton>
         )}
       </Box> */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1 }}>
-        <Slider
-          value={(currentTime / duration) * 100}
-          onChange={handleSeek}
-          aria-label="audio progress"
-          disabled={!isLoaded}
-          sx={(t) => ({
-            color: 'rgba(0,0,0,0.87)',
-            height: 4,
-            '& .MuiSlider-thumb': {
-              width: 8,
-              height: 8,
-              transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
-              '&::before': {
-                boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
+      {isExpanded && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1, }}>
+          <Slider
+            value={(currentTime / duration) * 100}
+            onChange={handleSeek}
+            aria-label="audio progress"
+            disabled={!isLoaded}
+            sx={(t) => ({
+              color: 'rgba(0,0,0,0.87)',
+              height: 4,
+              '& .MuiSlider-thumb': {
+                width: 8,
+                height: 8,
+                transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
+                '&::before': {
+                  boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
+                },
+                '&:hover, &.Mui-focusVisible': {
+                  boxShadow: `0px 0px 0px 8px ${'rgb(0 0 0 / 16%)'}`,
+                  ...t.applyStyles('dark', {
+                    boxShadow: `0px 0px 0px 8px ${'rgb(255 255 255 / 16%)'}`,
+                  }),
+                },
+                '&.Mui-active': {
+                  width: 20,
+                  height: 20,
+                },
               },
-              '&:hover, &.Mui-focusVisible': {
-                boxShadow: `0px 0px 0px 8px ${'rgb(0 0 0 / 16%)'}`,
-                ...t.applyStyles('dark', {
-                  boxShadow: `0px 0px 0px 8px ${'rgb(255 255 255 / 16%)'}`,
-                }),
+              '& .MuiSlider-rail': {
+                opacity: 0.28,
               },
-              '&.Mui-active': {
-                width: 20,
-                height: 20,
-              },
-            },
-            '& .MuiSlider-rail': {
-              opacity: 0.28,
-            },
-          })}
-        />
-        {/* <Typography variant="caption" color="text.secondary">
-          {formatTime(currentTime)} / {formatTime(duration)}
-        </Typography> */}
-      </Box>
+            })}
+          />
+          {/* <Typography variant="caption" color="text.secondary">
+            {formatTime(currentTime)} / {formatTime(duration)}
+          </Typography> */}
+        </Box>
+      )}
     </>
   );
 };

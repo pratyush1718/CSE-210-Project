@@ -172,16 +172,27 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
       </Toolbar>
 
       {/* Progress Bar */}
-      {isExpanded && (
+      {/* {isExpanded && (
         <Box sx={{ width: '50%', padding: '0 16px' }}>
           <AudioProgressTracker
             audioData={audioData}
             isPlaying={isPlaying}
             isLooping={isRepeat}
+            isExpanded={isExpanded}
             onPlayStateChange={handlePlayEnd}
           />
         </Box>
-      )}
+      )}  */}
+
+      <Box sx={{ width: '50%', padding: '0 16px' }}>
+        <AudioProgressTracker
+          audioData={audioData}
+          isPlaying={isPlaying}
+          isLooping={isRepeat}
+          isExpanded={isExpanded}
+          onPlayStateChange={handlePlayEnd}
+        />
+      </Box>  
     </AppBar>
   );
 }
