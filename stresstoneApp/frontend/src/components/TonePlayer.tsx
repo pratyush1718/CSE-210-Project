@@ -9,7 +9,7 @@ import {
   Shuffle, 
   Repeat,
   ExpandLess,
-  ExpandMore
+  ExpandMore,
 } from '@mui/icons-material';
 import AudioProgressTracker from './AudioProgressBar';
 
@@ -21,7 +21,7 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(30);
+  const [volume, setVolume] = useState(100);
   const [isExpanded, setIsExpanded] = useState(true);
 
   const handleShuffle = () => setIsShuffle((prev) => !prev);
@@ -160,7 +160,10 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
                 aria-labelledby="volume-slider"
                 min={0}
                 max={100}
-                sx={{ width: 100 }}
+                sx={{
+                  width: 100,
+                  color: 'rgba(0,0,0,0.87)',
+                }}
               />
             </>
           )}
