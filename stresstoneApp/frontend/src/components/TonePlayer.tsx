@@ -11,6 +11,7 @@ import {
   ExpandLess,
   ExpandMore
 } from '@mui/icons-material';
+import AudioProgressTracker from './AudioProgressBar';
 
 interface TonePlayerProps {
   onHeightChange: (height: number) => void; // Callback function to send height updates
@@ -19,7 +20,6 @@ interface TonePlayerProps {
 export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
-  const [progress, setProgress] = useState(30);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(30);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -27,6 +27,7 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
   const handleShuffle = () => setIsShuffle((prev) => !prev);
   const handleRepeat = () => setIsRepeat((prev) => !prev);
   const handlePlayPause = () => setIsPlaying((prev) => !prev);
+  const handlePlayEnd = (playstate: boolean) => setIsPlaying(playstate);
   const handleToggleExpand = () => {
     setIsExpanded((prev) => !prev);
   };
@@ -35,21 +36,33 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
     onHeightChange(isExpanded ? 120 : 64); // Update parent with the new height
   }, [isExpanded, onHeightChange]);
 
-  const updateProgress = () => {
-    setProgress((prev) => (prev + 1) % 101);
-  };
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying) {
-      interval = setInterval(updateProgress, 100);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying]);
-
   const handleVolumeChange = (_: Event, newValue: number | number[]) => {
     setVolume(newValue as number);
   };
+
+  /* Code below subject to change after connection to backend */
+  const [audioData, setAudioData] = useState<ArrayBuffer | null>(null);
+
+  useEffect(() => {
+    fetchAudio();
+  }, []);
+
+  const fetchAudio = async () => {
+    try {
+      const response = await fetch('IDM_Smooth.wav');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const buffer = await response.arrayBuffer();
+      if (buffer.byteLength === 0) {
+        throw new Error('The fetched audio data is empty.');
+      }
+      setAudioData(buffer);
+    } catch (error) {
+      console.error('Error fetching audio:', error);
+    }
+  };
+  /* End code change region */
 
   return (
     <AppBar
@@ -68,45 +81,49 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
         transition: 'min-height 0.3s ease-in-out',
       }}
     >
-      <Toolbar 
-        sx={{ 
-          width: '100%', 
-          justifyContent: 'space-between', 
+      <Toolbar
+        sx={{
+          width: '100%',
+          justifyContent: 'space-between',
           alignItems: 'center',
           height: isExpanded ? 'auto' : '64px',
-          overflow: 'hidden'
+          overflow: 'hidden',
         }}
       >
         {/* Left side: Album Cover and Song Title */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center',
-          width: isExpanded ? 'auto' : '33%'
-        }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            width: isExpanded ? 'auto' : '33%',
+          }}
+        >
           <Avatar
             alt="Album Cover"
             src="" // album cover source.
-            sx={{ 
-              width: isExpanded ? 60 : 40, 
-              height: isExpanded ? 60 : 40, 
+            sx={{
+              width: isExpanded ? 60 : 40,
+              height: isExpanded ? 60 : 40,
               marginRight: 2,
-              transition: 'all 0.3s ease-in-out'
+              transition: 'all 0.3s ease-in-out',
             }}
           />
           <Box>
-            <Typography variant={isExpanded ? "h6" : "body1"}>Song Title</Typography>
+            <Typography variant={isExpanded ? 'h6' : 'body1'}>Song Title</Typography>
             {isExpanded && <Typography variant="body2">Artist</Typography>}
           </Box>
         </Box>
 
         {/* Center: Controls */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: 2,
-          width: isExpanded ? 'auto' : '33%',
-          justifyContent: 'center'
-        }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            width: isExpanded ? 'auto' : '33%',
+            justifyContent: 'center',
+          }}
+        >
           {isExpanded && (
             <>
               <IconButton color={isShuffle ? 'primary' : 'inherit'} onClick={handleShuffle}>
@@ -157,10 +174,11 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
       {/* Progress Bar */}
       {isExpanded && (
         <Box sx={{ width: '50%', padding: '0 16px' }}>
-          <LinearProgress
-            variant="determinate"
-            value={progress}
-            sx={{ height: 5, bgcolor: '#ddd', borderRadius: 2 }}
+          <AudioProgressTracker
+            audioData={audioData}
+            isPlaying={isPlaying}
+            isLooping={isRepeat}
+            onPlayStateChange={handlePlayEnd}
           />
         </Box>
       )}
