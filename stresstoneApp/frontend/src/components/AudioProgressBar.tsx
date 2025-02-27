@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  Box,
-  Typography,
-  Slider,
-  CircularProgress,
-} from '@mui/material';
+import React, { useState, useEffect, useRef} from 'react';
+import { Box, Typography, Slider, CircularProgress, LinearProgress } from '@mui/material';
 
 interface AudioProgressTrackerProps {
-  audioData: ArrayBuffer | null; // WAV file data from backend
-  isPlaying: boolean,
+  audioData: ArrayBuffer | null;
+  isPlaying: boolean;
   isLooping: boolean;
+  volume: number;
+  isExpanded: boolean;
   onProgressChange?: (progress: number) => void;
   onPlayStateChange?: (isPlaying: boolean) => void;
 }
@@ -18,23 +15,23 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   audioData,
   isPlaying = false,
   isLooping = false,
+  volume, 
+  isExpanded = false,
   onProgressChange,
   onPlayStateChange,
 }) => {
-  // Refs
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<string | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
-  // State
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSeeking, setIsSeeking] = useState<boolean>(false); // Track if user is seeking
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Clean up previous blob URL if it exists
     if (audioSourceRef.current) {
       URL.revokeObjectURL(audioSourceRef.current);
       audioSourceRef.current = null;
@@ -47,13 +44,10 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
 
     try {
       setIsLoading(true);
-
-      // Create blob from ArrayBuffer
       const blob = new Blob([audioData], { type: 'audio/wav' });
       const blobUrl = URL.createObjectURL(blob);
       audioSourceRef.current = blobUrl;
 
-      // Initialize or reset audio element
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = blobUrl;
@@ -61,9 +55,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
       } else {
         const audio = new Audio(blobUrl);
         audioRef.current = audio;
-        // Set up event listeners
         audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-        audio.addEventListener('timeupdate', handleTimeUpdate);
         audio.addEventListener('ended', handleEnded);
         audio.addEventListener('error', handleError);
       }
@@ -76,23 +68,16 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
       setIsLoaded(true);
     }
 
-    // Clean up
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
       }
-
       if (audioSourceRef.current) {
         URL.revokeObjectURL(audioSourceRef.current);
-      }
-
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
       }
     };
   }, [audioData]);
 
-  // Update audio loop setting when isLooping changes
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.loop = isLooping;
@@ -100,43 +85,47 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   }, [isLooping]);
 
   useEffect(() => {
-    if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext ||
-        (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)();
-    }
-
     if (audioRef.current) {
       if (isPlaying) {
+        audioRef.current.currentTime = currentTime; 
         audioRef.current.play();
+        startUpdatingProgress();
       } else {
         audioRef.current.pause();
+        cancelAnimationFrame(animationFrameRef.current as number);
       }
     }
   }, [isPlaying]);
 
-  // Handle metadata loaded
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = (volume / 100);
+    }
+  }, [volume]);
+
+  const startUpdatingProgress = () => {
+    const update = () => {
+      if (audioRef.current && !isSeeking) {
+        setCurrentTime(audioRef.current.currentTime);
+        if (onProgressChange) {
+          onProgressChange((audioRef.current.currentTime / duration) * 100);
+        }
+      }
+      animationFrameRef.current = requestAnimationFrame(update);
+    };
+    cancelAnimationFrame(animationFrameRef.current as number); 
+    animationFrameRef.current = requestAnimationFrame(update);
+  };
+
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       setDuration(audioRef.current.duration);
+      setCurrentTime(0);
       setIsLoaded(true);
       setIsLoading(false);
     }
   };
 
-  // Handle time update
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
-
-      // Calculate progress percentage
-      const progressPercent = (audioRef.current.currentTime / audioRef.current.duration) * 100;
-      if (onProgressChange) {
-        onProgressChange(progressPercent);
-      }
-    }
-  };
-
-  // Handle end of audio
   const handleEnded = () => {
     if (!isLooping) {
       audioRef.current?.pause();
@@ -146,7 +135,6 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
     }
   };
 
-  // Handle audio loading error
   const handleError = (e: Event) => {
     console.error('Audio loading error:', e);
     setError('Failed to load audio');
@@ -154,23 +142,32 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
     setIsLoaded(false);
   };
 
-  // Format time for display
+  const handleSeekStart = () => {
+    setIsSeeking(true);
+  };
+
+  const handleSeek = (_event: Event, newValue: number | number[]) => {
+    const seekTime = ((newValue as number) / 100) * duration;
+    setCurrentTime(seekTime);
+  };
+
+  const handleSeekEnd = (_event: React.SyntheticEvent | Event, newValue: number | number[]) => {
+    setIsSeeking(false);
+    if (audioRef.current) {
+      audioRef.current.currentTime = ((newValue as number) / 100) * duration;
+    }
+  };
+
   const formatTime = (timeInSeconds: number): string => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // Handle seek
-  const handleSeek = (_event: Event, newValue: number | number[]) => {
-    const seekTo = ((newValue as number) / 100) * duration;
-    if (audioRef.current) {
-      audioRef.current.currentTime = seekTo;
-      setCurrentTime(seekTo);
-    }
+  const getProgressPercentage = () => {
+    return (currentTime / duration) * 100;
   };
 
-  // Loading state
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}>
@@ -182,7 +179,6 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
     );
   }
 
-  // Error state
   if (error) {
     return (
       <Box sx={{ p: 2, color: 'error.main' }}>
@@ -191,7 +187,6 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
     );
   }
 
-  // No audio data
   if (!audioData) {
     return (
       <Box sx={{ p: 2 }}>
@@ -204,60 +199,53 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
 
   return (
     <>
-      {/* <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 2,
-          width: 'auto',
-          justifyContent: 'center',
-        }}
-      >
-        <IconButton onClick={togglePlay} color="inherit" disabled={!isLoaded}>
-          {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
-        </IconButton>
-        {showLoopControl && (
-          <IconButton onClick={toggleLoop} color={isLooping ? 'primary' : 'default'} size="small">
-            <Repeat />
-          </IconButton>
-        )}
-      </Box> */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1 }}>
-        <Slider
-          value={(currentTime / duration) * 100}
-          onChange={handleSeek}
-          aria-label="audio progress"
-          disabled={!isLoaded}
-          sx={(t) => ({
-            color: 'rgba(0,0,0,0.87)',
-            height: 4,
-            '& .MuiSlider-thumb': {
-              width: 8,
-              height: 8,
-              transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
-              '&::before': {
-                boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
+      {isExpanded && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            {formatTime(currentTime)}
+          </Typography>
+          <Slider
+            value={duration > 0 && !isNaN(currentTime) ? getProgressPercentage() : 0}
+            onChange={handleSeek}
+            onChangeCommitted={handleSeekEnd}
+            onMouseDown={handleSeekStart}
+            aria-label="audio progress"
+            disabled={!isLoaded}
+            track={false}
+            sx={{
+              width: '100%',
+              height: 4,
+              color: 'rgba(0,0,0,0.87)',
+              '& .MuiSlider-thumb': {
+                width: 10,
+                height: 10,
+                transition: 'width 0.2s ease-in-out',
+                '&::before': {
+                  boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
+                },
+                // '&:hover, &.Mui-focusVisible': {
+                //   boxShadow: `0px 0px 0px 8px ${'rgb(0 0 0 / 16%)'}`,
+                //   ...t.applyStyles('dark', {
+                //     boxShadow: `0px 0px 0px 8px ${'rgb(255 255 255 / 16%)'}`,
+                //   }),
+                // },
+                // '&.Mui-active': {
+                //   height: 20,
+                //   width: 20,
+                // },
               },
-              '&:hover, &.Mui-focusVisible': {
-                boxShadow: `0px 0px 0px 8px ${'rgb(0 0 0 / 16%)'}`,
-                ...t.applyStyles('dark', {
-                  boxShadow: `0px 0px 0px 8px ${'rgb(255 255 255 / 16%)'}`,
-                }),
+              '& .MuiSlider-rail': {
+                background: `linear-gradient(to right, rgba(0,0,0,0.87) ${getProgressPercentage()}%, #ddd ${getProgressPercentage()}%)`,
+                opacity: 1,
               },
-              '&.Mui-active': {
-                width: 20,
-                height: 20,
-              },
-            },
-            '& .MuiSlider-rail': {
-              opacity: 0.28,
-            },
-          })}
-        />
-        {/* <Typography variant="caption" color="text.secondary">
-          {formatTime(currentTime)} / {formatTime(duration)}
-        </Typography> */}
-      </Box>
+            }}
+          />
+          <Typography variant="body2" color="text.secondary">
+            {formatTime(duration)}
+          </Typography>
+        </Box>
+      )}
+      {!isLoaded && <LinearProgress sx={{ width: '100%', mt: 1 }} />}
     </>
   );
 };
