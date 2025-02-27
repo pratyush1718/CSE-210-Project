@@ -219,7 +219,6 @@ export default function Discuss() {
       [postId]: "",
     }));
     toggleReplyEntryBox(postId);
-    console.log('new reply id ' + newReply.id);
   };
 
   return (
