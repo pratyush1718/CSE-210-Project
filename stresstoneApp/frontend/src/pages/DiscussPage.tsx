@@ -319,7 +319,7 @@ export default function Discuss() {
                   sx: { alignItems: "flex-end" },
                   endAdornment: (
                     <InputAdornment position="end">
-                      <Tooltip title="Send">
+                      <Tooltip title="Send" placement='top'>
                         <IconButton size="small" onClick={() => {handleCreateReply(post.id)}}>
                           <Send />
                         </IconButton>
