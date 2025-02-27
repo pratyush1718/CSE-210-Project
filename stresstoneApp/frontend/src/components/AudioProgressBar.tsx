@@ -162,7 +162,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   };
 
   // Handle seek
-  const handleSeek = (event: Event, newValue: number | number[]) => {
+  const handleSeek = (_event: Event, newValue: number | number[]) => {
     const seekTo = ((newValue as number) / 100) * duration;
     if (audioRef.current) {
       audioRef.current.currentTime = seekTo;
