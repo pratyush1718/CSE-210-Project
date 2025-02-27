@@ -176,6 +176,29 @@ export default function Discuss() {
     }));
   };
 
+  const handleCreateReply = (postId: number) => {
+    if (replyContent[postId]?.trim() === "") return;
+    const newReply: Reply = {
+      id: posts[postId - 1].replies.length + 1,
+      user: "You", 
+      content: replyContent[postId] || "",
+      time: "Just now",
+    };
+
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId
+          ? { ...post, replies: [...post.replies, newReply] }
+          : post
+      )
+    );
+    setReplyContent((prev) => ({
+      ...prev,
+      [postId]: "",
+    }));
+    toggleReplyEntryBox(postId);
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
@@ -296,9 +319,11 @@ export default function Discuss() {
                   sx: { alignItems: "flex-end" },
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton size="small" onClick={() => { /* Handle reply submit */ }}>
-                        <Send />
-                      </IconButton>
+                      <Tooltip title="Send">
+                        <IconButton size="small" onClick={() => {handleCreateReply(post.id)}}>
+                          <Send />
+                        </IconButton>
+                      </Tooltip>
                     </InputAdornment>
                   ),
                 }}
