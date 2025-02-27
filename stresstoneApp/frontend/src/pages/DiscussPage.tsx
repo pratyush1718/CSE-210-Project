@@ -63,9 +63,9 @@ const postsData: Post[] = [
     likeCount: 1, 
     dislikeCount: 0, 
     replies: [
-      { id: 1, user: 'Kyrian', content: "I've been listening to @Bella's new track on repeat! It's so calming.", time: "2 hours ago" },
-      { id: 2, user: 'Vanessa', content: "Ohh, I've been cooking something up. Just you wait!", time: "Feb 10, 2025" },
-      { id: 3, user: 'Simon', content: "Try out the Tone Creator! I've been making so many great sounds, I'll never run out things to listen to!", time: "Feb 10, 2025" },
+      { id: 1, user: 'Vanessa', content: "Ohh, I've been cooking something up. Just you wait!", time: "Feb 10, 2025" },
+      { id: 2, user: 'Simon', content: "Try out the Tone Creator! I've been making so many great sounds, I'll never run out things to listen to!", time: "Feb 10, 2025" },
+      { id: 3, user: 'Kyrian', content: "I've been listening to @Bella's new track on repeat! It's so calming.", time: "2 hours ago" },
     ]
   },
 ];
