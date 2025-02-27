@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Toolbar, AppBar, IconButton, Typography, Slider, Box, LinearProgress, Avatar } from '@mui/material';
+import { Toolbar, AppBar, IconButton, Typography, Slider, Box, Avatar, Tooltip } from '@mui/material';
 import { 
   PlayArrow, 
   Pause, 
@@ -9,7 +9,7 @@ import {
   Shuffle, 
   Repeat,
   ExpandLess,
-  ExpandMore
+  ExpandMore,
 } from '@mui/icons-material';
 import AudioProgressTracker from './AudioProgressBar';
 
@@ -21,7 +21,7 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(30);
+  const [volume, setVolume] = useState(100);
   const [isExpanded, setIsExpanded] = useState(true);
 
   const handleShuffle = () => setIsShuffle((prev) => !prev);
@@ -36,7 +36,7 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
     onHeightChange(isExpanded ? 120 : 64); // Update parent with the new height
   }, [isExpanded, onHeightChange]);
 
-  const handleVolumeChange = (_: Event, newValue: number | number[]) => {
+  const handleVolumeChange = (_event: Event, newValue: number | number[]) => {
     setVolume(newValue as number);
   };
 
@@ -126,25 +126,35 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
         >
           {isExpanded && (
             <>
-              <IconButton color={isShuffle ? 'primary' : 'inherit'} onClick={handleShuffle}>
-                <Shuffle />
-              </IconButton>
-              <IconButton color="inherit">
-                <SkipPrevious />
-              </IconButton>
+              <Tooltip title="Shuffle" placement = "top">
+                <IconButton color={isShuffle ? 'primary' : 'inherit'} onClick={handleShuffle}>
+                  <Shuffle />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Previous" placement = "top">
+                <IconButton color="inherit">
+                  <SkipPrevious />
+                </IconButton>
+              </Tooltip>
             </>
           )}
-          <IconButton color="inherit" onClick={handlePlayPause}>
-            {isPlaying ? <Pause /> : <PlayArrow />}
-          </IconButton>
+          <Tooltip title={isPlaying ? 'Pause' : 'Play'} placement = "top">
+            <IconButton color="inherit" onClick={handlePlayPause}>
+              {isPlaying ? <Pause /> : <PlayArrow />}
+            </IconButton>
+          </Tooltip>
           {isExpanded && (
             <>
-              <IconButton color="inherit">
-                <SkipNext />
-              </IconButton>
-              <IconButton color={isRepeat ? 'primary' : 'inherit'} onClick={handleRepeat}>
-                <Repeat />
-              </IconButton>
+              <Tooltip title="Next" placement = "top">
+                <IconButton color="inherit">
+                  <SkipNext />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Repeat" placement = "top">
+                <IconButton color={isRepeat ? 'primary' : 'inherit'} onClick={handleRepeat}>
+                  <Repeat />
+                </IconButton>
+              </Tooltip>
             </>
           )}
         </Box>
@@ -156,11 +166,23 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
               <VolumeUp />
               <Slider
                 value={volume}
+                track={false}
                 onChange={handleVolumeChange}
                 aria-labelledby="volume-slider"
                 min={0}
                 max={100}
-                sx={{ width: 100 }}
+                sx={{
+                  width: 100,
+                  color: 'rgba(0,0,0,0.87)',
+                  '& .MuiSlider-thumb': {
+                    width: 10,
+                    height: 10,
+                  },
+                  '& .MuiSlider-rail': {
+                    background: `linear-gradient(to right, rgba(0,0,0,0.87) ${volume}%, #ddd ${volume}%)`,
+                    opacity: 1,
+                  },
+                }}
               />
             </>
           )}
@@ -172,16 +194,16 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
       </Toolbar>
 
       {/* Progress Bar */}
-      {isExpanded && (
-        <Box sx={{ width: '50%', padding: '0 16px' }}>
-          <AudioProgressTracker
-            audioData={audioData}
-            isPlaying={isPlaying}
-            isLooping={isRepeat}
-            onPlayStateChange={handlePlayEnd}
-          />
-        </Box>
-      )}
+      <Box sx={{ width: '50%', padding: '0 16px' }}>
+        <AudioProgressTracker
+          audioData={audioData}
+          isPlaying={isPlaying}
+          isLooping={isRepeat}
+          volume = {volume}
+          isExpanded={isExpanded}
+          onPlayStateChange={handlePlayEnd}
+        />
+      </Box>  
     </AppBar>
   );
 }
