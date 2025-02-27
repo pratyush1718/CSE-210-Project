@@ -5,6 +5,13 @@ import {
 } from '@mui/material';
 import { ThumbUp, ThumbDown, Reply, Add, Close, Delete } from '@mui/icons-material';
 
+interface Reply {
+  id: number;
+  user: string;
+  content: string;
+  time: string;
+}
+
 interface Post {
   id: number;
   user: string;
@@ -12,14 +19,55 @@ interface Post {
   time: string;
   likeCount: number;
   dislikeCount: number;
-  replyCount: number;
+  replies: Reply[];
 }
 
 const postsData: Post[] = [
-  { id: 1, user: 'Kyrian', content: "Loving this new track by @Bella! It's so chill! Have you guys heard it yet?", time: "3 minutes ago", likeCount: 5, dislikeCount: 1, replyCount: 2 },
-  { id: 2, user: 'Brian', content: "What should I make for my next track? Trying to decide between Christmas and fall vibes.", time: "10 minutes ago", likeCount: 3, dislikeCount: 2, replyCount: 1 },
-  { id: 3, user: 'Bella', content: "Hey guys, new track is out! Make sure to check it out!", time: "23 hours ago", likeCount: 3, dislikeCount: 0, replyCount: 0 },
-  { id: 4, user: 'Angie', content: "Been looking for some new tracks to decompress after work. Any recs?", time: "Feb 10, 2025", likeCount: 1, dislikeCount: 0, replyCount: 3 },
+  { 
+    id: 1, 
+    user: 'Kyrian', 
+    content: "Loving this new track by @Bella! It's so chill! Have you guys heard it yet?", 
+    time: "3 minutes ago", 
+    likeCount: 5, 
+    dislikeCount: 1, 
+    replies: [
+        { id: 1, user: 'Bella', content: "Thanks so much! I'm glad you like it!", time: "1 minute ago" },
+        { id: 2, user: 'Kyrian', content: "Of course! Keep up the great work!", time: "Just now" },
+    ],
+  },
+  { 
+    id: 2, 
+    user: 'Brian', 
+    content: "What should I make for my next track? Trying to decide between Christmas and fall vibes.", 
+    time: "10 minutes ago", 
+    likeCount: 3, 
+    dislikeCount: 2, 
+    replies: [
+        { id: 1, user: 'Angie', content: "I think a Christmas track would be really fun!", time: "5 minutes ago" },
+    ],
+  },
+  { 
+    id: 3, 
+    user: 'Bella', 
+    content: "Hey guys, new track is out! Make sure to check it out!", 
+    time: "23 hours ago", 
+    likeCount: 3, 
+    dislikeCount: 0, 
+    replies: []
+  },
+  { 
+    id: 4, 
+    user: 'Angie', 
+    content: "Been looking for some new tracks to decompress after work. Any recs?", 
+    time: "Feb 10, 2025", 
+    likeCount: 1, 
+    dislikeCount: 0, 
+    replies: [
+      { id: 1, user: 'Kyrian', content: "I've been listening to @Bella's new track on repeat! It's so calming.", time: "2 hours ago" },
+      { id: 2, user: 'Vanessa', content: "Ohh, I've been cooking something up. Just you wait!", time: "Feb 10, 2025" },
+      { id: 3, user: 'Simon', content: "Try out the Tone Creator! I've been making so many great sounds, I'll never run out things to listen to!", time: "Feb 10, 2025" },
+    ]
+  },
 ];
 
 export default function Discuss() {
@@ -30,6 +78,11 @@ export default function Discuss() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [newPostContent, setNewPostContent] = useState("");
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
+
+  // Track visibility of reply boxes
+  const [replyEntryVisibility, setReplyEntryVisibility] = useState<{ [key: number]: boolean }>({});
+  const [replyContent, setReplyContent] = useState<{ [key: number]: string }>({});
+  const [repliesVisibility, setRepliesVisibility] = useState<{ [key: number]: boolean }>({});
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -44,7 +97,7 @@ export default function Discuss() {
       time: "Just now",
       likeCount: 0,
       dislikeCount: 0,
-      replyCount: 0,
+      replies: [],
     };
 
     setPosts([newPost, ...posts]);
@@ -100,6 +153,29 @@ export default function Discuss() {
     }));
   };
 
+  // Handle showing reply box
+  const toggleReplyEntryBox = (postId: number) => {
+    setReplyEntryVisibility((prev) => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
+  };
+
+  // Handle typing in the reply box
+  const handleReplyChange = (postId: number, content: string) => {
+    setReplyContent((prev) => ({
+      ...prev,
+      [postId]: content,
+    }));
+  };
+
+  const toggleReplies = (postId: number) => {
+    setRepliesVisibility((prev) => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
@@ -148,13 +224,22 @@ export default function Discuss() {
               </Tooltip>
 
               <Tooltip title="Reply">
-                <IconButton size="small"><Reply fontSize="small" />
-                  <Typography variant="body2" paddingLeft={1}>{post.replyCount}</Typography>
+                <IconButton 
+                size="small"
+                onClick={() => toggleReplyEntryBox(post.id)}
+                >
+                  <Reply fontSize="small" />
+                  <Typography variant="body2" paddingLeft={1}>{post.replies.length}</Typography>
                 </IconButton>
               </Tooltip>
 
-              {post.replyCount > 0 && (
-                <Button size="small">View Replies</Button>
+              {post.replies.length > 0 && (
+                <Button 
+                size="small"
+                onClick={() => toggleReplies(post.id)}
+                >
+                  {repliesVisibility[post.id] ? "Hide Replies" : "View Replies"}
+                </Button>
               )}
 
               {post.user === 'You' && (
@@ -164,7 +249,56 @@ export default function Discuss() {
                   </IconButton>
                 </Tooltip>
               )}
+
             </Box>
+
+            {/* Replies */}
+            {repliesVisibility[post.id] && (
+              <Box sx={{ mt: 2, ml: 2}}>
+                {post.replies.map((reply, index) => (
+                  <Box 
+                    key={reply.id} 
+                    sx={{ 
+                      mt: 1, 
+                      pb: 1, // Padding at the bottom for spacing
+                      borderBottom: index !== post.replies.length - 1 ? '1px solid rgba(0, 0, 0, 0.1)' : 'none' 
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {reply.user}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        • {reply.time}
+                      </Typography>
+                    </Box>
+                    <Typography variant="body1">
+                      {reply.content}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            )}
+
+            {/* Reply Entry Box */}
+            {replyEntryVisibility[post.id] && (
+              <Box sx={{ mt: 2 }}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={1}
+                  variant="outlined"
+                  placeholder="Write a reply..."
+                  value={replyContent[post.id] || ""}
+                  onChange={(e) => handleReplyChange(post.id, e.target.value)}
+                />
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+                  <Button size="small" onClick={() => { /* Handle reply submit */ }}>
+                    Reply
+                  </Button>
+                </Box>
+              </Box>
+            )}
           </CardContent>
         </Card>
       ))}
