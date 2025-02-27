@@ -286,12 +286,14 @@ export default function Discuss() {
               <TextField
                 fullWidth
                 multiline
-                rows={1}
+                minRows={1} 
+                maxRows={6} 
                 variant="outlined"
                 placeholder="Write a reply..."
                 value={replyContent[post.id] || ""}
                 onChange={(e) => handleReplyChange(post.id, e.target.value)}
                 InputProps={{
+                  sx: { alignItems: "flex-end" },
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton size="small" onClick={() => { /* Handle reply submit */ }}>
