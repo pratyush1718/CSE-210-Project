@@ -6,7 +6,10 @@ const SoundTrackSchema = new Schema({
   description: { type: String, text: true },
   tags: [{ type: String, text: true }],
   creator: { type: Schema.Types.ObjectId, ref: 'User' },
-  audioUrl: { type: String, required: true },
+  // audioUrl is now a GridFS file ID
+  audioFileId: { type: Schema.Types.ObjectId, required: true },
+  // Keep original filename for reference
+  audioFileName: { type: String, required: true },
   likes: { type: Number, default: 0 }, // <-- add likes
   createdAt: { type: Date, default: Date.now },
 });
