@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { 
   Box, Fab, Typography, Card, CardContent, Avatar, IconButton, 
-  Button, Tooltip, Modal, TextField, InputAdornment
+  Button, Tooltip, Modal, TextField, InputAdornment, Menu, MenuItem
 } from '@mui/material';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { ThumbUp, ThumbDown, Reply, Add, Close, Delete, Send } from '@mui/icons-material';
 
 interface Reply {
@@ -86,6 +87,17 @@ export default function Discuss() {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const openMenu = Boolean(anchorEl);
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleCreatePost = () => {
     if (newPostContent.trim() === "") return;
@@ -283,7 +295,7 @@ export default function Discuss() {
                     key={reply.id} 
                     sx={{ 
                       mt: 1, 
-                      pb: 1, // Padding at the bottom for spacing
+                      pb: 1,
                       borderBottom: index !== post.replies.length - 1 ? '1px solid rgba(0, 0, 0, 0.1)' : 'none' 
                     }}
                   >
@@ -300,6 +312,50 @@ export default function Discuss() {
                     </Typography>
                   </Box>
                 ))}
+              </Box>
+            )}
+            {repliesVisibility[post.id] && (
+              <Box sx={{ mt: 2, ml: 2 }}>
+                {post.replies.map((reply, index) => {
+                  return (
+                    <Box
+                      key={reply.id}
+                      sx={{
+                        mt: 1,
+                        pb: 1,
+                        borderBottom: index !== post.replies.length - 1 ? "1px solid rgba(0, 0, 0, 0.1)" : "none",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Box>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            {reply.user}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            • {reply.time}
+                          </Typography>
+                        </Box>
+                        <Typography variant="body1">{reply.content}</Typography>
+                      </Box>
+
+                      {/* Three-dot menu only if the user is "You" */}
+                      {reply.user === "You" && (
+                        <Box>
+                          <IconButton size="small" onClick={handleMenuOpen}>
+                            <MoreVertIcon />
+                          </IconButton>
+                          <Menu anchorEl={anchorEl} open={openMenu} onClose={handleMenuClose}>
+                            <MenuItem onClick={() => {/* Handle edit */ handleMenuClose(); }}>Edit</MenuItem>
+                            <MenuItem onClick={() => {/* Handle delete */ handleMenuClose(); }}>Delete</MenuItem>
+                          </Menu>
+                        </Box>
+                      )}
+                    </Box>
+                  );
+                })}
               </Box>
             )}
 
