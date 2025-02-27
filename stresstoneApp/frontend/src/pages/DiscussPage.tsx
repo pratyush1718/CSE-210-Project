@@ -117,6 +117,16 @@ export default function Discuss() {
     handleClose();
   };
 
+  const handleDeleteReply = (postId: number, replyId: number) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId
+          ? { ...post, replies: post.replies.filter((reply) => reply.id !== replyId) }
+          : post
+      )
+    );
+  };
+
   const handleDeletePost = (post: Post) => {
     setPostToDelete(post);
     setDeleteOpen(true);
@@ -209,6 +219,7 @@ export default function Discuss() {
       [postId]: "",
     }));
     toggleReplyEntryBox(postId);
+    console.log('new reply id ' + newReply.id);
   };
 
   return (
@@ -289,32 +300,6 @@ export default function Discuss() {
 
             {/* Replies */}
             {repliesVisibility[post.id] && (
-              <Box sx={{ mt: 2, ml: 2}}>
-                {post.replies.map((reply, index) => (
-                  <Box 
-                    key={reply.id} 
-                    sx={{ 
-                      mt: 1, 
-                      pb: 1,
-                      borderBottom: index !== post.replies.length - 1 ? '1px solid rgba(0, 0, 0, 0.1)' : 'none' 
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        {reply.user}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        • {reply.time}
-                      </Typography>
-                    </Box>
-                    <Typography variant="body1">
-                      {reply.content}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            )}
-            {repliesVisibility[post.id] && (
               <Box sx={{ mt: 2, ml: 2 }}>
                 {post.replies.map((reply, index) => {
                   return (
@@ -349,7 +334,7 @@ export default function Discuss() {
                           </IconButton>
                           <Menu anchorEl={anchorEl} open={openMenu} onClose={handleMenuClose}>
                             <MenuItem onClick={() => {/* Handle edit */ handleMenuClose(); }}>Edit</MenuItem>
-                            <MenuItem onClick={() => {/* Handle delete */ handleMenuClose(); }}>Delete</MenuItem>
+                            <MenuItem onClick={() => {/* Handle delete */ handleDeleteReply(post.id, reply.id); handleMenuClose(); }}>Delete</MenuItem>
                           </Menu>
                         </Box>
                       )}
