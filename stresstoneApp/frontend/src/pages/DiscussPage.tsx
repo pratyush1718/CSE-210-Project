@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { 
   Box, Fab, Typography, Card, CardContent, Avatar, IconButton, 
-  Button, Tooltip, Modal, TextField 
+  Button, Tooltip, Modal, TextField, InputAdornment
 } from '@mui/material';
-import { ThumbUp, ThumbDown, Reply, Add, Close, Delete } from '@mui/icons-material';
+import { ThumbUp, ThumbDown, Reply, Add, Close, Delete, Send } from '@mui/icons-material';
 
 interface Reply {
   id: number;
@@ -282,22 +282,26 @@ export default function Discuss() {
 
             {/* Reply Entry Box */}
             {replyEntryVisibility[post.id] && (
-              <Box sx={{ mt: 2 }}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={1}
-                  variant="outlined"
-                  placeholder="Write a reply..."
-                  value={replyContent[post.id] || ""}
-                  onChange={(e) => handleReplyChange(post.id, e.target.value)}
-                />
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
-                  <Button size="small" onClick={() => { /* Handle reply submit */ }}>
-                    Reply
-                  </Button>
-                </Box>
-              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1}}>
+              <TextField
+                fullWidth
+                multiline
+                rows={1}
+                variant="outlined"
+                placeholder="Write a reply..."
+                value={replyContent[post.id] || ""}
+                onChange={(e) => handleReplyChange(post.id, e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton size="small" onClick={() => { /* Handle reply submit */ }}>
+                        <Send />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
             )}
           </CardContent>
         </Card>
