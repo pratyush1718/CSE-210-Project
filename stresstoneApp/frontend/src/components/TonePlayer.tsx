@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Toolbar, AppBar, IconButton, Typography, Slider, Box, Avatar } from '@mui/material';
+import { Toolbar, AppBar, IconButton, Typography, Slider, Box, Avatar, Tooltip } from '@mui/material';
 import { 
   PlayArrow, 
   Pause, 
@@ -126,25 +126,35 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
         >
           {isExpanded && (
             <>
-              <IconButton color={isShuffle ? 'primary' : 'inherit'} onClick={handleShuffle}>
-                <Shuffle />
-              </IconButton>
-              <IconButton color="inherit">
-                <SkipPrevious />
-              </IconButton>
+              <Tooltip title="Shuffle" placement = "top">
+                <IconButton color={isShuffle ? 'primary' : 'inherit'} onClick={handleShuffle}>
+                  <Shuffle />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Previous" placement = "top">
+                <IconButton color="inherit">
+                  <SkipPrevious />
+                </IconButton>
+              </Tooltip>
             </>
           )}
-          <IconButton color="inherit" onClick={handlePlayPause}>
-            {isPlaying ? <Pause /> : <PlayArrow />}
-          </IconButton>
+          <Tooltip title={isPlaying ? 'Pause' : 'Play'} placement = "top">
+            <IconButton color="inherit" onClick={handlePlayPause}>
+              {isPlaying ? <Pause /> : <PlayArrow />}
+            </IconButton>
+          </Tooltip>
           {isExpanded && (
             <>
-              <IconButton color="inherit">
-                <SkipNext />
-              </IconButton>
-              <IconButton color={isRepeat ? 'primary' : 'inherit'} onClick={handleRepeat}>
-                <Repeat />
-              </IconButton>
+              <Tooltip title="Next" placement = "top">
+                <IconButton color="inherit">
+                  <SkipNext />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Repeat" placement = "top">
+                <IconButton color={isRepeat ? 'primary' : 'inherit'} onClick={handleRepeat}>
+                  <Repeat />
+                </IconButton>
+              </Tooltip>
             </>
           )}
         </Box>
