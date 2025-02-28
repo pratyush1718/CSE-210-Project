@@ -28,11 +28,10 @@ export const SearchController: RequestHandler<object, unknown, unknown, SearchQu
     const pageNum = parseInt(page, 10);
     const limitNum = parseInt(limit, 10);
 
-    let sortCriteria: Record<string, SortOrder | MetaSort> = {};
+    let sortCriteria: { [key: string]: SortOrder | { $meta: 'textScore' } } = {};
     if (sort === 'relevance') {
       sortCriteria = { score: { $meta: 'textScore' } };
     } else if (sort === 'likes') {
-      // Ensure your SoundTrack model includes a 'likes' field for this to work.
       sortCriteria = { likes: -1 };
     } else if (sort === 'recent') {
       sortCriteria = { createdAt: -1 };
