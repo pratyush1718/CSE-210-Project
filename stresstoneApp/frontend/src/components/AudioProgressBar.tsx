@@ -4,8 +4,8 @@ import { Box, Typography, Slider, CircularProgress, LinearProgress } from '@mui/
 interface AudioProgressTrackerProps {
   audioData: ArrayBuffer | null;
   isPlaying: boolean;
-  isLooping: boolean;
-  volume: number;
+  isLooping?: boolean;
+  volume?: number;
   isExpanded: boolean;
   onProgressChange?: (progress: number) => void;
   onPlayStateChange?: (isPlaying: boolean) => void;
@@ -98,7 +98,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   }, [isPlaying]);
 
   useEffect(() => {
-    if (audioRef.current) {
+    if (audioRef.current && volume) {
       audioRef.current.volume = (volume / 100);
     }
   }, [volume]);
