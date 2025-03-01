@@ -1,21 +1,35 @@
 import React, { useState } from 'react';
-import { TextField, Button, Card, CardContent, CardHeader, Typography, Box, Link, Divider } from '@mui/material';
+import { TextField, Button, Card, CardContent, CardHeader, Typography, Box, Link, Divider, Alert } from '@mui/material';
 import LoginComponentStyles from './LoginStyles'; // Import styles
 import MusicIcon from '../assets/MusicIcon.png'; // Import your PNG file
 import { signIn } from "../auth";
+import { useNavigate } from 'react-router-dom';
+import { UserCredential } from 'firebase/auth';
 
-const Login: React.FC = () => {
+interface LoginProps {
+  onLogin: () => void;
+}
+
+const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<String | null>(null);
+  const navigate = useNavigate();
+
+  const isUserCredential = (result: any): result is UserCredential => {
+    return result && typeof result === "object" && "user" in result;
+  };
 
   const handleLogin = async () => {
-    const user = await signIn(email, password);
-    if (user) {
-      console.log("Successfully logged in:", user.user);
+    const result = await signIn(email, password);
+    if (isUserCredential(result)) {
+      setError(null);
+      console.log("Successfully logged in:", result.user);
+      onLogin(); // Mark user as authenticated
     } else {
-      console.log("Login failed.");
+      setError(result); // Show error message
     }
-  };
+  };  
 
   return (
     <Box sx={LoginComponentStyles.container}>
@@ -29,11 +43,16 @@ const Login: React.FC = () => {
               <Typography sx={{ fontWeight: 'bold', pb: 4.25 }} variant="h5" align="center">
                 Login to StressTone
               </Typography>
-              <Divider sx={{ width: '359px', backgroundColor: '#F5F5F5', fill: '100%', height: '1px' }} />
+              <Divider sx={{ width: '100%', backgroundColor: '#F5F5F5', height: '1px' }} />
             </Box>
           }
         />
         <CardContent>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2, wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+              {error}
+            </Alert>
+          )}
           <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
             Email
           </Typography>
@@ -65,7 +84,7 @@ const Login: React.FC = () => {
           </Button>
           <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Typography sx={{ textAlign: 'left', fontWeight: 'bold' }}>Don't have an account?</Typography>
-            <Link href="/register" sx={LoginComponentStyles.registerButton}>
+            <Link onClick={() => navigate('/register')} sx={LoginComponentStyles.registerButton}>
               REGISTER
             </Link>
           </Box>
