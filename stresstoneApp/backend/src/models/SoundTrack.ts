@@ -10,7 +10,12 @@ const SoundTrackSchema = new Schema({
   audioFileId: { type: Schema.Types.ObjectId, required: true },
   // Keep original filename for reference
   audioFileName: { type: String, required: true },
+  imageFileId: { type: Schema.Types.ObjectId },
+  imageFileName: { type: String },
   likes: { type: Number, default: 0 }, // <-- add likes
+  visibility: { type: String, enum: ["public", "private"], default: "public" }, // Optional visibility
+  allowDownloads: { type: Boolean, default: false },
+  location: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now },
 });
 

@@ -28,34 +28,63 @@ const UploadPage: React.FC = () => {
 
   const handleUpload = async () => {
     if (!audioFile || !title || !description) {
-      alert("Please upload an audio file and fill in the required fields.");
-      return;
+        alert("Please upload an audio file and fill in the required fields.");
+        return;
     }
-    console.log("Uploading data...");
-    console.log("Audio File:", audioFile.name);
-    if (imageFile) {
-        console.log("Image File:", imageFile.name);
-    } else {
-        console.log("No Image File Uploaded.");
-    }
-    console.log("Title:", title);
-    console.log("Description:", description);
-    console.log("Tags:", tags);
-    console.log("Location:", location);
-    console.log("Visibility:", visibility);
-    console.log("Allow Downloads:", allowDownloads);
 
-    // upload to backend...
+    // console.log("Uploading data...");
+    // console.log("Audio File:", audioFile.name);
+    // if (imageFile) {
+    //     console.log("Image File:", imageFile.name);
+    // } else {
+    //     console.log("No Image File Uploaded.");
+    // }
+    // console.log("Title:", title);
+    // console.log("Description:", description);
+    // console.log("Tags:", tags);
+    // console.log("Location:", location);
+    // console.log("Visibility:", visibility);
+    // console.log("Allow Downloads:", allowDownloads);
+  
+    const formData = new FormData();
+    formData.append("audioFile", audioFile);
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("visibility", visibility);
+    formData.append("allowDownloads", (allowDownloads==="yes").toString());
+    if (tags.trim() !== "") {
+        formData.append("tags", JSON.stringify(tags.split(",").map((tag) => tag.trim())));
+    }
+    if (location.trim() !== "") {
+        formData.append("location", location);
+    }
+    if (imageFile) {
+        formData.append("imageFile", imageFile);
+    }
+
+  
     try {
-        // timeout for 2s
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await fetch("http://localhost:3000/api/upload/", {
+        method: "POST",
+        body: formData,
+      });
+  
+      const data = await response.json();
+      if (data.success) {
         alert("Your music file has been uploaded successfully!");
+        // console.log("Uploaded File:", data);
         window.location.reload();
+      } else {
+        alert("Upload failed: " + data.error);
+      }
     } catch (error) {
-        console.error("Upload Failed:", error);
-        alert("Upload failed! Please try again.");
+      console.error("Upload Failed:", error);
+      alert("Upload failed! Please try again.");
     }
   };
+  
+
+
 
   return (
     <Box sx={{ padding: 3}}>
@@ -76,6 +105,7 @@ const UploadPage: React.FC = () => {
                     <Paper sx={{ p: 2, display: 'flex', alignItems: "center", flexDirection: 'column',
                                     justifyContent:'center', width: "100%", height: '40%' }}>
                         <Typography variant="subtitle1">Upload your tone*</Typography>
+                        <Typography variant="subtitle2">Supported: MP3, WAV</Typography>
                         <input 
                             type="file" 
                             accept="audio/mp3, audio/wav" 
@@ -95,6 +125,7 @@ const UploadPage: React.FC = () => {
                     <Paper sx={{ p: 2, display: 'flex', alignItems: "center", flexDirection: 'column',
                                     justifyContent:'center', width: "100%", height: '40%' }}>
                         <Typography variant="subtitle1">Upload a teaser for your tone</Typography>
+                        <Typography variant="subtitle2">Supported: JPEG, PNG</Typography>
                         <input 
                             type="file" 
                             accept="image/jpeg, image/png" 
