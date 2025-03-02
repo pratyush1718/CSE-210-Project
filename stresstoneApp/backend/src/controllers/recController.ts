@@ -16,8 +16,17 @@ export const recommendContent = async(req: Request, res: Response) => {
         const contents = await Content.find();
 
         const scoredContent = contents.map((content) => {
-            const matchingTags = content.tags.filter((tag) => userTags.some(userTag => userTag.tag === tag)).length;
-            return { content, score: matchingTags };
+            let score = 0;
+
+            content.tags.forEach((tag) => {
+                const userTag = userTags.find(userTag => userTag.tag === tag);
+
+                if (userTag) {
+                    score += userTag.count;
+                }
+            });
+
+            return { content, score };
         });
 
         scoredContent.sort((a, b) => b.score - a.score);
