@@ -17,8 +17,8 @@ const Register: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const isUserCredential = (result: any): result is UserCredential => {
-    return result && typeof result === "object" && "user" in result;
+  const isUserCredential = (result: unknown): result is UserCredential => {
+    return typeof result === "object" && result !== null && "user" in result;
   };
 
   const handleRegister = async () => {
