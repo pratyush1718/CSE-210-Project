@@ -13,15 +13,16 @@ import {
   Button, 
   Typography,
   Menu,
-  MenuItem
+  MenuItem,
+  Avatar,
+  ListItemAvatar
 } from '@mui/material';
 import SortIcon from '@mui/icons-material/Sort';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 interface SoundTrack {
   _id: string;
@@ -30,6 +31,8 @@ interface SoundTrack {
   creator?: { name: string };
   likes: number;
   createdAt: string;
+  imageFileId?: string;
+  audioUrl?: string;
 }
 
 type SortOption = 'relevance' | 'likes' | 'recent';
@@ -156,15 +159,39 @@ const SearchBar: React.FC = () => {
       {results.length > 0 && (
         <List>
           {results.map((track) => (
-            <ListItem key={track._id}>
+            <ListItem key={track._id} alignItems="flex-start" sx={{ borderBottom: '1px solid #eee', py: 1.5 }}>
+              <ListItemAvatar>
+                {track.imageFileId ? (
+                  <Avatar 
+                    alt={track.title}
+                    src={`http://localhost:3000/api/audio/image/${track.imageFileId}`}
+                    variant="rounded"
+                    sx={{ width: 60, height: 60 }}
+                  />
+                ) : (
+                  <Avatar 
+                    alt="Music Icon" 
+                    variant="rounded"
+                    sx={{ width: 60, height: 60, bgcolor: 'primary.light' }}
+                  >
+                    <MusicNoteIcon sx={{ fontSize: 30 }} />
+                  </Avatar>
+                )}
+              </ListItemAvatar>
               <ListItemText
                 primary={track.title}
+                primaryTypographyProps={{ variant: 'h6', sx: { ml: 2 } }}
                 secondary={
-                  <>
-                    {track.creator?.name && <>Author: {track.creator.name} | </>}
-                    Likes: {track.likes} | Published: {new Date(track.createdAt).toLocaleString()}
-                  </>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2, mt: 0.5 }}>
+                    {track.creator?.name && <Typography variant="body2">Author: {track.creator.name} | </Typography>}
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <ThumbUpAltIcon fontSize="small" sx={{ mr: 0.5 }} />
+                      <Typography variant="body2">{track.likes}</Typography>
+                    </Box>
+                    <Typography variant="body2"> | Published: {new Date(track.createdAt).toLocaleDateString()}</Typography>
+                  </Box>
                 }
+                sx={{ ml: 1 }}
               />
             </ListItem>
           ))}
