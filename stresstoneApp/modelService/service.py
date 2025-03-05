@@ -8,7 +8,7 @@ import io
 from musicgen import MusicGen
 import uvicorn
 from fastapi.responses import StreamingResponse
-
+from fastapi.middleware.cors import CORSMiddleware
 
 class TextToMusic(BaseModel):
     text: str
@@ -17,6 +17,14 @@ class TextToMusic(BaseModel):
 
 model = MusicGen()
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change this to specific origins if needed
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/text_to_music")
 async def text_to_music(text_prompt: TextToMusic):
@@ -36,7 +44,7 @@ async def text_to_music(text_prompt: TextToMusic):
 
     music_stream = model.generate_music(prompt, tokens)
     if not music_stream:
-        raise HTTPException(status_code=500, detail="Music generation failed")
+        raise HTTPException(status_code=400, detail="Music generation failed")
 
     # Return the music stream as a response
     return StreamingResponse(io.BytesIO(music_stream.getbuffer()), media_type="audio/wav")
