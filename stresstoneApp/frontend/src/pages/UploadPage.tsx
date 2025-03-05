@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { 
   TextField, Button, RadioGroup, FormControlLabel, Radio, 
-  Typography, Box, Paper, IconButton, Grid2 as Grid
+  Typography, Box, Paper, IconButton, Grid2 as Grid,
+  Stack,
+  Chip
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import { PREDEFINED_TAGS } from "../assets/constants";
 
 const UploadPage: React.FC = () => {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [tags, setTags] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [location, setLocation] = useState("");
   const [visibility, setVisibility] = useState("public");
   const [allowDownloads, setAllowDownloads] = useState("no");
@@ -24,6 +27,12 @@ const UploadPage: React.FC = () => {
         setImageFile(file);
       }
     }
+  };
+
+  const handleTagClick = (tag: string) => {
+    setTags((prevTags) =>
+      prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]
+    );
   };
 
   const handleUpload = async () => {
@@ -41,7 +50,7 @@ const UploadPage: React.FC = () => {
     // }
     // console.log("Title:", title);
     // console.log("Description:", description);
-    // console.log("Tags:", tags);
+    // console.log("Tags:", JSON.stringify(tags));
     // console.log("Location:", location);
     // console.log("Visibility:", visibility);
     // console.log("Allow Downloads:", allowDownloads);
@@ -52,8 +61,8 @@ const UploadPage: React.FC = () => {
     formData.append("description", description);
     formData.append("visibility", visibility);
     formData.append("allowDownloads", (allowDownloads==="yes").toString());
-    if (tags.trim() !== "") {
-        formData.append("tags", JSON.stringify(tags.split(",").map((tag) => tag.trim())));
+    if (tags.length > 0) {
+        formData.append("tags", JSON.stringify(tags));
     }
     if (location.trim() !== "") {
         formData.append("location", location);
@@ -73,7 +82,7 @@ const UploadPage: React.FC = () => {
       if (data.success) {
         alert("Your music file has been uploaded successfully!");
         // console.log("Uploaded File:", data);
-        window.location.reload();
+        // window.location.reload();
       } else {
         alert("Upload failed: " + data.error);
       }
@@ -171,13 +180,18 @@ const UploadPage: React.FC = () => {
                 />
 
                 {/* Tags */}
-                <TextField 
-                    label="Tags (Relax, Study, Cafe...)" 
-                    fullWidth 
-                    value={tags} 
-                    onChange={(e) => setTags(e.target.value)} 
-                    sx={{ mb: 2 }} 
-                />
+                <Typography variant="subtitle1">Select Tags:</Typography>
+                <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: "wrap" }}>
+                    {PREDEFINED_TAGS.map((tag) => (
+                    <Chip 
+                        key={tag} 
+                        label={tag} 
+                        clickable 
+                        onClick={() => handleTagClick(tag)}
+                        color={tags.includes(tag) ? "primary" : "default"}
+                    />
+                    ))}
+                </Stack>
 
                 {/* Location */}
                 <TextField 
