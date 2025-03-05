@@ -77,7 +77,7 @@ const ToneCreationPage: React.FC = () => {
       setIsLoading(true);
       setIsGenerated(false);
       // use controller logic
-      const audio = await musicgenDispatcher({ text: fullPrompt, length: 'test'});
+      const audio = await musicgenDispatcher({ text: fullPrompt, length: toneLength});
       setAudioData(audio);
       setIsLoading(false);
       setIsGenerated(true);
