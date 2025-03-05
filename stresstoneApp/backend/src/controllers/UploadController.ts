@@ -29,33 +29,9 @@ type UploadFilesType = {
 
 export const UploadController: RequestHandler = async (req, res, next) => {
   try {
-// console.log("Upload request received");
-    // console.log(req.body); 
-
-    // console.log("Upload request received");
-    // console.log(req.body); 
-
     const files = req.files as UploadFilesType;
     const audioFile = files.audioFile[0]; 
     const imageFile = files.imageFile?.[0] || null;
-// console.log(`Audio File Stored: ${audioFile.filename}`);
-// if (imageFile) {
-//   console.log(`Image File Stored: ${imageFile.filename}`);
-    // } else {
-    //   console.log("No image file provided.");
-    // }
-    // console.log(`Audio File Stored: ${audioFile.filename}`);
-    // if (imageFile) {
-    //   console.log(`Image File Stored: ${imageFile.filename}`);
-    // } else {
-    //   console.log("No image file provided.");
-    // }
-    // console.log(`Audio File Stored: ${audioFile.filename}`);
-    // if (imageFile) {
-    //   console.log(`Image File Stored: ${imageFile.filename}`);
-    // } else {
-    //   console.log("No image file provided.");
-    // }
 
     const form = <RequestBodyType>req.body;
     
@@ -65,8 +41,7 @@ export const UploadController: RequestHandler = async (req, res, next) => {
       try {
         tags = JSON.parse(form.tags);
       } catch (error) {
-        // If parsing fails, use the string as a single tag
-        tags = [form.tags];
+        tags = undefined;
       }
     }
     
@@ -84,7 +59,7 @@ export const UploadController: RequestHandler = async (req, res, next) => {
         imageFileName: imageFile?.filename || null, 
         visibility,
         allowDownloads,
-        location: location || null,
+        location: location,
     });
 
     await newSoundTrack.save();
