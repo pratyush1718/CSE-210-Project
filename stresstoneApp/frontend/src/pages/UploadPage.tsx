@@ -82,7 +82,7 @@ const UploadPage: React.FC = () => {
       if (data.success) {
         alert("Your music file has been uploaded successfully!");
         // console.log("Uploaded File:", data);
-        // window.location.reload();
+        window.location.reload();
       } else {
         alert("Upload failed: " + data.error);
       }
