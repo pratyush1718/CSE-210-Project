@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { 
   TextField, Button, RadioGroup, FormControlLabel, Radio, 
-  Typography, Box, Paper, IconButton, Grid2 as Grid
+  Typography, Box, Paper, IconButton, Grid2 as Grid,
+  Stack,
+  Chip
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import { PREDEFINED_TAGS } from "../assets/constants";
 
 const UploadPage: React.FC = () => {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [tags, setTags] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [location, setLocation] = useState("");
   const [visibility, setVisibility] = useState("public");
   const [allowDownloads, setAllowDownloads] = useState("no");
@@ -26,36 +29,71 @@ const UploadPage: React.FC = () => {
     }
   };
 
+  const handleTagClick = (tag: string) => {
+    setTags((prevTags) =>
+      prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]
+    );
+  };
+
   const handleUpload = async () => {
     if (!audioFile || !title || !description) {
-      alert("Please upload an audio file and fill in the required fields.");
-      return;
+        alert("Please upload an audio file and fill in the required fields.");
+        return;
     }
-    console.log("Uploading data...");
-    console.log("Audio File:", audioFile.name);
-    if (imageFile) {
-        console.log("Image File:", imageFile.name);
-    } else {
-        console.log("No Image File Uploaded.");
-    }
-    console.log("Title:", title);
-    console.log("Description:", description);
-    console.log("Tags:", tags);
-    console.log("Location:", location);
-    console.log("Visibility:", visibility);
-    console.log("Allow Downloads:", allowDownloads);
 
-    // upload to backend...
+    // console.log("Uploading data...");
+    // console.log("Audio File:", audioFile.name);
+    // if (imageFile) {
+    //     console.log("Image File:", imageFile.name);
+    // } else {
+    //     console.log("No Image File Uploaded.");
+    // }
+    // console.log("Title:", title);
+    // console.log("Description:", description);
+    // console.log("Tags:", JSON.stringify(tags));
+    // console.log("Location:", location);
+    // console.log("Visibility:", visibility);
+    // console.log("Allow Downloads:", allowDownloads);
+  
+    const formData = new FormData();
+    formData.append("audioFile", audioFile);
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("visibility", visibility);
+    formData.append("allowDownloads", (allowDownloads==="yes").toString());
+    if (tags.length > 0) {
+        formData.append("tags", JSON.stringify(tags));
+    }
+    if (location.trim() !== "") {
+        formData.append("location", location);
+    }
+    if (imageFile) {
+        formData.append("imageFile", imageFile);
+    }
+
+  
     try {
-        // timeout for 2s
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await fetch("http://localhost:3000/api/upload/", {
+        method: "POST",
+        body: formData,
+      });
+  
+      const data = await response.json();
+      if (data.success) {
         alert("Your music file has been uploaded successfully!");
+        // console.log("Uploaded File:", data);
         window.location.reload();
+      } else {
+        alert("Upload failed: " + data.error);
+      }
     } catch (error) {
-        console.error("Upload Failed:", error);
-        alert("Upload failed! Please try again.");
+      console.error("Upload Failed:", error);
+      alert("Upload failed! Please try again.");
     }
   };
+  
+
+
 
   return (
     <Box sx={{ padding: 3}}>
@@ -76,6 +114,7 @@ const UploadPage: React.FC = () => {
                     <Paper sx={{ p: 2, display: 'flex', alignItems: "center", flexDirection: 'column',
                                     justifyContent:'center', width: "100%", height: '40%' }}>
                         <Typography variant="subtitle1">Upload your tone*</Typography>
+                        <Typography variant="subtitle2">Supported: MP3, WAV</Typography>
                         <input 
                             type="file" 
                             accept="audio/mp3, audio/wav" 
@@ -95,6 +134,7 @@ const UploadPage: React.FC = () => {
                     <Paper sx={{ p: 2, display: 'flex', alignItems: "center", flexDirection: 'column',
                                     justifyContent:'center', width: "100%", height: '40%' }}>
                         <Typography variant="subtitle1">Upload a teaser for your tone</Typography>
+                        <Typography variant="subtitle2">Supported: JPEG, PNG</Typography>
                         <input 
                             type="file" 
                             accept="image/jpeg, image/png" 
@@ -140,13 +180,18 @@ const UploadPage: React.FC = () => {
                 />
 
                 {/* Tags */}
-                <TextField 
-                    label="Tags (Relax, Study, Cafe...)" 
-                    fullWidth 
-                    value={tags} 
-                    onChange={(e) => setTags(e.target.value)} 
-                    sx={{ mb: 2 }} 
-                />
+                <Typography variant="subtitle1">Select Tags:</Typography>
+                <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: "wrap" }}>
+                    {PREDEFINED_TAGS.map((tag) => (
+                    <Chip 
+                        key={tag} 
+                        label={tag} 
+                        clickable 
+                        onClick={() => handleTagClick(tag)}
+                        color={tags.includes(tag) ? "primary" : "default"}
+                    />
+                    ))}
+                </Stack>
 
                 {/* Location */}
                 <TextField 

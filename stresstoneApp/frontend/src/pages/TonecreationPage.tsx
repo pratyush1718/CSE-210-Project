@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   TextField,
@@ -13,54 +13,72 @@ import {
   Stack,
   IconButton,
   ButtonGroup,
+  Button,
 } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
-import UploadIcon from '@mui/icons-material/Upload';
-import DownloadIcon from '@mui/icons-material/Download';
-import DeleteIcon from '@mui/icons-material/Delete';
-import LinearProgress from '@mui/material/LinearProgress';
+import AudioProgressTracker from '../components/AudioProgressBar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
+import { Bookmark, Delete, Upload } from '@mui/icons-material';
+
+interface GeneratedCandidates {
+  id: number;
+  title: string;
+  tags: string[];
+  audioData: ArrayBuffer;
+}
+
+const MusicPreviewCard: React.FC<GeneratedCandidates> = ({ id, title, tags, audioData }) => {
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  const togglePlay = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const handlePlayEnd = (playstate: boolean) => setIsPlaying(playstate);
+
+  return (
+    <>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, padding: '0 0 5px 0' }}>
+        {tags.map((tag) => (
+          <Chip key={tag} label={tag} size="small" />
+        ))}
+      </Box>
+
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+        <IconButton onClick={togglePlay}>{isPlaying ? <PauseIcon /> : <PlayArrowIcon />}</IconButton>
+        <AudioProgressTracker
+          audioData={audioData}
+          isPlaying={isPlaying}
+          isExpanded
+          onPlayStateChange={handlePlayEnd}
+        />
+      </Box>
+    </>
+  );
+};
 
 const ToneCreationPage: React.FC = () => {
   // State for multiple choice selections
   const [imageryTags, setImageryTags] = useState<string[]>([]);
   const [artisticTags, setArtisticTags] = useState<string[]>([]);
   const [environmentTags, setEnvironmentTags] = useState<string[]>([]);
-  const [playbackPosition, setPlaybackPosition] = useState<number>(30);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  const [isGenerated, setIsGenerated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [textPrompt, setTextPrompt] = useState<string>('');
+  const [fullPrompt, setFullPrompt] = useState<string>('');
+
+  const [musicId, setMusicId] = useState<number>(0);
+  const [viewTags, setViewTags] = useState<string[]>([]);
+
+  const [bookmarkedTones, setBookmarkedTones] = useState<GeneratedCandidates[]>([]);
 
   // Sample tags for each category - updated for stress relief focus
   const imageryOptions = ['Nature', 'Beach', 'Forest', 'Mountains', 'Garden', 'Rain'];
   const artisticOptions = ['Calm', 'Soothing', 'Relaxing', 'Peaceful', 'Gentle', 'Ambient'];
   const environmentOptions = ['Meditation', 'Spa', 'Night', 'Morning', 'Ocean', 'Wilderness'];
-
-  // Sample bookmarked tones
-  const savedTones = [
-    {
-      id: 1,
-      prompt: 'Gentle rainfall on a forest canopy',
-      imagery: ['Nature', 'Forest', 'Rain'],
-      artistic: ['Peaceful', 'Ambient'],
-      environment: ['Wilderness'],
-      progress: 65,
-    },
-    {
-      id: 2,
-      prompt: 'Ocean waves at sunset with distant birds',
-      imagery: ['Beach', 'Nature'],
-      artistic: ['Calm', 'Relaxing'],
-      environment: ['Ocean'],
-      progress: 42,
-    },
-    {
-      id: 3,
-      prompt: 'Soft wind through morning meadow',
-      imagery: ['Nature', 'Garden'],
-      artistic: ['Gentle', 'Soothing'],
-      environment: ['Morning'],
-      progress: 27,
-    },
-  ];
 
   // Handle tag selection
   const handleTagToggle = (tag: string, category: string) => {
@@ -73,15 +91,84 @@ const ToneCreationPage: React.FC = () => {
     }
   };
 
-  // Handle playback position change
-  const handlePlaybackChange = (event: Event, newValue: number | number[]) => {
-    setPlaybackPosition(newValue as number);
+  const generatePrompt = () => {
+    if (textPrompt === '' && imageryTags.length === 0 && artisticTags.length === 0 && environmentTags.length === 0) {
+      alert('Please enter a prompt');
+      return null;
+    }
+    const promptElems = [textPrompt, ...imageryTags, ...artisticTags, ...environmentTags].filter((tag) => tag !== '');
+
+    const fullPrompt = promptElems.join(', ');
+    setFullPrompt(fullPrompt);
+    return fullPrompt;
   };
 
-  // Toggle play/pause
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+  // should be async
+  const handleGenerate = async () => {
+    const fullPrompt = generatePrompt();
+    if (fullPrompt) {
+      setViewTags([...imageryTags, ...artisticTags, ...environmentTags]);
+      setMusicId((prev) => prev + 1);
+      setIsLoading(true);
+      setIsGenerated(false);
+      // call API here
+      // wait 2s
+      setTimeout(() => {
+        setIsLoading(false);
+        setIsGenerated(true);
+      }, 50);
+    }
   };
+
+  const handleBookmark = () => {
+    setBookmarkedTones((prev) => {
+      const newTone = {
+        id: musicId,
+        title: fullPrompt,
+        tags: viewTags,
+        audioData: audioData,
+      } as GeneratedCandidates;
+
+      // Check if the newTone already exists in the prev array
+      const exists = prev.some((tone) => tone.id === newTone.id);
+
+      // If it doesn't exist, add it to the array
+      if (!exists) {
+        return [...prev, newTone];
+      }
+
+      // If it exists, return the previous array unchanged
+      return prev;
+    });
+  };
+
+  const handleDeleteBookmark = (id: number) => {
+    setBookmarkedTones((prev) => prev.filter((tone) => tone.id !== id));
+  };
+
+  /* Code below subject to change after connection to backend */
+  const [audioData, setAudioData] = useState<ArrayBuffer | null>(null);
+
+  useEffect(() => {
+    fetchAudio();
+  }, []);
+
+  const fetchAudio = async () => {
+    try {
+      const response = await fetch('IDM_Smooth.wav');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const buffer = await response.arrayBuffer();
+      if (buffer.byteLength === 0) {
+        throw new Error('The fetched audio data is empty.');
+      }
+      setAudioData(buffer);
+    } catch (error) {
+      console.error('Error fetching audio:', error);
+    }
+  };
+  /* End code change region */
 
   return (
     <Box sx={{ p: 3 }}>
@@ -97,6 +184,7 @@ const ToneCreationPage: React.FC = () => {
               placeholder="Describe the relaxing sound you want to generate"
               multiline
               rows={2}
+              onChange={(e) => setTextPrompt(e.target.value)}
             />
 
             {/* Imagery Section */}
@@ -156,130 +244,56 @@ const ToneCreationPage: React.FC = () => {
               </Box>
             </Box>
 
+            <Button
+              loading={isLoading}
+              variant="contained"
+              onClick={handleGenerate}
+              startIcon={<FontAwesomeIcon icon={faWandMagicSparkles} />}
+            >
+              Generate
+            </Button>
+
             {/* Music Player Card */}
-            <Card elevation={3}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Preview
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <IconButton onClick={togglePlay} color="primary">
-                    {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
-                  </IconButton>
-                  <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                    {isPlaying ? 'Now Playing' : 'Click to Play'}
-                  </Typography>
-                </Box>
-                <Box sx={{ width: '100%', mr: 1 }}>
-                  <Slider value={playbackPosition} onChange={handlePlaybackChange} aria-labelledby="playback-slider" />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="caption" color="text.secondary">
-                      0:00
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {Math.floor(playbackPosition / 60)}:{String(playbackPosition % 60).padStart(2, '0')}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      2:00
-                    </Typography>
+            {isGenerated && audioData ? (
+              <Card elevation={2}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', justifyItems: 'space-between', justifyContent: 'space-between' }}>
+                    <Typography>{fullPrompt}</Typography>
+                    <IconButton size="small" onClick={handleBookmark}>
+                      <Bookmark />
+                    </IconButton>
                   </Box>
-                </Box>
-              </CardContent>
-            </Card>
+                  <MusicPreviewCard audioData={audioData} id={musicId} title={fullPrompt} tags={viewTags} />
+                </CardContent>
+              </Card>
+            ) : (
+              <></>
+            )}
           </Stack>
         </Grid>
 
         {/* Right Column - Scrollable Card List */}
         <Grid item xs={12} md={8}>
-          <Paper
-            elevation={2}
-            sx={{
-              height: '85vh',
-              overflowY: 'auto',
-              p: 2,
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Bookmarked Tones
-            </Typography>
-            <Stack spacing={2}>
-              {savedTones.map((tone) => (
-                <Card key={tone.id} elevation={2} sx={{ mb: 2 }}>
-                  <CardContent sx={{ p: 2 }}>
-                    <Grid container>
-                      {/* Left side with tone details */}
-                      <Grid item xs={9} sx={{ pr: 2 }}>
-                        <Typography variant="subtitle1" gutterBottom>
-                          {tone.prompt}
-                        </Typography>
-
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-                          {tone.imagery.map((tag, index) => (
-                            <Chip key={index} label={tag} size="small" color="primary" variant="outlined" />
-                          ))}
-                          {tone.artistic.map((tag, index) => (
-                            <Chip key={index} label={tag} size="small" color="secondary" variant="outlined" />
-                          ))}
-                          {tone.environment.map((tag, index) => (
-                            <Chip key={index} label={tag} size="small" color="info" variant="outlined" />
-                          ))}
-                        </Box>
-
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <IconButton size="small" color="primary">
-                            <PlayArrowIcon />
-                          </IconButton>
-                          <Box sx={{ width: '100%', ml: 1 }}>
-                            <LinearProgress
-                              variant="determinate"
-                              value={tone.progress}
-                              sx={{ height: 8, borderRadius: 4 }}
-                            />
-                          </Box>
-                        </Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            0:00
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            2:00
-                          </Typography>
-                        </Box>
-                      </Grid>
-
-                      {/* Vertical divider */}
-                      <Divider orientation="vertical" flexItem />
-
-                      {/* Right side with action buttons */}
-                      <Grid
-                        item
-                        xs={2}
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          pl: 2,
-                        }}
-                      >
-                        <ButtonGroup orientation="horizontal" variant="outlined" sx={{ width: '100%' }}>
-                          <IconButton>
-                            <UploadIcon />
-                          </IconButton>
-                          <IconButton>
-                            <DownloadIcon />
-                          </IconButton>
-                          <IconButton color="error">
-                            <DeleteIcon />
-                          </IconButton>
-                        </ButtonGroup>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              ))}
-            </Stack>
-          </Paper>
+          <Card elevation={2} sx={{ overflow: 'scroll', maxHeight: '80%' }}>
+            {bookmarkedTones.map((tone) => {
+              return (
+                <CardContent>
+                  <Box sx={{ display: 'flex', justifyItems: 'space-between', justifyContent: 'space-between' }}>
+                    <Typography>{tone.title}</Typography>
+                    <div style={{ display: 'flex' }}>
+                      <IconButton size="small" onClick={() => alert('TBD')}>
+                        <Upload />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => handleDeleteBookmark(tone.id)}>
+                        <Delete />
+                      </IconButton>
+                    </div>
+                  </Box>
+                  <MusicPreviewCard audioData={tone.audioData} id={tone.id} title={tone.title} tags={tone.tags} />
+                </CardContent>
+              );
+            })}
+          </Card>
         </Grid>
       </Grid>
     </Box>

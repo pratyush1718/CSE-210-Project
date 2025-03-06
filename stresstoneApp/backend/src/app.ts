@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import searchRouter from './routes/SearchRouter';
 import mongoose from 'mongoose';
+import UploadRouter from './routes/UploadRouter';
+import audioRouter from './routes/AudioRouter';
 
 dotenv.config();
 const app: Application = express();
@@ -22,6 +24,12 @@ mongoose
 
 // Mount search routes under /search
 app.use('/api/search', searchRouter);
+
+// Mount upload routes under /upload
+app.use("/api/upload", UploadRouter);
+
+// Mount audio routes
+app.use('/api/audio', audioRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');

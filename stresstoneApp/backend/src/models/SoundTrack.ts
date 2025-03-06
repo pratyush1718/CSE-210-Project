@@ -4,13 +4,18 @@ import { Schema, model } from 'mongoose';
 const SoundTrackSchema = new Schema({
   title: { type: String, required: true, text: true }, // use text index
   description: { type: String, text: true },
-  tags: [{ type: String, text: true }],
+  tags: { type: [String], default: [] },
   creator: { type: Schema.Types.ObjectId, ref: 'User' },
   // audioUrl is now a GridFS file ID
   audioFileId: { type: Schema.Types.ObjectId, required: true },
   // Keep original filename for reference
   audioFileName: { type: String, required: true },
+  imageFileId: { type: Schema.Types.ObjectId },
+  imageFileName: { type: String },
   likes: { type: Number, default: 0 }, // <-- add likes
+  visibility: { type: String, enum: ["public", "private"], default: "public" }, // Optional visibility
+  allowDownloads: { type: Boolean, default: false },
+  location: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now },
 });
 
