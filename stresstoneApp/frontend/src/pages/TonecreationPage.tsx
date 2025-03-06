@@ -7,57 +7,21 @@ import {
   Chip,
   Card,
   CardContent,
-  Slider,
   Grid,
-  Paper,
   Stack,
   IconButton,
-  ButtonGroup,
   Button,
+  FormControlLabel,
+  RadioGroup,
+  Radio,
 } from '@mui/material';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
-import AudioProgressTracker from '../components/AudioProgressBar';
+
+import AudioPreviewCard from '../components/AudioPreviewCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
 import { Bookmark, Delete, Upload } from '@mui/icons-material';
-
-interface GeneratedCandidates {
-  id: number;
-  title: string;
-  tags: string[];
-  audioData: ArrayBuffer;
-}
-
-const MusicPreviewCard: React.FC<GeneratedCandidates> = ({ id, title, tags, audioData }) => {
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  const handlePlayEnd = (playstate: boolean) => setIsPlaying(playstate);
-
-  return (
-    <>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, padding: '0 0 5px 0' }}>
-        {tags.map((tag) => (
-          <Chip key={tag} label={tag} size="small" />
-        ))}
-      </Box>
-
-      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-        <IconButton onClick={togglePlay}>{isPlaying ? <PauseIcon /> : <PlayArrowIcon />}</IconButton>
-        <AudioProgressTracker
-          audioData={audioData}
-          isPlaying={isPlaying}
-          isExpanded
-          onPlayStateChange={handlePlayEnd}
-        />
-      </Box>
-    </>
-  );
-};
+import { musicgenDispatcher } from '../controller/musicgenDispatcher';
+import { ToneLengthOptions, ToneLengthTypes, TonePreviewProps } from '../types';
 
 const ToneCreationPage: React.FC = () => {
   // State for multiple choice selections
@@ -69,11 +33,12 @@ const ToneCreationPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [textPrompt, setTextPrompt] = useState<string>('');
   const [fullPrompt, setFullPrompt] = useState<string>('');
+  const [toneLength, setToneLength] = useState<ToneLengthTypes>('short');
 
   const [musicId, setMusicId] = useState<number>(0);
   const [viewTags, setViewTags] = useState<string[]>([]);
 
-  const [bookmarkedTones, setBookmarkedTones] = useState<GeneratedCandidates[]>([]);
+  const [bookmarkedTones, setBookmarkedTones] = useState<TonePreviewProps[]>([]);
 
   // Sample tags for each category - updated for stress relief focus
   const imageryOptions = ['Nature', 'Beach', 'Forest', 'Mountains', 'Garden', 'Rain'];
@@ -111,12 +76,11 @@ const ToneCreationPage: React.FC = () => {
       setMusicId((prev) => prev + 1);
       setIsLoading(true);
       setIsGenerated(false);
-      // call API here
-      // wait 2s
-      setTimeout(() => {
-        setIsLoading(false);
-        setIsGenerated(true);
-      }, 50);
+      // use controller logic
+      const audio = await musicgenDispatcher({ text: fullPrompt, length: toneLength});
+      setAudioData(audio);
+      setIsLoading(false);
+      setIsGenerated(true);
     }
   };
 
@@ -127,7 +91,7 @@ const ToneCreationPage: React.FC = () => {
         title: fullPrompt,
         tags: viewTags,
         audioData: audioData,
-      } as GeneratedCandidates;
+      } as TonePreviewProps;
 
       // Check if the newTone already exists in the prev array
       const exists = prev.some((tone) => tone.id === newTone.id);
@@ -145,6 +109,10 @@ const ToneCreationPage: React.FC = () => {
   const handleDeleteBookmark = (id: number) => {
     setBookmarkedTones((prev) => prev.filter((tone) => tone.id !== id));
   };
+
+  const handleUpdateToneLength = (currentOption: ToneLengthTypes) => {
+    setToneLength(currentOption);
+  }
 
   /* Code below subject to change after connection to backend */
   const [audioData, setAudioData] = useState<ArrayBuffer | null>(null);
@@ -244,6 +212,18 @@ const ToneCreationPage: React.FC = () => {
               </Box>
             </Box>
 
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                Tone Length
+              </Typography>
+              <Divider />
+              <RadioGroup row value={toneLength} onChange={(e) => handleUpdateToneLength(e.target.value)}>
+                {ToneLengthOptions.map((option) => (
+                  <FormControlLabel key={option} value={option} control={<Radio />} label={option} />
+                ))}
+              </RadioGroup>
+            </Box>
+
             <Button
               loading={isLoading}
               variant="contained"
@@ -263,7 +243,7 @@ const ToneCreationPage: React.FC = () => {
                       <Bookmark />
                     </IconButton>
                   </Box>
-                  <MusicPreviewCard audioData={audioData} id={musicId} title={fullPrompt} tags={viewTags} />
+                  <AudioPreviewCard audioData={audioData} id={musicId} title={fullPrompt} tags={viewTags} />
                 </CardContent>
               </Card>
             ) : (
@@ -289,7 +269,7 @@ const ToneCreationPage: React.FC = () => {
                       </IconButton>
                     </div>
                   </Box>
-                  <MusicPreviewCard audioData={tone.audioData} id={tone.id} title={tone.title} tags={tone.tags} />
+                  <AudioPreviewCard audioData={tone.audioData} id={tone.id} title={tone.title} tags={tone.tags} />
                 </CardContent>
               );
             })}
