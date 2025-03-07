@@ -44,7 +44,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
 
     try {
       setIsLoading(true);
-      const blob = new Blob([audioData], { type: 'audio/wav' });
+      const blob = new Blob([audioData], { type: 'audio/*' });
       const blobUrl = URL.createObjectURL(blob);
       audioSourceRef.current = blobUrl;
 
@@ -58,6 +58,27 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
         audio.addEventListener('loadedmetadata', handleLoadedMetadata);
         audio.addEventListener('ended', handleEnded);
         audio.addEventListener('error', handleError);
+        
+        // Debug listeners
+        audio.addEventListener('canplay', () => {
+          console.log('Audio can play now');
+          // Auto-play if isPlaying flag is set
+          if (isPlaying && audio.paused) {
+            console.log('Auto-playing after load');
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(error => {
+                console.error("Auto-play failed:", error);
+                if (onPlayStateChange) {
+                  onPlayStateChange(false);
+                }
+              });
+            }
+          }
+        });
+        audio.addEventListener('playing', () => console.log('Audio is playing'));
+        audio.addEventListener('waiting', () => console.log('Audio is waiting for data'));
+        audio.addEventListener('stalled', () => console.log('Audio playback has stalled'));
       }
       setError(null);
     } catch (err) {
@@ -76,7 +97,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
         URL.revokeObjectURL(audioSourceRef.current);
       }
     };
-  }, [audioData]);
+  }, [audioData, isPlaying]); // Add isPlaying as a dependency
 
   useEffect(() => {
     if (audioRef.current) {
@@ -88,7 +109,21 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.currentTime = currentTime; 
-        audioRef.current.play();
+        // Add try/catch around play()
+        try {
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.error("Play failed:", error);
+              // Inform parent component that play failed
+              if (onPlayStateChange) {
+                onPlayStateChange(false);
+              }
+            });
+          }
+        } catch (error) {
+          console.error("Play error:", error);
+        }
         startUpdatingProgress();
       } else {
         audioRef.current.pause();

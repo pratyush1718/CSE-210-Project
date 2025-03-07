@@ -15,7 +15,8 @@ import {
   Menu,
   MenuItem,
   Avatar,
-  ListItemAvatar
+  ListItemAvatar,
+  LinearProgress
 } from '@mui/material';
 import SortIcon from '@mui/icons-material/Sort';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
@@ -23,6 +24,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { usePlayer } from '../contexts/PlayerContext';
 
 interface SoundTrack {
   _id: string;
@@ -40,6 +43,8 @@ type SortOption = 'relevance' | 'likes' | 'recent';
 const resultsPerPage = 10;
 
 const SearchBar: React.FC = () => {
+  const { setCurrentTrack, currentTrack, isPlaying, togglePlay } = usePlayer();
+  
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SoundTrack[]>([]);
   const [loading, setLoading] = useState(false);
@@ -106,6 +111,35 @@ const SearchBar: React.FC = () => {
 
   const totalPages = Math.ceil(totalResults / resultsPerPage);
 
+  const handlePlay = (track: SoundTrack) => {
+    try {
+      // Ensure the URL is absolute
+      let fullAudioUrl = track.audioUrl;
+      if (track.audioUrl.startsWith('/')) {
+        fullAudioUrl = `http://localhost:3000${track.audioUrl}`;
+      }
+      
+      console.log("Attempting to play URL:", fullAudioUrl);
+      
+      const playerTrack = {
+        _id: track._id,
+        title: track.title,
+        creator: track.creator,
+        audioUrl: fullAudioUrl,
+        imageFileId: track.imageFileId,
+      };
+      
+      setCurrentTrack(playerTrack);
+      
+      if (!isPlaying) {
+        togglePlay();
+      }
+    } catch (error) {
+      console.error("Error playing track:", error);
+      setError(`Failed to play track: ${error.message}`);
+    }
+  };
+
   return (
     <div>
       <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -159,7 +193,15 @@ const SearchBar: React.FC = () => {
       {results.length > 0 && (
         <List>
           {results.map((track) => (
-            <ListItem key={track._id} alignItems="flex-start" sx={{ borderBottom: '1px solid #eee', py: 1.5 }}>
+            <ListItem 
+              key={track._id} 
+              alignItems="flex-start" 
+              sx={{ 
+                borderBottom: '1px solid #eee',
+                py: 1.5,
+                bgcolor: isPlaying && currentTrack?._id === track._id ? 'rgba(0, 0, 0, 0.04)' : 'inherit'
+              }}
+            >
               <ListItemAvatar>
                 {track.imageFileId ? (
                   <Avatar 
@@ -193,6 +235,15 @@ const SearchBar: React.FC = () => {
                 }
                 sx={{ ml: 1 }}
               />
+              
+              {/* Play button */}
+              <IconButton 
+                color={isPlaying && currentTrack?._id === track._id ? "primary" : "default"}
+                onClick={() => handlePlay(track)}
+                sx={{ ml: 1 }}
+              >
+                <PlayArrowIcon />
+              </IconButton>
             </ListItem>
           ))}
         </List>

@@ -11,6 +11,7 @@ import Register from './components/Register';
 import UploadPage from './pages/UploadPage';
 import SearchPage from './pages/SearchPage.tsx';
 import ToneCreationPage from './pages/TonecreationPage.tsx';
+import { PlayerProvider } from './contexts/PlayerContext';
 
 const siderWidth = 240;
 const headerHeight = 64;
@@ -25,7 +26,7 @@ function App() {
   }, []);
 
   return (
-    <>
+    <PlayerProvider>
       <CssBaseline />
       {isAuthenticated ? (
         <>
@@ -55,7 +56,7 @@ function App() {
           </Routes>
         </>
       )}
-    </>
+    </PlayerProvider>
   );
 }
 
