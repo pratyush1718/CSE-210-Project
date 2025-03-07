@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   TextField, Button, RadioGroup, FormControlLabel, Radio, 
   Typography, Box, Paper, IconButton, Grid2 as Grid,
@@ -7,16 +7,16 @@ import {
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { PREDEFINED_TAGS } from "../assets/constants";
+import useUploadStore from "../stores/useUploadState";
 
 const UploadPage: React.FC = () => {
-  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const { title, setTitle, audioFile, setAudioFile, tags, clear } = useUploadStore();
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
   const [location, setLocation] = useState("");
   const [visibility, setVisibility] = useState("public");
   const [allowDownloads, setAllowDownloads] = useState("no");
+  const [audioTags, setAudioTags] = useState(tags);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, type: "audio" | "image") => {
     const file = event.target.files?.[0] || null;
@@ -30,7 +30,7 @@ const UploadPage: React.FC = () => {
   };
 
   const handleTagClick = (tag: string) => {
-    setTags((prevTags) =>
+    setAudioTags((prevTags) =>
       prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]
     );
   };
@@ -61,8 +61,8 @@ const UploadPage: React.FC = () => {
     formData.append("description", description);
     formData.append("visibility", visibility);
     formData.append("allowDownloads", (allowDownloads==="yes").toString());
-    if (tags.length > 0) {
-        formData.append("tags", JSON.stringify(tags));
+    if (audioTags.length > 0) {
+        formData.append("tags", JSON.stringify(audioTags));
     }
     if (location.trim() !== "") {
         formData.append("location", location);
@@ -81,7 +81,10 @@ const UploadPage: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         alert("Your music file has been uploaded successfully!");
-        // console.log("Uploaded File:", data);
+        clear();
+        // console.log("Title:", title);
+        // console.log("Tags:", JSON.stringify(tags));
+        // console.log("Audio File:", audioFile.name);
         window.location.reload();
       } else {
         alert("Upload failed: " + data.error);
@@ -188,7 +191,7 @@ const UploadPage: React.FC = () => {
                         label={tag} 
                         clickable 
                         onClick={() => handleTagClick(tag)}
-                        color={tags.includes(tag) ? "primary" : "default"}
+                        color={audioTags.includes(tag) ? "primary" : "default"}
                     />
                     ))}
                 </Stack>
