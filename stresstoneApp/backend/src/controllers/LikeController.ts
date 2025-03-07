@@ -5,7 +5,20 @@ import Like from '../models/Like';
 import SoundTrack from '../models/SoundTrack';
 import mongoose from 'mongoose';
 
-// Add these interfaces at the top of your file
+// First, define an interface for the object returned by toObject()
+interface SoundTrackObject {
+  _id: mongoose.Types.ObjectId;
+  title: string;
+  description: string;
+  creator?: { name: string; _id: mongoose.Types.ObjectId };
+  audioFileId: mongoose.Types.ObjectId;
+  imageFileId?: mongoose.Types.ObjectId;
+  createdAt: Date;
+  likes: number;
+  tags?: string[];
+}
+
+// Then update the PopulatedSoundTrack interface
 interface PopulatedSoundTrack extends mongoose.Document {
   title: string;
   description: string;
@@ -14,7 +27,7 @@ interface PopulatedSoundTrack extends mongoose.Document {
   imageFileId?: mongoose.Types.ObjectId;
   createdAt: Date;
   likes: number;
-  toObject(): any;
+  toObject(): SoundTrackObject; // Use the specific return type instead of any
 }
 
 interface PopulatedLike extends mongoose.Document {
