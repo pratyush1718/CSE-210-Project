@@ -2,6 +2,9 @@ import pytest
 from fastapi.testclient import TestClient
 from service import app
 
+# Code: 200 - successful
+# Code: 422 - Cannot process
+
 client = TestClient(app)
 
 def test_text_to_music_short():
