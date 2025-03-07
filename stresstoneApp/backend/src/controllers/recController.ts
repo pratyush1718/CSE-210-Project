@@ -17,11 +17,11 @@ export const recommendContent = async(req: Request, res: Response) => {
 
         const scoredContent = contents.map((content) => {
             // uses cosine similarity
-            var score = 0;
+            let score = 0;
 
-            var dotproduct = 0;
-            var magVectorA = 0;
-            var magVectorB = 0;
+            let dotproduct = 0;
+            let magVectorA = 0;
+            let magVectorB = 0;
 
             // I made a mistake in my initial design.
             // User's definition of tags is an array of objects of Type Tag while Content's definition of tags is a string array.
