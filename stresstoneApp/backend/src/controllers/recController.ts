@@ -65,7 +65,7 @@ export const recommendContent = async(req: Request, res: Response) => {
 
         // Respond with top 10 results.
         res.status(200).json({recommendations: top10results});
-        return
+        return;
     }
     catch (error) {
         console.error("Error:", error);
