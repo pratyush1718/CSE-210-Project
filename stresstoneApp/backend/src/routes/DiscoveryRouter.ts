@@ -3,6 +3,6 @@ import { recommendContent } from "../controllers/recController";
 
 const discoveryRouter = express.Router();
 
-discoveryRouter.post("/user/:username/recommendations", recommendContent);
+discoveryRouter.post("/recommendations", recommendContent);
 
 export default discoveryRouter;

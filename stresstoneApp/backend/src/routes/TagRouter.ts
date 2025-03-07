@@ -3,6 +3,6 @@ import { addTagsToUser } from "../controllers/tagController";
 
 const tagRouter = express.Router();
 
-tagRouter.post("/user/:username/content/:title", addTagsToUser);
+tagRouter.post("/userTag/content", addTagsToUser);
 
 export default tagRouter;

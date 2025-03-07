@@ -4,12 +4,12 @@ import Content from "../models/Content";
 import { Console } from "console";
 
 export const recommendContent = async(req: Request, res: Response) => {
-    const {username} = req.params;
+    const {firebaseId} = req.body;
 
     try {
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ firebaseId });
         if (!user) {
-            res.status(404).json({message: "Username does not exist."});
+            res.status(404).json({message: "User does not exist."});
             return;
         }
 
