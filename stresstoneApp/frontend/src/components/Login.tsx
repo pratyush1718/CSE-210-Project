@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserCredential } from 'firebase/auth';
 
 interface LoginProps {
-  onLogin: () => void;
+  onLogin: (email: string) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
@@ -25,7 +25,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     if (isUserCredential(result)) {
       setError(null);
       console.log("Successfully logged in:", result.user);
-      onLogin(); // Mark user as authenticated
+      onLogin(email); 
     } else {
       setError(result); // Show error message
     }

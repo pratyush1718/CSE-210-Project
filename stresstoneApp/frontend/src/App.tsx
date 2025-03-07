@@ -18,6 +18,18 @@ const headerHeight = 64;
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [footerHeight, setFooterHeight] = useState(120); // Default expanded height
+  const [userEmail, setUserEmail] = useState<string>('');
+
+  const handleSignOut = () => {
+    setIsAuthenticated(false);
+    setUserEmail('');
+  };
+
+  const handleLogin = (email: string) => {
+    setIsAuthenticated(true);
+    setUserEmail(email); 
+  };
+  
 
   useEffect(() => {
     axios.get('http://localhost:3000/')
@@ -29,7 +41,7 @@ function App() {
       <CssBaseline />
       {isAuthenticated ? (
         <>
-          <Header height={headerHeight} />
+          <Header height={headerHeight} onSignOut={handleSignOut} userEmail={userEmail}/>
           <Box sx={{ display: 'flex', marginTop: `${headerHeight}px`, marginBottom: `${footerHeight}px` }}>
             <Sider drawerWidth={siderWidth} />
             <Box component="main" sx={{ p: 2, width: `calc(100% - ${siderWidth}px)`, height: '100%', overflow: 'auto' }}>
@@ -49,7 +61,7 @@ function App() {
         //if not authenticated, only these routes are available
         <>
           <Routes>
-            <Route path="/" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
+            <Route path="/" element={<Login onLogin={handleLogin} />} />
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
