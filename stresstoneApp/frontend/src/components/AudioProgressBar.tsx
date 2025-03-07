@@ -49,55 +49,54 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
       audioSourceRef.current = blobUrl;
 
       if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = blobUrl;
-        audioRef.current.load();
+        // Clear previous event listeners to avoid duplicates
+        const audio = audioRef.current;
+        audio.pause();
+        
+        // Remove old listeners if they exist
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.removeEventListener('ended', handleEnded);
+        audio.removeEventListener('error', handleError);
+        audio.removeEventListener('canplay', handleCanPlay);
+        
+        // Set new source
+        audio.src = blobUrl;
+        audio.load();
+        
+        // Add all listeners again
+        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.addEventListener('ended', handleEnded);
+        audio.addEventListener('error', handleError);
+        audio.addEventListener('canplay', handleCanPlay);
       } else {
         const audio = new Audio(blobUrl);
         audioRef.current = audio;
         audio.addEventListener('loadedmetadata', handleLoadedMetadata);
         audio.addEventListener('ended', handleEnded);
         audio.addEventListener('error', handleError);
-        
-        // Debug listeners
-        audio.addEventListener('canplay', () => {
-          console.log('Audio can play now');
-          // Auto-play if isPlaying flag is set
-          if (isPlaying && audio.paused) {
-            console.log('Auto-playing after load');
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-              playPromise.catch(error => {
-                console.error("Auto-play failed:", error);
-                if (onPlayStateChange) {
-                  onPlayStateChange(false);
-                }
-              });
-            }
-          }
-        });
-        audio.addEventListener('playing', () => console.log('Audio is playing'));
-        audio.addEventListener('waiting', () => console.log('Audio is waiting for data'));
-        audio.addEventListener('stalled', () => console.log('Audio playback has stalled'));
+        audio.addEventListener('canplay', handleCanPlay);
       }
       setError(null);
     } catch (err) {
       setError('Failed to process audio data');
       console.error('Error processing audio data:', err);
-    } finally {
-      setIsLoading(false);
-      setIsLoaded(true);
     }
 
     return () => {
       if (audioRef.current) {
-        audioRef.current.pause();
+        const audio = audioRef.current;
+        audio.pause();
+        // Clean up event listeners
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.removeEventListener('ended', handleEnded);
+        audio.removeEventListener('error', handleError);
+        audio.removeEventListener('canplay', handleCanPlay);
       }
       if (audioSourceRef.current) {
         URL.revokeObjectURL(audioSourceRef.current);
       }
     };
-  }, [audioData, isPlaying]); // Add isPlaying as a dependency
+  }, [audioData]); // Remove isPlaying from dependencies
 
   useEffect(() => {
     if (audioRef.current) {
@@ -138,6 +137,12 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
     }
   }, [volume]);
 
+  useEffect(() => {
+    if (audioRef.current && isLoaded) {
+      handleCanPlay();
+    }
+  }, [isPlaying, isLoaded]);
+
   const startUpdatingProgress = () => {
     const update = () => {
       if (audioRef.current && !isSeeking) {
@@ -175,6 +180,22 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
     setError('Failed to load audio');
     setIsLoading(false);
     setIsLoaded(false);
+  };
+
+  const handleCanPlay = () => {
+    console.log('Audio can play now');
+    if (isPlaying && audioRef.current?.paused) {
+      console.log('Auto-playing after load');
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Auto-play failed:", error);
+          if (onPlayStateChange) {
+            onPlayStateChange(false);
+          }
+        });
+      }
+    }
   };
 
   const handleSeekStart = () => {
