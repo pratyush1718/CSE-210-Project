@@ -1,8 +1,8 @@
 import mongoose, {Schema, Document} from "mongoose"
 
 interface IUser extends Document {
-    _id: string;
-    username: string;
+    firebaseId: string;
+    email: string;
     tags: { tag: string, count: number }[];
 }
 
@@ -12,7 +12,8 @@ const tagSchema = new Schema({
 });
 
 const userSchema: Schema<IUser> = new Schema({
-    username: {type: String, required: true},
+    firebaseId: {type: String, required: true},
+    email: {type: String, required: true},
     tags: {type: [tagSchema], default: []},
 });
 
