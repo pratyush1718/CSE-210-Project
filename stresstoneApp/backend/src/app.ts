@@ -5,6 +5,7 @@ import searchRouter from './routes/SearchRouter';
 import mongoose from 'mongoose';
 import UploadRouter from './routes/UploadRouter';
 import audioRouter from './routes/AudioRouter';
+import likeRouter from './routes/LikeRouter';
 import userRouter from './routes/UserRouter';
 
 dotenv.config();
@@ -31,6 +32,9 @@ app.use("/api/upload", UploadRouter);
 
 // Mount audio routes
 app.use('/api/audio', audioRouter);
+
+// Mount like routes
+app.use('/api/likes', likeRouter);
 
 // Mount user routes
 app.use('/api/user', userRouter);
