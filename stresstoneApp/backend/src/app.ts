@@ -5,6 +5,7 @@ import searchRouter from './routes/SearchRouter';
 import mongoose from 'mongoose';
 import UploadRouter from './routes/UploadRouter';
 import audioRouter from './routes/AudioRouter';
+import userRouter from './routes/UserRouter';
 
 dotenv.config();
 const app: Application = express();
@@ -30,6 +31,9 @@ app.use("/api/upload", UploadRouter);
 
 // Mount audio routes
 app.use('/api/audio', audioRouter);
+
+// Mount user routes
+app.use('/api/user', userRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
