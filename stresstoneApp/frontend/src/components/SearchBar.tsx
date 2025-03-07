@@ -26,6 +26,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { usePlayer } from '../contexts/PlayerContext';
+import LikeButton from './LikeButton';
 
 interface SoundTrack {
   _id: string;
@@ -244,6 +245,13 @@ const SearchBar: React.FC = () => {
               >
                 <PlayArrowIcon />
               </IconButton>
+              
+              {/* Like button */}
+              <LikeButton 
+                trackId={track._id} 
+                initialLikeCount={track.likes} 
+                userId="user-id-here" // Replace with actual user ID from auth
+              />
             </ListItem>
           ))}
         </List>
