@@ -16,7 +16,7 @@ mongoose.connect("mongodb://localhost:27017/test_database");
 // to use a local MongoDB database.
 app.use("/api/tagRouter", tagRouter);
 app.use("/api/discovery", discoveryRouter);
-
+       
 app.listen(3000, () => {
     console.log("Server is running on http://localhost:3000");
 })

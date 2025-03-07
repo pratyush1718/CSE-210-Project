@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import User from "../models/User";
 import Content from "../models/Content";
 import { Console } from "console";
-
+ 
 export const recommendContent = async(req: Request, res: Response) => {
     const {firebaseId} = req.body;
 

@@ -18,7 +18,7 @@ app.use(cors({ origin: 'http://localhost:5173' }));
 
 // MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI as string;
-
+ 
 // Uncomment below once MongoDB is set up
 mongoose
   .connect(MONGO_URI)
