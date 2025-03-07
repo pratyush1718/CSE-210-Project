@@ -1,6 +1,7 @@
 import mongoose, {Schema, Document} from "mongoose"
 
 interface IUser extends Document {
+    _id: string;
     username: string;
     tags: { tag: string, count: number }[];
 }

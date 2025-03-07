@@ -10,6 +10,8 @@ app.use(express.json());
 // For now, this is connecting to MongoDB localhost. Replace later!
 mongoose.connect("mongodb://localhost:27017/test_database");
 
+// just to quickly test functions out. this isn't the actual server we are using, this is
+// to use a local MongoDB database.
 app.post("/user/:username/content/:title", addTagsToUser);
 app.post("/user/:username/recommendations", recommendContent);
 
