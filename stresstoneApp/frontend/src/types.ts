@@ -18,3 +18,8 @@ export interface UploadPageProps {
   generatedAudioTitle?: string;
   generatedAudioTags?: string[];
 }
+
+export interface TagProps {
+  type: string;
+  description: string;
+}

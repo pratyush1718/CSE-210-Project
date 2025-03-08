@@ -29,12 +29,12 @@ import { Bookmark, Delete, Download, Upload } from '@mui/icons-material';
 import { musicgenDispatcher } from '../controller/musicgenDispatcher';
 import { ToneLengthOptions, ToneLengthTypes, TonePreviewProps } from '../types';
 import useUploadStore from '../stores/useUploadState';
+import TagChips from '../components/TagChips';
+import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES } from '../assets/constants';
 
 const ToneCreationPage: React.FC = () => {
   // State for multiple choice selections
-  const [imageryTags, setImageryTags] = useState<string[]>([]);
-  const [artisticTags, setArtisticTags] = useState<string[]>([]);
-  const [environmentTags, setEnvironmentTags] = useState<string[]>([]);
+  const [audioTags, setAudioTags] = useState<string[]>([]);
 
   const [isGenerated, setIsGenerated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -47,28 +47,18 @@ const ToneCreationPage: React.FC = () => {
 
   const [bookmarkedTones, setBookmarkedTones] = useState<TonePreviewProps[]>([]);
 
-  // Sample tags for each category - updated for stress relief focus
-  const imageryOptions = ['Nature', 'Beach', 'Forest', 'Mountains', 'Garden', 'Rain'];
-  const artisticOptions = ['Calm', 'Soothing', 'Relaxing', 'Peaceful', 'Gentle', 'Ambient'];
-  const environmentOptions = ['Meditation', 'Spa', 'Night', 'Morning', 'Ocean', 'Wilderness'];
-
   // Handle tag selection
-  const handleTagToggle = (tag: string, category: string) => {
-    if (category === 'imagery') {
-      setImageryTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
-    } else if (category === 'artistic') {
-      setArtisticTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
-    } else if (category === 'environment') {
-      setEnvironmentTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
-    }
+  const handleTagClick = (tag: string) => {
+    setAudioTags((prevTags) => (prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]));
+    // console.log(audioTags)
   };
 
   const generatePrompt = () => {
-    if (textPrompt === '' && imageryTags.length === 0 && artisticTags.length === 0 && environmentTags.length === 0) {
+    if (textPrompt === '' && audioTags.length === 0) {
       alert('Please enter a prompt');
       return null;
     }
-    const promptElems = [textPrompt, ...imageryTags, ...artisticTags, ...environmentTags].filter((tag) => tag !== '');
+    const promptElems = [textPrompt, ...audioTags].filter((tag) => tag !== '');
 
     const fullPrompt = promptElems.join(', ');
     setFullPrompt(fullPrompt);
@@ -79,7 +69,7 @@ const ToneCreationPage: React.FC = () => {
   const handleGenerate = async () => {
     const fullPrompt = generatePrompt();
     if (fullPrompt) {
-      setViewTags([...imageryTags, ...artisticTags, ...environmentTags]);
+      setViewTags(audioTags);
       setMusicId((prev) => prev + 1);
       setIsLoading(true);
       setIsGenerated(false);
@@ -214,58 +204,28 @@ const ToneCreationPage: React.FC = () => {
               {/* Imagery Section */}
               <Box>
                 <Typography variant="h6" gutterBottom>
-                  Imagery
+                  Styles
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {imageryOptions.map((tag) => (
-                    <Chip
-                      key={tag}
-                      label={tag}
-                      onClick={() => handleTagToggle(tag, 'imagery')}
-                      color={imageryTags.includes(tag) ? 'primary' : 'default'}
-                      variant={imageryTags.includes(tag) ? 'filled' : 'outlined'}
-                    />
-                  ))}
-                </Box>
+                <TagChips tags={MUSIC_STYLES} handleTagClick={handleTagClick} showTooltip />
               </Box>
 
               {/* Artistic Feature Section */}
               <Box>
                 <Typography variant="h6" gutterBottom>
-                  Artistic Feature
+                  Ambiances
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {artisticOptions.map((tag) => (
-                    <Chip
-                      key={tag}
-                      label={tag}
-                      onClick={() => handleTagToggle(tag, 'artistic')}
-                      color={artisticTags.includes(tag) ? 'primary' : 'default'}
-                      variant={artisticTags.includes(tag) ? 'filled' : 'outlined'}
-                    />
-                  ))}
-                </Box>
+                <TagChips tags={MUSIC_AMBIANCES} handleTagClick={handleTagClick} showTooltip />
               </Box>
 
               {/* Environment Section */}
               <Box>
                 <Typography variant="h6" gutterBottom>
-                  Environment
+                  Scenario
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {environmentOptions.map((tag) => (
-                    <Chip
-                      key={tag}
-                      label={tag}
-                      onClick={() => handleTagToggle(tag, 'environment')}
-                      color={environmentTags.includes(tag) ? 'primary' : 'default'}
-                      variant={environmentTags.includes(tag) ? 'filled' : 'outlined'}
-                    />
-                  ))}
-                </Box>
+                <TagChips tags={MUSIC_SCENARIOS} handleTagClick={handleTagClick} showTooltip />
               </Box>
 
               <Box>
