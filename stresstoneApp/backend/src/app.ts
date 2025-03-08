@@ -7,6 +7,7 @@ import UploadRouter from './routes/UploadRouter';
 import audioRouter from './routes/AudioRouter';
 import tagRouter from './routes/TagRouter';
 import discoveryRouter from './routes/DiscoveryRouter';
+import likeRouter from './routes/LikeRouter';
 import userRouter from './routes/UserRouter';
 
 dotenv.config();
@@ -39,6 +40,9 @@ app.use('/api/discovery', discoveryRouter);
 
 // Mount tag routes
 app.use('/api/tagRouter', tagRouter);
+
+// Mount like routes
+app.use('/api/likes', likeRouter);
 
 // Mount user routes
 app.use('/api/user', userRouter);

@@ -45,11 +45,21 @@ export const SearchController: RequestHandler<object, unknown, unknown, SearchQu
       .limit(limitNum)
       .collation({ locale: 'en', strength: 2 }); // Case-insensitive search
 
+    // Transform results to include streaming URL
+    const transformedResults = results.map(track => {
+      const trackObj = track.toObject();
+      return {
+        ...trackObj,
+        audioUrl: `/api/audio/stream/${track.audioFileId}`,
+      };
+    });
+
     res.json({
-      results, // each result now includes title, creator, likes and createdAt
+      results: transformedResults,
       pagination: {
         currentPage: pageNum,
         resultsPerPage: limitNum,
+        totalCount: results.length, // Ideally, get the total count from a separate count query
       },
     });
   } catch (error) {

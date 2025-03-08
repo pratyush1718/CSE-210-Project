@@ -12,6 +12,7 @@ import {
   ExpandMore,
 } from '@mui/icons-material';
 import AudioProgressTracker from './AudioProgressBar';
+import { usePlayer } from '../contexts/PlayerContext';
 
 interface TonePlayerProps {
   onHeightChange: (height: number) => void; // Callback function to send height updates
@@ -20,13 +21,13 @@ interface TonePlayerProps {
 export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(100);
   const [isExpanded, setIsExpanded] = useState(true);
+  const { currentTrack, isPlaying, setIsPlaying, togglePlay } = usePlayer();
 
   const handleShuffle = () => setIsShuffle((prev) => !prev);
   const handleRepeat = () => setIsRepeat((prev) => !prev);
-  const handlePlayPause = () => setIsPlaying((prev) => !prev);
+  const handlePlayPause = () => togglePlay();
   const handlePlayEnd = (playstate: boolean) => setIsPlaying(playstate);
   const handleToggleExpand = () => {
     setIsExpanded((prev) => !prev);
@@ -44,19 +45,33 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
   const [audioData, setAudioData] = useState<ArrayBuffer | null>(null);
 
   useEffect(() => {
-    fetchAudio();
-  }, []);
+    if (currentTrack?.audioUrl) {
+      setAudioData(null); // Clear previous audio data
+      fetchTrackAudio(currentTrack.audioUrl);
+    }
+  }, [currentTrack]);
 
-  const fetchAudio = async () => {
+  const fetchTrackAudio = async (audioUrl: string) => {
+    console.log('Fetching audio from URL:', audioUrl);
     try {
-      const response = await fetch('IDM_Smooth.wav');
+      const response = await fetch(audioUrl);
+      console.log('Response status:', response.status);
+      // Log headers to check content type
+      response.headers.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+      });
+      
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
+      
       const buffer = await response.arrayBuffer();
+      console.log('Buffer received, size:', buffer.byteLength);
+      
       if (buffer.byteLength === 0) {
         throw new Error('The fetched audio data is empty.');
       }
+      
       setAudioData(buffer);
     } catch (error) {
       console.error('Error fetching audio:', error);
@@ -99,8 +114,10 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
           }}
         >
           <Avatar
-            alt="Album Cover"
-            src="" // album cover source.
+            alt={currentTrack?.title || "Album Cover"}
+            src={currentTrack?.imageFileId ? 
+                 `http://localhost:3000/api/audio/image/${currentTrack.imageFileId}` : 
+                 ""}
             sx={{
               width: isExpanded ? 60 : 40,
               height: isExpanded ? 60 : 40,
@@ -109,8 +126,12 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
             }}
           />
           <Box>
-            <Typography variant={isExpanded ? 'h6' : 'body1'}>Song Title</Typography>
-            {isExpanded && <Typography variant="body2">Artist</Typography>}
+            <Typography variant={isExpanded ? 'h6' : 'body1'}>
+              {currentTrack?.title || "No track selected"}
+            </Typography>
+            {isExpanded && <Typography variant="body2">
+              {currentTrack?.creator?.name || "Unknown artist"}
+            </Typography>}
           </Box>
         </Box>
 
@@ -201,7 +222,7 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
           isLooping={isRepeat}
           volume = {volume}
           isExpanded={isExpanded}
-          onPlayStateChange={handlePlayEnd}
+          onPlayStateChange={setIsPlaying}
         />
       </Box>  
     </AppBar>
