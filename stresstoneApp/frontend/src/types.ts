@@ -12,3 +12,9 @@ export interface TonePreviewProps {
   tags: string[];
   audioData: ArrayBuffer;
 }
+
+export interface UploadPageProps {
+  generatedAudioFile?: File;
+  generatedAudioTitle?: string;
+  generatedAudioTags?: string[];
+}
