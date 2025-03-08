@@ -1,6 +1,6 @@
 import { FirebaseError } from "firebase/app";
 import { auth } from "./firebase";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, UserCredential, getIdToken  } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, UserCredential, getAuth} from "firebase/auth";
 
 export const signIn = async (email: string, password: string): Promise<UserCredential | string> => {
   try {
@@ -23,10 +23,14 @@ export const signUp = async (email: string, password: string): Promise<UserCrede
     const user = userCredential.user;
     console.log("User reigstered in firebase:", user);
 
-    const response = await fetch("http://localhost:5000/api/user/register", {
+    const port = import.meta.env.VITE_BACKEND_PORT || 3000;
+    const idToken = await user.getIdToken();
+
+    const response = await fetch(`http://localhost:${port}/api/user/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${idToken}`, 
       },
       body: JSON.stringify({
         firebaseId: user.uid,
@@ -53,4 +57,13 @@ export const signUp = async (email: string, password: string): Promise<UserCrede
     console.error("Unknown error signing up:", error);
     return "unknown_error";
   }
+};
+
+export const getAuthToken = async (): Promise<string | null> => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (user) {
+    return await user.getIdToken();
+  }
+  return null;
 };
