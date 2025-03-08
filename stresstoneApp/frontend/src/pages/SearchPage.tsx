@@ -1,8 +1,15 @@
 // File: stresstoneApp/frontend/src/pages/SearchPage.tsx
-import React from "react";
+import React, { useEffect } from "react";
 import SearchBar from "../components/SearchBar";
+import useUploadStore from "../stores/useUploadState";
 
 const SearchPage: React.FC = () => {
+  const { clear } = useUploadStore();
+
+  useEffect(() => {
+    clear();
+  }, [])
+
   return (
     <div>
       <h2>Search Sound Tracks</h2>

@@ -17,7 +17,7 @@ const siderWidth = 240;
 const headerHeight = 64;
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const [footerHeight, setFooterHeight] = useState(120); // Default expanded height
   const [userEmail, setUserEmail] = useState<string>('');
 

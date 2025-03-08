@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { 
   Box, Fab, Typography, Card, CardContent, Avatar, IconButton, 
   Button, Tooltip, Modal, TextField 
 } from '@mui/material';
 import { ThumbUp, ThumbDown, Reply, Add, Close, Delete } from '@mui/icons-material';
+import useUploadStore from '../stores/useUploadState';
 
 interface Post {
   id: number;
@@ -23,6 +24,12 @@ const postsData: Post[] = [
 ];
 
 export default function Discuss() {
+    const { clear } = useUploadStore();
+
+    useEffect(() => {
+      clear();
+    }, []);
+    
   const [posts, setPosts] = useState(postsData);
   const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
   const [dislikedPosts, setDislikedPosts] = useState<{ [key: number]: boolean }>({});

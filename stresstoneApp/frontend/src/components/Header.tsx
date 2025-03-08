@@ -35,11 +35,11 @@ export default function Header(props: HeaderProps) {
         minHeight: height
       }}
     >
-      <Toolbar>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between"}}>
         <Typography variant="h5" component="div" color="black">
           StressTone
         </Typography>
-        <Input
+        {/* <Input
           placeholder="Search"
           sx={{
             marginLeft: "auto",
