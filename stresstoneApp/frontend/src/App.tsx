@@ -11,7 +11,8 @@ import Register from './components/Register';
 import UploadPage from './pages/UploadPage';
 import SearchPage from './pages/SearchPage.tsx';
 import ToneCreationPage from './pages/TonecreationPage.tsx';
-import { PlayerProvider } from './contexts/PlayerContext'; // Import PlayerProvider
+import DiscoveryQueue from './components/DiscoveryQueue';
+import { PlayerProvider } from './contexts/PlayerContext';
 
 const siderWidth = 240;
 const headerHeight = 64;
@@ -65,7 +66,8 @@ function App() {
             <Sider drawerWidth={siderWidth} />
             <Box component="main" sx={{ p: 2, width: `calc(100% - ${siderWidth}px)`, height: '100%', overflow: 'auto' }}>
               <Routes>
-                <Route path="/" element={<Discuss />} />
+                {/* These routes are accessible only after login */}
+                <Route path="/" element={<><DiscoveryQueue/><Discuss/></>} />
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/upload" element={<UploadPage />} />
                 <Route path="/toneCreation" element={<ToneCreationPage />} />
