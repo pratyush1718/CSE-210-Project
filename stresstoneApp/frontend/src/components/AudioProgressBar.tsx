@@ -4,8 +4,8 @@ import { Box, Typography, Slider, CircularProgress, LinearProgress } from '@mui/
 interface AudioProgressTrackerProps {
   audioData: ArrayBuffer | null;
   isPlaying: boolean;
-  isLooping: boolean;
-  volume: number;
+  isLooping?: boolean;
+  volume?: number;
   isExpanded: boolean;
   onProgressChange?: (progress: number) => void;
   onPlayStateChange?: (isPlaying: boolean) => void;
@@ -44,39 +44,59 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
 
     try {
       setIsLoading(true);
-      const blob = new Blob([audioData], { type: 'audio/wav' });
+      const blob = new Blob([audioData], { type: 'audio/*' });
       const blobUrl = URL.createObjectURL(blob);
       audioSourceRef.current = blobUrl;
 
       if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = blobUrl;
-        audioRef.current.load();
+        // Clear previous event listeners to avoid duplicates
+        const audio = audioRef.current;
+        audio.pause();
+        
+        // Remove old listeners if they exist
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.removeEventListener('ended', handleEnded);
+        audio.removeEventListener('error', handleError);
+        audio.removeEventListener('canplay', handleCanPlay);
+        
+        // Set new source
+        audio.src = blobUrl;
+        audio.load();
+        
+        // Add all listeners again
+        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.addEventListener('ended', handleEnded);
+        audio.addEventListener('error', handleError);
+        audio.addEventListener('canplay', handleCanPlay);
       } else {
         const audio = new Audio(blobUrl);
         audioRef.current = audio;
         audio.addEventListener('loadedmetadata', handleLoadedMetadata);
         audio.addEventListener('ended', handleEnded);
         audio.addEventListener('error', handleError);
+        audio.addEventListener('canplay', handleCanPlay);
       }
       setError(null);
     } catch (err) {
       setError('Failed to process audio data');
       console.error('Error processing audio data:', err);
-    } finally {
-      setIsLoading(false);
-      setIsLoaded(true);
     }
 
     return () => {
       if (audioRef.current) {
-        audioRef.current.pause();
+        const audio = audioRef.current;
+        audio.pause();
+        // Clean up event listeners
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.removeEventListener('ended', handleEnded);
+        audio.removeEventListener('error', handleError);
+        audio.removeEventListener('canplay', handleCanPlay);
       }
       if (audioSourceRef.current) {
         URL.revokeObjectURL(audioSourceRef.current);
       }
     };
-  }, [audioData]);
+  }, [audioData]); // Remove isPlaying from dependencies
 
   useEffect(() => {
     if (audioRef.current) {
@@ -88,7 +108,21 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.currentTime = currentTime; 
-        audioRef.current.play();
+        // Add try/catch around play()
+        try {
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.error("Play failed:", error);
+              // Inform parent component that play failed
+              if (onPlayStateChange) {
+                onPlayStateChange(false);
+              }
+            });
+          }
+        } catch (error) {
+          console.error("Play error:", error);
+        }
         startUpdatingProgress();
       } else {
         audioRef.current.pause();
@@ -98,10 +132,16 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   }, [isPlaying]);
 
   useEffect(() => {
-    if (audioRef.current) {
+    if (audioRef.current && volume) {
       audioRef.current.volume = (volume / 100);
     }
   }, [volume]);
+
+  useEffect(() => {
+    if (audioRef.current && isLoaded) {
+      handleCanPlay();
+    }
+  }, [isPlaying, isLoaded]);
 
   const startUpdatingProgress = () => {
     const update = () => {
@@ -140,6 +180,22 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
     setError('Failed to load audio');
     setIsLoading(false);
     setIsLoaded(false);
+  };
+
+  const handleCanPlay = () => {
+    console.log('Audio can play now');
+    if (isPlaying && audioRef.current?.paused) {
+      console.log('Auto-playing after load');
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Auto-play failed:", error);
+          if (onPlayStateChange) {
+            onPlayStateChange(false);
+          }
+        });
+      }
+    }
   };
 
   const handleSeekStart = () => {

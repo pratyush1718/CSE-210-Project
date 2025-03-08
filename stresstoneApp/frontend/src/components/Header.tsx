@@ -1,16 +1,35 @@
-import { Input, Avatar, Typography, Toolbar, AppBar } from "@mui/material";
+import { Input, Avatar, Typography, Toolbar, AppBar, Menu, MenuItem } from "@mui/material";
+import { useState } from "react";
 
 interface HeaderProps {
   height: number;
+  onSignOut: () => void;
+  userEmail: string; // Pass the email to the Header component
 }
 
 export default function Header(props: HeaderProps) {
-  const { height } = props;
+  const { height, onSignOut, userEmail } = props;
+  
+  // State for managing the dropdown menu
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  
+  // Open the menu when avatar is clicked
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
+  // Close the menu
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  // Get the first letter of the user's email for the avatar
+  const avatarLetter = userEmail.charAt(0).toUpperCase();
+
   return (
     <AppBar
       position="fixed"
       sx={{
-        // Appera above sider
         zIndex: (theme) => theme.zIndex.drawer + 1,
         bgcolor: "#fff",
         minHeight: height
@@ -28,7 +47,26 @@ export default function Header(props: HeaderProps) {
             width: "20rem",
           }}
         />
-        <Avatar>H</Avatar>
+        
+        {/* Profile Avatar with first letter of the email */}
+        <Avatar
+          sx={{ cursor: "pointer" }}
+          onClick={handleClick}
+        >
+          {avatarLetter}
+        </Avatar>
+
+        {/* Menu for Sign Out */}
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+          MenuListProps={{
+            "aria-labelledby": "profile-avatar",
+          }}
+        >
+          <MenuItem onClick={onSignOut}>Sign Out</MenuItem>
+        </Menu>
       </Toolbar>
     </AppBar>
   );
