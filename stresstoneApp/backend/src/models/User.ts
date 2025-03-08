@@ -1,7 +1,7 @@
 import mongoose, {Schema, Document} from "mongoose"
 
 interface IUser extends Document {
-    firebaseId: string;
+    firebaseId: string; 
     email: string;
     tags: { tag: string, count: number }[];
 }

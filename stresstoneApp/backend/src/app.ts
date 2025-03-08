@@ -5,6 +5,8 @@ import searchRouter from './routes/SearchRouter';
 import mongoose from 'mongoose';
 import UploadRouter from './routes/UploadRouter';
 import audioRouter from './routes/AudioRouter';
+import tagRouter from './routes/TagRouter';
+import discoveryRouter from './routes/DiscoveryRouter';
 import likeRouter from './routes/LikeRouter';
 import userRouter from './routes/UserRouter';
 
@@ -17,7 +19,7 @@ app.use(cors({ origin: 'http://localhost:5173' }));
 
 // MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI as string;
-
+ 
 // Uncomment below once MongoDB is set up
 mongoose
   .connect(MONGO_URI)
@@ -32,6 +34,12 @@ app.use("/api/upload", UploadRouter);
 
 // Mount audio routes
 app.use('/api/audio', audioRouter);
+
+// Mount discovery routes
+app.use('/api/discovery', discoveryRouter);
+
+// Mount tag routes
+app.use('/api/tagRouter', tagRouter);
 
 // Mount like routes
 app.use('/api/likes', likeRouter);
