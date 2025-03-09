@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import User from "../models/User";
 import Content from "../models/Content";
-
+ 
 export const addTagsToUser = async(req: Request, res: Response) => {
-    const { username, title } = req.params;
+    const { firebaseId, title } = req.body;
     
     try {
         const content = await Content.findOne({title: title});
@@ -11,7 +11,7 @@ export const addTagsToUser = async(req: Request, res: Response) => {
             res.status(404).send("Content not found.");
             return;
         }
-        const user = await User.findOne({username : username});
+        const user = await User.findOne({firebaseId : firebaseId});
         if (!user) {
             res.status(404).send("User not found.");
             return;

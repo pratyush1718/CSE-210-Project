@@ -20,6 +20,7 @@ interface RequestBodyType {
     visibility: "public" | "private";
     allowDownloads: boolean;
     location?: string;
+    creator: string;
 }
 
 type UploadFilesType = {
@@ -45,14 +46,13 @@ export const UploadController: RequestHandler = async (req, res, next) => {
       }
     }
     
-    const { title, description, location, visibility, allowDownloads } = form;
+    const { title, description, location, visibility, allowDownloads, creator } = form;
 
-    const creator = null;
     const newSoundTrack = new SoundTrack({
         title,
         description,
         tags,  // Use the parsed tags
-        creator: creator || undefined, // search only works with undefined creator for now, or existing creator
+        creator: creator, // search only works with undefined creator for now, or existing creator
         audioFileId: audioFile.id,
         audioFileName: audioFile.filename,
         imageFileId: imageFile?.id || null, 

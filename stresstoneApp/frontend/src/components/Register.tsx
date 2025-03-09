@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import { 
-  TextField, Button, Card, CardContent, CardHeader, Typography, Box, 
-  Link, Divider, Alert 
-} from '@mui/material';
+import { TextField, Button, Card, CardContent, CardHeader, Typography, Box, Link, Divider, Alert } from '@mui/material';
 import RegisterComponentStyles from './RegisterStyles'; // Import styles
 import MusicIcon from '../assets/MusicIcon.png'; // Import your PNG file
-import { signUp } from "../auth";
+import { signUp } from '../auth';
 import { useNavigate } from 'react-router-dom';
 import { UserCredential } from 'firebase/auth';
 
@@ -18,21 +15,24 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
 
   const isUserCredential = (result: unknown): result is UserCredential => {
-    return typeof result === "object" && result !== null && "user" in result;
+    return typeof result === 'object' && result !== null && 'user' in result;
   };
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError('Passwords do not match.');
       return;
-    }
+    } else if (username === "" || email === "" || password === "") {
+      setError("Please fill in all fields.");
+      return;
+    } 
     
-    const result = await signUp(email, password);
+    const result = await signUp(email, username, password);
     
     if (isUserCredential(result)) { 
       setError(null); // Clear error on success
-      console.log("Successfully registered:", result.user);
-      navigate("/"); // Redirect to login page after successful registration
+      console.log('Successfully registered:', result.user);
+      navigate('/'); // Redirect to login page after successful registration
     } else {
       setError(result); // Display Firebase error message
     }
@@ -55,15 +55,11 @@ const Register: React.FC = () => {
           }
         />
         <CardContent>
-          {error && (
-            <Alert 
-              severity="error" 
-            >
-              {error}
-            </Alert>
-          )}
-          
-          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Email</Typography>
+          {error && <Alert severity="error">{error}</Alert>}
+
+          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+            Email
+          </Typography>
           <TextField
             sx={RegisterComponentStyles.textFieldContainer}
             fullWidth
@@ -73,8 +69,10 @@ const Register: React.FC = () => {
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
           />
-          
-          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Username</Typography>
+
+          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+            Username
+          </Typography>
           <TextField
             sx={RegisterComponentStyles.textFieldContainer}
             fullWidth
@@ -85,7 +83,9 @@ const Register: React.FC = () => {
             onChange={(e) => setUsername(e.target.value)}
           />
 
-          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Password</Typography>
+          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+            Password
+          </Typography>
           <TextField
             sx={RegisterComponentStyles.textFieldContainer}
             fullWidth
@@ -97,7 +97,9 @@ const Register: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Confirm Password</Typography>
+          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+            Confirm Password
+          </Typography>
           <TextField
             sx={RegisterComponentStyles.textFieldContainer}
             fullWidth

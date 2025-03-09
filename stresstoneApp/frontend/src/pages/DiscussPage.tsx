@@ -72,12 +72,18 @@ const postsData: Post[] = [
 ];
 
 export default function Discuss() {
+  const { clear } = useUploadStore();
+
+  useEffect(() => {
+    clear();
+  }, []);
+
   const [posts, setPosts] = useState(postsData);
   const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
   const [dislikedPosts, setDislikedPosts] = useState<{ [key: number]: boolean }>({});
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [newPostContent, setNewPostContent] = useState("");
+  const [newPostContent, setNewPostContent] = useState('');
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
   // Track visibility of reply boxes
@@ -100,20 +106,20 @@ export default function Discuss() {
   };
 
   const handleCreatePost = () => {
-    if (newPostContent.trim() === "") return;
-    
+    if (newPostContent.trim() === '') return;
+
     const newPost: Post = {
       id: posts.length + 1,
       user: 'You',
       content: newPostContent,
-      time: "Just now",
+      time: 'Just now',
       likeCount: 0,
       dislikeCount: 0,
       replies: [],
     };
 
     setPosts([newPost, ...posts]);
-    setNewPostContent("");
+    setNewPostContent('');
     handleClose();
   };
 
@@ -134,7 +140,7 @@ export default function Discuss() {
 
   const confirmDeletePost = () => {
     if (postToDelete) {
-      setPosts(posts.filter(post => post.id !== postToDelete.id));
+      setPosts(posts.filter((post) => post.id !== postToDelete.id));
     }
     setDeleteOpen(false);
     setPostToDelete(null);
@@ -150,8 +156,8 @@ export default function Discuss() {
       prevPosts.map((post) =>
         post.id === postId
           ? { ...post, likeCount: likedPosts[postId] ? post.likeCount - 1 : post.likeCount + 1 }
-          : post
-      )
+          : post,
+      ),
     );
 
     setLikedPosts((prevLikedPosts) => ({
@@ -165,8 +171,8 @@ export default function Discuss() {
       prevPosts.map((post) =>
         post.id === postId
           ? { ...post, dislikeCount: dislikedPosts[postId] ? post.dislikeCount - 1 : post.dislikeCount + 1 }
-          : post
-      )
+          : post,
+      ),
     );
 
     setDislikedPosts((prevDislikedPosts) => ({
@@ -247,24 +253,28 @@ export default function Discuss() {
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1 }}>
               <Tooltip title="Like">
-                <IconButton 
-                  size="small" 
-                  onClick={() => handleLike(post.id)} 
-                  sx={{ color: likedPosts[post.id] ? "blue" : "inherit" }}
+                <IconButton
+                  size="small"
+                  onClick={() => handleLike(post.id)}
+                  sx={{ color: likedPosts[post.id] ? 'blue' : 'inherit' }}
                 >
                   <ThumbUp fontSize="small" />
-                  <Typography variant="body2" paddingLeft={1}>{post.likeCount}</Typography>
+                  <Typography variant="body2" paddingLeft={1}>
+                    {post.likeCount}
+                  </Typography>
                 </IconButton>
               </Tooltip>
 
               <Tooltip title="Dislike">
-                <IconButton 
-                  size="small" 
-                  onClick={() => handleDislike(post.id)} 
-                  sx={{ color: dislikedPosts[post.id] ? "red" : "inherit" }}
+                <IconButton
+                  size="small"
+                  onClick={() => handleDislike(post.id)}
+                  sx={{ color: dislikedPosts[post.id] ? 'red' : 'inherit' }}
                 >
                   <ThumbDown fontSize="small" />
-                  <Typography variant="body2" paddingLeft={1}>{post.dislikeCount}</Typography>
+                  <Typography variant="body2" paddingLeft={1}>
+                    {post.dislikeCount}
+                  </Typography>
                 </IconButton>
               </Tooltip>
 
@@ -374,25 +384,27 @@ export default function Discuss() {
         </Card>
       ))}
 
-      <Tooltip title="Create Post" placement='top'>
-        <Fab color="primary" sx={{ position: "fixed", bottom: 130, right: 24 }} onClick={handleOpen}>
+      <Tooltip title="Create Post" placement="top">
+        <Fab color="primary" sx={{ position: 'fixed', bottom: 130, right: 24 }} onClick={handleOpen}>
           <Add />
         </Fab>
       </Tooltip>
 
       {/* Post Modal */}
       <Modal open={open} onClose={handleClose}>
-        <Box sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 3,
-          borderRadius: 2,
-          width: 400,
-        }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 3,
+            borderRadius: 2,
+            width: 400,
+          }}
+        >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h6">Create Post</Typography>
             <IconButton onClick={handleClose}>
@@ -411,7 +423,13 @@ export default function Discuss() {
           />
 
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
-            <Button onClick={() => { handleCreatePost(); handleClose(); }} color="primary">
+            <Button
+              onClick={() => {
+                handleCreatePost();
+                handleClose();
+              }}
+              color="primary"
+            >
               Post
             </Button>
           </Box>
@@ -420,11 +438,23 @@ export default function Discuss() {
 
       {/* Delete Confirmation Modal */}
       <Modal open={deleteOpen} onClose={cancelDeletePost}>
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', p: 3, borderRadius: 2 }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            p: 3,
+            borderRadius: 2,
+          }}
+        >
           <Typography>Are you sure you want to delete this post?</Typography>
-          <Box sx={{ mt: 2, textAlign: "right" }}>
-            <Button onClick={cancelDeletePost} >Cancel</Button>
-            <Button onClick={confirmDeletePost} color="error">Delete</Button>
+          <Box sx={{ mt: 2, textAlign: 'right' }}>
+            <Button onClick={cancelDeletePost}>Cancel</Button>
+            <Button onClick={confirmDeletePost} color="error">
+              Delete
+            </Button>
           </Box>
         </Box>
       </Modal>

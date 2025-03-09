@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Box, CssBaseline } from '@mui/material';
-import axios from 'axios';
+import { getAuth, onAuthStateChanged, User, signOut } from 'firebase/auth';
 import Discuss from './pages/DiscussPage';
 import Header from './components/Header';
 import Sider from './components/Sider';
@@ -11,45 +11,67 @@ import Register from './components/Register';
 import UploadPage from './pages/UploadPage';
 import SearchPage from './pages/SearchPage.tsx';
 import ToneCreationPage from './pages/TonecreationPage.tsx';
-import { PlayerProvider } from './contexts/PlayerContext';
+import DiscoveryQueue from './components/DiscoveryQueue';
+import { PlayerProvider } from './stateManagement/PlayerContext.tsx';
 
 const siderWidth = 240;
 const headerHeight = 64;
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [footerHeight, setFooterHeight] = useState(120); // Default expanded height
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [userEmail, setUserEmail] = useState<string>('');
+  const [footerHeight, setFooterHeight] = useState(120);
 
-  const handleSignOut = () => {
+  useEffect(() => {
+    const auth = getAuth();
+
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
+      console.log('Auth state changed:', user);
+
+      if (user) {
+        console.log('User logged in:', user.email);
+        setIsAuthenticated(true);
+        setUserEmail(user.email || '');
+      } else {
+        console.log('User logged out or not authenticated');
+        setIsAuthenticated(false);
+        setUserEmail('');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    const auth = getAuth();
+    await signOut(auth);
     setIsAuthenticated(false);
     setUserEmail('');
+    console.log('User signed out');
   };
 
   const handleLogin = (email: string) => {
     setIsAuthenticated(true);
-    setUserEmail(email); 
+    setUserEmail(email);
   };
-  
-
-  useEffect(() => {
-    axios.get('http://localhost:3000/')
-      .catch((err) => console.log(err));
-  }, []);
 
   return (
     <PlayerProvider>
       <CssBaseline />
       {isAuthenticated ? (
         <>
-          <Header height={headerHeight} onSignOut={handleSignOut} userEmail={userEmail}/>
+          <Header height={headerHeight} userEmail={userEmail} onSignOut={handleSignOut} />
           <Box sx={{ display: 'flex', marginTop: `${headerHeight}px`, marginBottom: `${footerHeight}px` }}>
             <Sider drawerWidth={siderWidth} />
-            <Box component="main" sx={{ p: 2, width: `calc(100% - ${siderWidth}px)`, height: '100%', overflow: 'auto' }}>
+            <Box
+              component="main"
+              sx={{ p: 2, width: `calc(100% - ${siderWidth}px)`, height: '100%', overflow: 'auto' }}
+            >
               <Routes>
                 {/* These routes are accessible only after login */}
-                <Route path="/" element={<Discuss />} />
+                <Route path="/" element={<DiscoveryQueue />} />
                 <Route path="/search" element={<SearchPage />} />
+                <Route path="/discuss" element={<Discuss />} />
                 <Route path="/upload" element={<UploadPage />} />
                 <Route path="/toneCreation" element={<ToneCreationPage />} />
                 <Route path="*" element={<Navigate to="/" />} />
@@ -59,14 +81,11 @@ function App() {
           <TonePlayer onHeightChange={setFooterHeight} />
         </>
       ) : (
-        //if not authenticated, only these routes are available
-        <>
-          <Routes>
-            <Route path="/" element={<Login onLogin={handleLogin} />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </>
+        <Routes>
+          <Route path="/" element={<Login onLogin={handleLogin} />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
       )}
     </PlayerProvider>
   );

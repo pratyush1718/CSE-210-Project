@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { TextField, Button, Card, CardContent, CardHeader, Typography, Box, Link, Divider, Alert } from '@mui/material';
-import LoginComponentStyles from './LoginStyles'; // Import styles
-import MusicIcon from '../assets/MusicIcon.png'; // Import your PNG file
-import { signIn } from "../auth";
+import LoginComponentStyles from './LoginStyles';
+import MusicIcon from '../assets/MusicIcon.png';
+import { signIn } from '../auth';
 import { useNavigate } from 'react-router-dom';
 import { UserCredential } from 'firebase/auth';
 
 interface LoginProps {
-  onLogin: (email: string) => void;
+  onLogin: (email: string) => void; // Callback passed from App.tsx
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
@@ -17,19 +17,24 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const navigate = useNavigate();
 
   const isUserCredential = (result: unknown): result is UserCredential => {
-    return typeof result === "object" && result !== null && "user" in result;
+    return typeof result === 'object' && result !== null && 'user' in result;
   };
 
   const handleLogin = async () => {
-    const result = await signIn(email, password);
-    if (isUserCredential(result)) {
-      setError(null);
-      console.log("Successfully logged in:", result.user);
-      onLogin(email); 
-    } else {
-      setError(result); // Show error message
+    try {
+      const result = await signIn(email, password);
+      if (isUserCredential(result)) {
+        setError(null);
+        console.log('Successfully logged in:', result.user);
+        onLogin(email);
+      } else {
+        setError('Login failed. Please check your credentials.');
+      }
+    } catch (error) {
+      setError('An error occurred during login. Please try again later.');
+      console.error(error); // Log the actual error for debugging
     }
-  };  
+  };
 
   return (
     <Box sx={LoginComponentStyles.container}>
