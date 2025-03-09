@@ -25,10 +25,7 @@ const Register: React.FC = () => {
     } else if (username === "" || email === "" || password === "") {
       setError("Please fill in all fields.");
       return;
-    } else if (username === "" || email === "" || password === "") {
-      setError("Please fill in all fields.");
-      return;
-    }
+    } 
     
     const result = await signUp(email, username, password);
     
