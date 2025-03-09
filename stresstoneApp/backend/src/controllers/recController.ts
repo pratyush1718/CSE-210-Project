@@ -59,7 +59,7 @@ export const recommendContent = async(req: Request, res: Response) : Promise<voi
                 score = dotproduct / (magVectorA * magVectorB);
             }
 
-            // Simple log to show cosine similarity result.
+            // Simple log to show cosine similarity result. 
             console.log("Content: " + content.title + " Score: " + score + "\n");
 
             return { content, score };

@@ -8,6 +8,8 @@ import handlePlay from '/.SearchBar';
 
 const port = import.meta.env.VITE_BACKEND_PORT || 3000;
 
+let currentAudioElement: HTMLAudioElement | null = null;
+
 interface CarouselProps {
   items: { _id: string; audioFileId: string; imageFileId: string; title: string }[];
 }
@@ -34,8 +36,59 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
     handlePlay: (track: SoundTrack) => void;
   }
 
-  const playSong = () => {
+  const playSong = async() => {
     // TO IMPLEMENT
+    const apiURL = "http://localhost:" + import.meta.env.VITE_BACKEND_PORT + "/api/audio/stream/"+items[currentIndex].audioFileId;
+    console.log(apiURL);
+
+    let response = null;
+
+    try {
+      response = await fetch(apiURL)
+      .then(response => {
+        if (response.ok) {
+          return response.blob();
+        }
+        throw new Error('failed to load audio');
+      })
+      .then(blob => {
+
+        if (currentAudioElement) {
+          currentAudioElement.pause();
+          currentAudioElement.currentTime = 0;
+          currentAudioElement.remove();
+
+          const prevAudioUrl = currentAudioElement.querySelector('source')?.src;
+          if (prevAudioUrl && prevAudioUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(prevAudioUrl);  // Release the Blob URL memory
+          }
+        }
+
+        const audioUrl = URL.createObjectURL(blob);
+        currentAudioElement = document.createElement('audio');
+        const audioSource = document.createElement('source');
+
+        audioSource.src = audioUrl;
+
+        currentAudioElement.appendChild(audioSource);
+
+        currentAudioElement.controls = true;
+
+        document.body.appendChild(currentAudioElement);
+
+        currentAudioElement.play()
+        .then(() => {
+          console.log('playing audio...');
+        })
+        .catch(err => {
+          console.log('error playing audio',err);
+        })
+      })
+    }
+    catch {
+      console.log('error streaming audio file');
+    }
+    console.log(response);
   };
 
   return (
