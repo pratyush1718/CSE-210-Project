@@ -25,9 +25,12 @@ const Register: React.FC = () => {
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
+    } else if (username === "" || email === "" || password === "") {
+      setError("Please fill in all fields.");
+      return;
     }
     
-    const result = await signUp(email, password);
+    const result = await signUp(email, username, password);
     
     if (isUserCredential(result)) { 
       setError(null); // Clear error on success
