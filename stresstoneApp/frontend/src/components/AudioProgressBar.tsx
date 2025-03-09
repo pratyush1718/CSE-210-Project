@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, Slider, CircularProgress, LinearProgress } from '@mui/material';
 
 interface AudioProgressTrackerProps {
@@ -15,7 +15,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   audioData,
   isPlaying = false,
   isLooping = false,
-  volume, 
+  volume,
   isExpanded = false,
   onProgressChange,
   onPlayStateChange,
@@ -52,17 +52,17 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
         // Clear previous event listeners to avoid duplicates
         const audio = audioRef.current;
         audio.pause();
-        
+
         // Remove old listeners if they exist
         audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
         audio.removeEventListener('ended', handleEnded);
         audio.removeEventListener('error', handleError);
         audio.removeEventListener('canplay', handleCanPlay);
-        
+
         // Set new source
         audio.src = blobUrl;
         audio.load();
-        
+
         // Add all listeners again
         audio.addEventListener('loadedmetadata', handleLoadedMetadata);
         audio.addEventListener('ended', handleEnded);
@@ -107,13 +107,13 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.currentTime = currentTime; 
+        audioRef.current.currentTime = currentTime;
         // Add try/catch around play()
         try {
           const playPromise = audioRef.current.play();
           if (playPromise !== undefined) {
-            playPromise.catch(error => {
-              console.error("Play failed:", error);
+            playPromise.catch((error) => {
+              console.error('Play failed:', error);
               // Inform parent component that play failed
               if (onPlayStateChange) {
                 onPlayStateChange(false);
@@ -121,7 +121,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
             });
           }
         } catch (error) {
-          console.error("Play error:", error);
+          console.error('Play error:', error);
         }
         startUpdatingProgress();
       } else {
@@ -133,7 +133,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
 
   useEffect(() => {
     if (audioRef.current && volume) {
-      audioRef.current.volume = (volume / 100);
+      audioRef.current.volume = volume / 100;
     }
   }, [volume]);
 
@@ -153,7 +153,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
       }
       animationFrameRef.current = requestAnimationFrame(update);
     };
-    cancelAnimationFrame(animationFrameRef.current as number); 
+    cancelAnimationFrame(animationFrameRef.current as number);
     animationFrameRef.current = requestAnimationFrame(update);
   };
 
@@ -188,8 +188,8 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
       console.log('Auto-playing after load');
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.error("Auto-play failed:", error);
+        playPromise.catch((error) => {
+          console.error('Auto-play failed:', error);
           if (onPlayStateChange) {
             onPlayStateChange(false);
           }

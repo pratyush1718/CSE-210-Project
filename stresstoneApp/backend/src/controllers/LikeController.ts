@@ -1,11 +1,10 @@
 // File: stresstoneApp/backend/src/controllers/LikeController.ts
 import { Request, Response } from 'express';
-import { ObjectId } from 'mongodb';
+import mongoose from 'mongoose';
 import Like from '../models/Like';
 import SoundTrack from '../models/SoundTrack';
-import mongoose from 'mongoose';
 
-// First, define an interface for the object returned by toObject()
+// First, define interfaces for type safety
 interface SoundTrackObject {
   _id: mongoose.Types.ObjectId;
   title: string;
@@ -18,7 +17,6 @@ interface SoundTrackObject {
   tags?: string[];
 }
 
-// Then update the PopulatedSoundTrack interface
 interface PopulatedSoundTrack extends mongoose.Document {
   title: string;
   description: string;
@@ -27,11 +25,11 @@ interface PopulatedSoundTrack extends mongoose.Document {
   imageFileId?: mongoose.Types.ObjectId;
   createdAt: Date;
   likes: number;
-  toObject(): SoundTrackObject; // Use the specific return type instead of any
+  toObject(): SoundTrackObject;
 }
 
 interface PopulatedLike extends mongoose.Document {
-  userId: mongoose.Types.ObjectId;
+  firebaseId: string; // Changed from userId to firebaseId
   soundtrackId: PopulatedSoundTrack;
   createdAt: Date;
 }
@@ -40,10 +38,10 @@ interface PopulatedLike extends mongoose.Document {
 export const toggleLike = async (req: Request, res: Response): Promise<void> => {
   try {
     const { soundtrackId } = req.params;
-    const userId = req.body.userId; // In a real app, this would come from authenticated user
+    const { firebaseId } = req.body; // Get firebaseId from request body
     
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      res.status(400).json({ error: 'Valid user ID is required' });
+    if (!firebaseId) {
+      res.status(400).json({ error: 'Firebase ID is required' });
       return;
     }
     
@@ -52,10 +50,10 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    // Check if like already exists
+    // Check if like already exists using firebaseId
     const existingLike = await Like.findOne({
-      userId: new ObjectId(userId),
-      soundtrackId: new ObjectId(soundtrackId)
+      firebaseId,
+      soundtrackId: new mongoose.Types.ObjectId(soundtrackId)
     });
 
     // Start a session for transaction
@@ -69,7 +67,7 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
         
         // Decrement like counter
         await SoundTrack.updateOne(
-          { _id: new ObjectId(soundtrackId) },
+          { _id: new mongoose.Types.ObjectId(soundtrackId) },
           { $inc: { likes: -1 } }
         ).session(session);
         
@@ -78,13 +76,13 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
       } else {
         // Like: create a new like document
         await Like.create([{
-          userId: new ObjectId(userId),
-          soundtrackId: new ObjectId(soundtrackId)
+          firebaseId, // Use firebaseId instead of userId
+          soundtrackId: new mongoose.Types.ObjectId(soundtrackId)
         }], { session });
         
         // Increment like counter
         await SoundTrack.updateOne(
-          { _id: new ObjectId(soundtrackId) },
+          { _id: new mongoose.Types.ObjectId(soundtrackId) },
           { $inc: { likes: 1 } }
         ).session(session);
         
@@ -92,7 +90,6 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
         res.status(200).json({ liked: true, likes: await getUpdatedLikesCount(soundtrackId) });
       }
     } catch (error) {
-      // Abort transaction on error
       await session.abortTransaction();
       throw error;
     } finally {
@@ -108,16 +105,16 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
 export const checkLikeStatus = async (req: Request, res: Response): Promise<void> => {
   try {
     const { soundtrackId } = req.params;
-    const userId = req.query.userId as string;
+    const firebaseId = req.query.firebaseId as string;
     
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      res.status(400).json({ error: 'Valid user ID is required' });
+    if (!firebaseId) {
+      res.status(400).json({ error: 'Firebase ID is required' });
       return;
     }
     
     const like = await Like.findOne({
-      userId: new ObjectId(userId),
-      soundtrackId: new ObjectId(soundtrackId)
+      firebaseId,
+      soundtrackId: new mongoose.Types.ObjectId(soundtrackId)
     });
     
     res.status(200).json({ 
@@ -133,15 +130,14 @@ export const checkLikeStatus = async (req: Request, res: Response): Promise<void
 // Get all tracks liked by a user
 export const getUserLikes = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.params.userId;
+    const firebaseId = req.params.firebaseId;
     
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      res.status(400).json({ error: 'Valid user ID is required' });
+    if (!firebaseId) {
+      res.status(400).json({ error: 'Firebase ID is required' });
       return;
     }
     
-    // Use the proper type for the populated result
-    const likes = await Like.find({ userId: new ObjectId(userId) })
+    const likes = await Like.find({ firebaseId })
       .populate({
         path: 'soundtrackId',
         select: 'title description creator audioFileId imageFileId createdAt likes',
@@ -149,7 +145,6 @@ export const getUserLikes = async (req: Request, res: Response): Promise<void> =
       })
       .sort({ createdAt: -1 }) as unknown as PopulatedLike[];
     
-    // Now TypeScript knows that soundtrackId is a PopulatedSoundTrack
     const likedTracks = likes.map(like => ({
       ...like.soundtrackId.toObject(),
       audioUrl: `/api/audio/stream/${like.soundtrackId.audioFileId}`
@@ -162,8 +157,8 @@ export const getUserLikes = async (req: Request, res: Response): Promise<void> =
   }
 };
 
-// Helper: Get updated likes count
+// Helper function to get updated likes count
 async function getUpdatedLikesCount(soundtrackId: string): Promise<number> {
-  const track = await SoundTrack.findById(new ObjectId(soundtrackId));
+  const track = await SoundTrack.findById(new mongoose.Types.ObjectId(soundtrackId));
   return track?.likes || 0;
 }

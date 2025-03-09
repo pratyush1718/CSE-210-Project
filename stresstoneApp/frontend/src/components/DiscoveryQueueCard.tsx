@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Carousel from './Carousel';
 
 interface DiscoveryItem {
@@ -12,11 +12,10 @@ interface DiscoveryQueueCardProps {
 }
 
 const DiscoveryQueueCard: React.FC<DiscoveryQueueCardProps> = ({ items }) => {
-
   return (
     <div className="discovery-queue-card">
       <h2>Discovery Queue</h2>
-        <Carousel items = {items}/>
+      <Carousel items={items} />
     </div>
   );
 };
