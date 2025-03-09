@@ -17,7 +17,7 @@ export const signIn = async (email: string, password: string): Promise<UserCrede
   }
 };
 
-export const signUp = async (email: string, password: string): Promise<UserCredential | string> => {
+export const signUp = async (email: string, username: string, password: string): Promise<UserCredential | string> => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -34,8 +34,9 @@ export const signUp = async (email: string, password: string): Promise<UserCrede
       },
       body: JSON.stringify({
         firebaseId: user.uid,
-        email: user.email,
-      }),
+        email: user.email, 
+        username: username,
+        }),
     });
 
     if (response.ok) {

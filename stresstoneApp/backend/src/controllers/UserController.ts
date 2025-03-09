@@ -3,14 +3,15 @@ import { Request, Response } from "express";
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    const { firebaseId, email } = req.body;
+    const { firebaseId, email, username } = req.body;
     let user = await User.findOne({ firebaseId });
     if (user) {
       res.status(400).json({ message: 'User already exists' });
     }
     user = await User.create({
       firebaseId,
-      email
+      email, 
+      username,
     });
 
     res.status(201).json({ message: 'User registered in mongodb!', user });
