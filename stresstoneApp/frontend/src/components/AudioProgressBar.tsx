@@ -244,13 +244,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   }
 
   if (!audioData) {
-    return (
-      <Box sx={{ p: 2 }}>
-        <Typography variant="body2" color="text.secondary">
-          No audio available
-        </Typography>
-      </Box>
-    );
+    return; 
   }
 
   return (
