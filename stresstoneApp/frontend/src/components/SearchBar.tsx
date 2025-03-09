@@ -27,6 +27,7 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { usePlayer } from '../contexts/PlayerContext';
 import LikeButton from './LikeButton';
+import { auth } from '../firebase'; // Add this import to directly access Firebase auth
 
 interface SoundTrack {
   _id: string;
@@ -142,6 +143,9 @@ const SearchBar: React.FC = () => {
     }
   };
 
+  // Option 1: Use the imported auth directly
+  const user = auth.currentUser;
+  
   return (
     <div>
       <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -251,7 +255,7 @@ const SearchBar: React.FC = () => {
               <LikeButton 
                 trackId={track._id} 
                 initialLikeCount={track.likes} 
-                userId="user-id-here" // Replace with actual user ID from auth
+                firebaseId={user?.uid || ''} // If using option 1
               />
             </ListItem>
           ))}

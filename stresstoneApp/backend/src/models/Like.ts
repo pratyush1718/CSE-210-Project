@@ -2,8 +2,8 @@
 import { Schema, model } from 'mongoose';
 
 const LikeSchema = new Schema({
-  // References
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  // Use firebaseId (string) instead of MongoDB ObjectId 
+  firebaseId: { type: String, required: true, ref: 'User' },
   soundtrackId: { type: Schema.Types.ObjectId, ref: 'SoundTrack', required: true },
   
   // Metadata
@@ -11,6 +11,6 @@ const LikeSchema = new Schema({
 });
 
 // Create a compound index for uniqueness and efficient queries
-LikeSchema.index({ userId: 1, soundtrackId: 1 }, { unique: true });
+LikeSchema.index({ firebaseId: 1, soundtrackId: 1 }, { unique: true });
 
 export default model('Like', LikeSchema, 'Likes');

@@ -10,7 +10,7 @@ likeRouter.post('/:soundtrackId', toggleLike);
 // Check if user has liked a track
 likeRouter.get('/:soundtrackId/status', checkLikeStatus);
 
-// Get all tracks liked by a user
-likeRouter.get('/user/:userId', getUserLikes);
+// Get all tracks liked by a user - update param name
+likeRouter.get('/user/:firebaseId', getUserLikes);
 
 export default likeRouter;
