@@ -1,16 +1,21 @@
 // File: stresstoneApp/backend/src/models/Like.ts
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
-const LikeSchema = new Schema({
-  // References
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+interface ILike extends Document {
+  firebaseId: string; // Use Firebase ID instead of MongoDB ObjectId
+  soundtrackId: mongoose.Types.ObjectId;
+  createdAt: Date;
+}
+
+const likeSchema: Schema<ILike> = new Schema({
+  firebaseId: { type: String, required: true },
   soundtrackId: { type: Schema.Types.ObjectId, ref: 'SoundTrack', required: true },
-  
-  // Metadata
   createdAt: { type: Date, default: Date.now }
 });
 
-// Create a compound index for uniqueness and efficient queries
-LikeSchema.index({ userId: 1, soundtrackId: 1 }, { unique: true });
+// Create compound index for uniqueness and efficient queries
+likeSchema.index({ firebaseId: 1, soundtrackId: 1 }, { unique: true });
 
-export default model('Like', LikeSchema, 'Likes');
+const Like = mongoose.model<ILike>('Like', likeSchema);
+
+export default Like;

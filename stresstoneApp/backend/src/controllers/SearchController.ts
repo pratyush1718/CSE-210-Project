@@ -1,4 +1,4 @@
-// src/controllers/searchController.ts
+// src/controllers/SearchController.ts
 import { RequestHandler } from 'express';
 import SoundTrack from '../models/SoundTrack';
 import { SortOrder } from 'mongoose';
