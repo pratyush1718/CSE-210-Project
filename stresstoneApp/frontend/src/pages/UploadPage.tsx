@@ -6,7 +6,7 @@ import {
   Chip
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES, PREDEFINED_TAGS } from "../assets/constants";
+import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES, PREDEFINED_TAGS } from "../constants";
 import useUploadStore from "../stores/useUploadState";
 import TagChips from "../components/TagChips";
 

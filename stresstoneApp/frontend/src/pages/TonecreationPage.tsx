@@ -30,7 +30,7 @@ import { musicgenDispatcher } from '../controller/musicgenDispatcher';
 import { ToneLengthOptions, ToneLengthTypes, TonePreviewProps } from '../types';
 import useUploadStore from '../stores/useUploadState';
 import TagChips from '../components/TagChips';
-import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES } from '../assets/constants';
+import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES } from '../constants';
 
 const ToneCreationPage: React.FC = () => {
   // State for multiple choice selections

@@ -2,8 +2,7 @@ import { MusicGenSpec } from "../types";
 
 export async function musicgenDispatcher(userRequest: MusicGenSpec) : Promise<ArrayBuffer> {
   const apiUrl = import.meta.env.VITE_MODEL_SERVICE_DOMAIN + '/text_to_music';
-  console.log(apiUrl)
-
+  // console.log(apiUrl)
   try {
     const response = await fetch(apiUrl, {
       method: 'POST',
