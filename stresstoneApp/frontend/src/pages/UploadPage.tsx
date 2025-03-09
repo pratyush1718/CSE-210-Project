@@ -11,11 +11,10 @@ import {
   IconButton,
   Grid2 as Grid,
   Stack,
-  Chip
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES } from "../assets/constants";
-import useUploadStore from "../stores/useUploadState";
+import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES } from "../constants";
+import useUploadStore from "../stateManagement/useUploadState";
 import { auth } from "../firebase";
 import { User } from "firebase/auth";
 import { uploadDispatcher } from "../controller/uploadDispatcher";

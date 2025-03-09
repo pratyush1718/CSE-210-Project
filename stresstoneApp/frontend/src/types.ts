@@ -29,8 +29,8 @@ export type SortOption = 'relevance' | 'likes' | 'recent';
 export interface SearchSpec {
   q: string;
   sort: SortOption;
-  page: number;
-  limit: number;
+  page: string;
+  limit: string;
 }
 
 export interface SoundTrack {

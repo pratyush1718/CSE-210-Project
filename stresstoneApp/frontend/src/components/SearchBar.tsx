@@ -28,6 +28,7 @@ import { SearchSpec, SortOption, SoundTrack } from '../types';
 import { RESULTS_PER_PAGE } from '../constants';
 import { searchDispatcher } from '../controller/searchDispatcher';
 import { fetchAudio, getImageURL } from '../controller/contentDispatcher';
+import { auth } from '../firebase'; // Add this import
 
 const SearchBar: React.FC = () => {
   const { setCurrentTrack, currentTrack, isPlaying, togglePlay } = usePlayer();
@@ -62,8 +63,8 @@ const SearchBar: React.FC = () => {
         const querySpec = {
           q: query,
           sort: sortOption,
-          page: currentPage,
-          limit: RESULTS_PER_PAGE,
+          page: `${currentPage}`,
+          limit: `${RESULTS_PER_PAGE}`,
         } as SearchSpec;
         const searchResult = searchDispatcher(querySpec);
         searchResult
@@ -110,6 +111,9 @@ const SearchBar: React.FC = () => {
       setError(`Failed to play track`);
     }
   };
+
+  // Get Firebase user
+  const user = auth.currentUser;
 
   return (
     <div>
@@ -213,7 +217,7 @@ const SearchBar: React.FC = () => {
               <LikeButton
                 trackId={track._id}
                 initialLikeCount={track.likes}
-                userId="user-id-here" // Replace with actual user ID from auth
+                firebaseId={user?.uid || ''} // Add the LikeButton with firebaseId
               />
             </ListItem>
           ))}

@@ -244,7 +244,7 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   }
 
   if (!audioData) {
-    return;
+    return; 
   }
 
   return (

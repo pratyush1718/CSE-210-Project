@@ -8,19 +8,24 @@ import axios from 'axios';
 interface LikeButtonProps {
   trackId: string;
   initialLikeCount: number;
-  userId: string; // In production, you'd get this from auth context
+  firebaseId: string; // Changed from userId to firebaseId
 }
 
-const LikeButton: React.FC<LikeButtonProps> = ({ trackId, initialLikeCount, userId }) => {
+const LikeButton: React.FC<LikeButtonProps> = ({ trackId, initialLikeCount, firebaseId }) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [loading, setLoading] = useState(false);
+  const port = import.meta.env.VITE_BACKEND_PORT || 3000;
 
   useEffect(() => {
-    // Check initial like status
+    // Check initial like status using firebaseId
     const checkLikeStatus = async () => {
+      if (!firebaseId) return;
+      
       try {
-        const response = await axios.get(`/api/likes/${trackId}/status?userId=${userId}`);
+        const response = await axios.get(
+          `http://localhost:${port}/api/likes/${trackId}/status?firebaseId=${firebaseId}`
+        );
         setLiked(response.data.liked);
         setLikeCount(response.data.likes);
       } catch (error) {
@@ -29,14 +34,17 @@ const LikeButton: React.FC<LikeButtonProps> = ({ trackId, initialLikeCount, user
     };
 
     checkLikeStatus();
-  }, [trackId, userId]);
+  }, [trackId, firebaseId, port]);
 
   const handleToggleLike = async () => {
-    if (loading) return;
-
+    if (loading || !firebaseId) return;
+    
     setLoading(true);
     try {
-      const response = await axios.post(`/api/likes/${trackId}`, { userId });
+      const response = await axios.post(
+        `http://localhost:${port}/api/likes/${trackId}`, 
+        { firebaseId }
+      );
       setLiked(response.data.liked);
       setLikeCount(response.data.likes);
     } catch (error) {
@@ -47,8 +55,12 @@ const LikeButton: React.FC<LikeButtonProps> = ({ trackId, initialLikeCount, user
   };
 
   return (
-    <Tooltip title={liked ? 'Unlike' : 'Like'}>
-      <IconButton color={liked ? 'primary' : 'default'} onClick={handleToggleLike} disabled={loading}>
+    <Tooltip title={liked ? "Unlike" : "Like"}>
+      <IconButton
+        color={liked ? "primary" : "default"}
+        onClick={handleToggleLike}
+        disabled={loading || !firebaseId}
+      >
         <Badge badgeContent={likeCount} color="primary">
           {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </Badge>
