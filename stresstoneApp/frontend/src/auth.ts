@@ -1,6 +1,6 @@
 import { FirebaseError } from "firebase/app";
 import { auth } from "./firebase";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, UserCredential, getIdToken  } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, UserCredential, getAuth} from "firebase/auth";
 
 export const signIn = async (email: string, password: string): Promise<UserCredential | string> => {
   try {
@@ -24,12 +24,15 @@ export const signUp = async (email: string, password: string): Promise<UserCrede
     console.log("User reigstered in firebase:", user);
     const port = import.meta.env.VITE_BACKEND_PORT || 3000;
 
+    const idToken = await user.getIdToken();
+
     const response = await fetch(`http://localhost:${port}/api/user/register`, {
-        method: "POST",
-        headers: {
+      method: "POST",
+      headers: {
         "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+        "Authorization": `Bearer ${idToken}`, 
+      },
+      body: JSON.stringify({
         firebaseId: user.uid,
         email: user.email
         }),
@@ -56,3 +59,12 @@ export const signUp = async (email: string, password: string): Promise<UserCrede
   }
 };
 
+
+export const getAuthToken = async (): Promise<string | null> => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (user) {
+    return await user.getIdToken();
+  }
+  return null;
+};

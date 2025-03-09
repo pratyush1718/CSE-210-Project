@@ -57,18 +57,22 @@ function App() {
 
 
   return (
-    <PlayerProvider> 
+    <PlayerProvider>
       <CssBaseline />
       {isAuthenticated ? (
         <>
           <Header height={headerHeight} userEmail={userEmail} onSignOut={handleSignOut} />
           <Box sx={{ display: 'flex', marginTop: `${headerHeight}px`, marginBottom: `${footerHeight}px` }}>
             <Sider drawerWidth={siderWidth} />
-            <Box component="main" sx={{ p: 2, width: `calc(100% - ${siderWidth}px)`, height: '100%', overflow: 'auto' }}>
+            <Box
+              component="main"
+              sx={{ p: 2, width: `calc(100% - ${siderWidth}px)`, height: '100%', overflow: 'auto' }}
+            >
               <Routes>
                 {/* These routes are accessible only after login */}
-                <Route path="/" element={<><DiscoveryQueue/><Discuss/></>} />
+                <Route path="/" element={<DiscoveryQueue />} />
                 <Route path="/search" element={<SearchPage />} />
+                <Route path="/discuss" element={<Discuss />} />
                 <Route path="/upload" element={<UploadPage />} />
                 <Route path="/toneCreation" element={<ToneCreationPage />} />
                 <Route path="*" element={<Navigate to="/" />} />
