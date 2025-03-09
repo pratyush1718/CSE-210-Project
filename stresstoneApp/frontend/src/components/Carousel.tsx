@@ -15,14 +15,12 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
 
   // Go to the previous item in the carousel
   const prevItem = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? items.length - 1 : prevIndex - 1
-    );
+    setCurrentIndex((prevIndex) => (prevIndex === 0 ? items.length - 1 : prevIndex - 1));
   };
 
   const playSong = () => {
     // TO IMPLEMENT
-  }
+  };
 
   return (
     <div className="carousel-container">
@@ -32,7 +30,7 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
       <div className="carousel-items">
         <div className="carousel-item">
           <img src={items[currentIndex].imageUrl} alt={items[currentIndex].title} />
-          <button className="carousel-button play-button" onClick={playSong}/>
+          <button className="carousel-button play-button" onClick={playSong} />
           <h3>{items[currentIndex].title}</h3>
         </div>
       </div>

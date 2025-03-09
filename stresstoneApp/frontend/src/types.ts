@@ -1,5 +1,5 @@
-export const ToneLengthOptions = ['test', 'short', 'medium', 'long']
-export type ToneLengthTypes = typeof ToneLengthOptions[number]
+export const ToneLengthOptions = ['test', 'short', 'medium', 'long'];
+export type ToneLengthTypes = (typeof ToneLengthOptions)[number];
 
 export interface MusicGenSpec {
   text: string;
@@ -22,4 +22,24 @@ export interface UploadPageProps {
 export interface TagProps {
   type: string;
   description: string;
+}
+
+export type SortOption = 'relevance' | 'likes' | 'recent';
+
+export interface SearchSpec {
+  q: string;
+  sort: SortOption;
+  page: number;
+  limit: number;
+}
+
+export interface SoundTrack {
+  _id: string;
+  title: string;
+  description?: string;
+  creator?: { name: string };
+  likes: number;
+  createdAt: string;
+  imageFileId?: string;
+  audioUrl?: string;
 }

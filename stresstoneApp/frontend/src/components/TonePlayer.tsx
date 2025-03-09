@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Toolbar, AppBar, IconButton, Typography, Slider, Box, Avatar, Tooltip } from '@mui/material';
-import { 
-  PlayArrow, 
-  Pause, 
-  SkipNext, 
-  SkipPrevious, 
-  VolumeUp, 
-  Shuffle, 
+import {
+  PlayArrow,
+  Pause,
+  SkipNext,
+  SkipPrevious,
+  VolumeUp,
+  Shuffle,
   Repeat,
   ExpandLess,
   ExpandMore,
 } from '@mui/icons-material';
 import AudioProgressTracker from './AudioProgressBar';
-import { usePlayer } from '../contexts/PlayerContext';
+import { usePlayer } from '../stateManagement/PlayerContext';
 
 interface TonePlayerProps {
   onHeightChange: (height: number) => void; // Callback function to send height updates
@@ -60,18 +60,18 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
       response.headers.forEach((value, key) => {
         console.log(`${key}: ${value}`);
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
+
       const buffer = await response.arrayBuffer();
       console.log('Buffer received, size:', buffer.byteLength);
-      
+
       if (buffer.byteLength === 0) {
         throw new Error('The fetched audio data is empty.');
       }
-      
+
       setAudioData(buffer);
     } catch (error) {
       console.error('Error fetching audio:', error);
@@ -114,10 +114,8 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
           }}
         >
           <Avatar
-            alt={currentTrack?.title || "Album Cover"}
-            src={currentTrack?.imageFileId ? 
-                 `http://localhost:3000/api/audio/image/${currentTrack.imageFileId}` : 
-                 ""}
+            alt={currentTrack?.title || 'Album Cover'}
+            src={currentTrack?.imageFileId ? `http://localhost:3000/api/audio/image/${currentTrack.imageFileId}` : ''}
             sx={{
               width: isExpanded ? 60 : 40,
               height: isExpanded ? 60 : 40,
@@ -126,12 +124,8 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
             }}
           />
           <Box>
-            <Typography variant={isExpanded ? 'h6' : 'body1'}>
-              {currentTrack?.title || "No track selected"}
-            </Typography>
-            {isExpanded && <Typography variant="body2">
-              {currentTrack?.creator?.name || "Unknown artist"}
-            </Typography>}
+            <Typography variant={isExpanded ? 'h6' : 'body1'}>{currentTrack?.title || 'No track selected'}</Typography>
+            {isExpanded && <Typography variant="body2">{currentTrack?.creator?.name || 'Unknown artist'}</Typography>}
           </Box>
         </Box>
 
@@ -147,31 +141,31 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
         >
           {isExpanded && (
             <>
-              <Tooltip title="Shuffle" placement = "top">
+              <Tooltip title="Shuffle" placement="top">
                 <IconButton color={isShuffle ? 'primary' : 'inherit'} onClick={handleShuffle}>
                   <Shuffle />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Previous" placement = "top">
+              <Tooltip title="Previous" placement="top">
                 <IconButton color="inherit">
                   <SkipPrevious />
                 </IconButton>
               </Tooltip>
             </>
           )}
-          <Tooltip title={isPlaying ? 'Pause' : 'Play'} placement = "top">
+          <Tooltip title={isPlaying ? 'Pause' : 'Play'} placement="top">
             <IconButton color="inherit" onClick={handlePlayPause}>
               {isPlaying ? <Pause /> : <PlayArrow />}
             </IconButton>
           </Tooltip>
           {isExpanded && (
             <>
-              <Tooltip title="Next" placement = "top">
+              <Tooltip title="Next" placement="top">
                 <IconButton color="inherit">
                   <SkipNext />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Repeat" placement = "top">
+              <Tooltip title="Repeat" placement="top">
                 <IconButton color={isRepeat ? 'primary' : 'inherit'} onClick={handleRepeat}>
                   <Repeat />
                 </IconButton>
@@ -220,11 +214,11 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
           audioData={audioData}
           isPlaying={isPlaying}
           isLooping={isRepeat}
-          volume = {volume}
+          volume={volume}
           isExpanded={isExpanded}
           onPlayStateChange={setIsPlaying}
         />
-      </Box>  
+      </Box>
     </AppBar>
   );
 }
