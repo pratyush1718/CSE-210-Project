@@ -2,8 +2,9 @@ import React from 'react';
 import Carousel from './Carousel';
 
 interface DiscoveryItem {
-  id: string;
-  imageUrl: string;
+  _id: string;
+  audioFileId: string;
+  imageFileId: string;
   title: string;
 }
 

@@ -1,10 +1,15 @@
 import { Request, Response } from "express";
 import User from "../models/User";
-import Content from "../models/Content";
+import SoundTrack from "../models/SoundTrack";
 import { Console } from "console";
  
-export const recommendContent = async(req: Request, res: Response) => {
+export const recommendContent = async(req: Request, res: Response) : Promise<void> => {
+    console.log(req.body);
     const {firebaseId} = req.body;
+
+    console.log("I am in recommendContent ");
+
+    console.log(firebaseId);
 
     try {
         const user = await User.findOne({ firebaseId });
@@ -13,7 +18,10 @@ export const recommendContent = async(req: Request, res: Response) => {
             return;
         }
 
-        const contents = await Content.find();
+        const contents = await SoundTrack.find();
+
+        console.log(contents);
+        console.log(user);
 
         const scoredContent = contents.map((content) => {
             // uses cosine similarity
@@ -63,13 +71,16 @@ export const recommendContent = async(req: Request, res: Response) => {
         // Slice top 10 results.
         const top10results = scoredContent.slice(0,10).map((item) => item.content);
 
+        console.log(top10results);
+
         // Respond with top 10 results.
+        //res.status(200).json({message: 'buttpoop'});
         res.status(200).json({recommendations: top10results});
         return;
     }
     catch (error) {
         console.error("Error:", error);
-        res.status(500).json({message: "An error ocurred ", error});
+        res.status(500).json({message: "An error ocurred", error});
         return;
     }
 };
