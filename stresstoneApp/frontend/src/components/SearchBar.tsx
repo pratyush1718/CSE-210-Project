@@ -28,7 +28,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { usePlayer } from '../contexts/PlayerContext';
 import LikeButton from './LikeButton';
 
-interface SoundTrack {
+export interface SoundTrack {
   _id: string;
   title: string;
   description?: string;
