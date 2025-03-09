@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   TextField,
   Typography,
   Divider,
-  Chip,
   Card,
   CardContent,
   Grid,
@@ -28,7 +27,7 @@ import { faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
 import { Bookmark, Delete, Download, Upload } from '@mui/icons-material';
 import { musicgenDispatcher } from '../controller/musicgenDispatcher';
 import { ToneLengthOptions, ToneLengthTypes, TonePreviewProps } from '../types';
-import useUploadStore from '../stores/useUploadState';
+import useUploadStore from '../stateManagement/useUploadState';
 import TagChips from '../components/TagChips';
 import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES } from '../constants';
 
@@ -141,7 +140,7 @@ const ToneCreationPage: React.FC = () => {
       setTitle(uploadAudio.title);
       setAudioFile(file);
       setTags(uploadAudio.tags);
-      // goto upload page
+      // // goto upload page
       navigation('/upload');
     }
   };
@@ -159,29 +158,7 @@ const ToneCreationPage: React.FC = () => {
     }
   };
 
-  /* Code below subject to change after connection to backend */
   const [audioData, setAudioData] = useState<ArrayBuffer | null>(null);
-
-  useEffect(() => {
-    fetchAudio();
-  }, []);
-
-  const fetchAudio = async () => {
-    try {
-      const response = await fetch('IDM_Smooth.wav');
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const buffer = await response.arrayBuffer();
-      if (buffer.byteLength === 0) {
-        throw new Error('The fetched audio data is empty.');
-      }
-      setAudioData(buffer);
-    } catch (error) {
-      console.error('Error fetching audio:', error);
-    }
-  };
-  /* End code change region */
 
   return (
     <>

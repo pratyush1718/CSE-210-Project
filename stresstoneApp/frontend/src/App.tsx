@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Box, CssBaseline, CircularProgress } from '@mui/material';
+import { Box, CssBaseline } from '@mui/material';
 import { getAuth, onAuthStateChanged, User, signOut } from 'firebase/auth';
 import Discuss from './pages/DiscussPage';
 import Header from './components/Header';
@@ -12,7 +12,7 @@ import UploadPage from './pages/UploadPage';
 import SearchPage from './pages/SearchPage.tsx';
 import ToneCreationPage from './pages/TonecreationPage.tsx';
 import DiscoveryQueue from './components/DiscoveryQueue';
-import { PlayerProvider } from './contexts/PlayerContext';
+import { PlayerProvider } from './stateManagement/PlayerContext.tsx';
 
 const siderWidth = 240;
 const headerHeight = 64;
@@ -39,7 +39,7 @@ function App() {
       }
     });
 
-    return () => unsubscribe(); 
+    return () => unsubscribe();
   }, []);
 
   const handleSignOut = async () => {
@@ -54,7 +54,6 @@ function App() {
     setIsAuthenticated(true);
     setUserEmail(email);
   };
-
 
   return (
     <PlayerProvider>

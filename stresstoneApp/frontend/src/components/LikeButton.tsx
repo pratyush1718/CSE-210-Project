@@ -33,7 +33,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ trackId, initialLikeCount, user
 
   const handleToggleLike = async () => {
     if (loading) return;
-    
+
     setLoading(true);
     try {
       const response = await axios.post(`/api/likes/${trackId}`, { userId });
@@ -47,12 +47,8 @@ const LikeButton: React.FC<LikeButtonProps> = ({ trackId, initialLikeCount, user
   };
 
   return (
-    <Tooltip title={liked ? "Unlike" : "Like"}>
-      <IconButton
-        color={liked ? "primary" : "default"}
-        onClick={handleToggleLike}
-        disabled={loading}
-      >
+    <Tooltip title={liked ? 'Unlike' : 'Like'}>
+      <IconButton color={liked ? 'primary' : 'default'} onClick={handleToggleLike} disabled={loading}>
         <Badge badgeContent={likeCount} color="primary">
           {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </Badge>

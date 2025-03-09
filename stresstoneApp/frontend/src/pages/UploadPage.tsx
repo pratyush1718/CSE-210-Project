@@ -1,46 +1,51 @@
-import React, { useState, useEffect } from "react";
-import { 
-  TextField, Button, RadioGroup, FormControlLabel, Radio, 
-  Typography, Box, Paper, IconButton, Grid2 as Grid,
+import React, { useState } from 'react';
+import {
+  TextField,
+  Button,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Typography,
+  Box,
+  Paper,
+  IconButton,
+  Grid2 as Grid,
   Stack,
-  Chip
-} from "@mui/material";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES, PREDEFINED_TAGS } from "../constants";
-import useUploadStore from "../stores/useUploadState";
-import TagChips from "../components/TagChips";
+} from '@mui/material';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES } from '../constants';
+import useUploadStore from '../stateManagement/useUploadState';
+import TagChips from '../components/TagChips';
 
 const UploadPage: React.FC = () => {
   const { title, setTitle, audioFile, setAudioFile, tags, clear } = useUploadStore();
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
-  const [visibility, setVisibility] = useState("public");
-  const [allowDownloads, setAllowDownloads] = useState("no");
+  const [description, setDescription] = useState('');
+  const [location, setLocation] = useState('');
+  const [visibility, setVisibility] = useState('public');
+  const [allowDownloads, setAllowDownloads] = useState('no');
   const [audioTags, setAudioTags] = useState(tags);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, type: "audio" | "image") => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, type: 'audio' | 'image') => {
     const file = event.target.files?.[0] || null;
     if (file) {
-      if (type === "audio" && ["audio/mpeg", "audio/wav"].includes(file.type)) {
+      if (type === 'audio' && ['audio/mpeg', 'audio/wav'].includes(file.type)) {
         setAudioFile(file);
-      } else if (type === "image" && ["image/jpeg", "image/png"].includes(file.type)) {
+      } else if (type === 'image' && ['image/jpeg', 'image/png'].includes(file.type)) {
         setImageFile(file);
       }
     }
   };
 
   const handleTagClick = (tag: string) => {
-    setAudioTags((prevTags) =>
-      prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]
-    );
+    setAudioTags((prevTags) => (prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]));
     // console.log(audioTags)
   };
 
   const handleUpload = async () => {
     if (!audioFile || !title || !description) {
-        alert("Please upload an audio file and fill in the required fields.");
-        return;
+      alert('Please upload an audio file and fill in the required fields.');
+      return;
     }
 
     // console.log("Uploading data...");
@@ -56,50 +61,46 @@ const UploadPage: React.FC = () => {
     // console.log("Location:", location);
     // console.log("Visibility:", visibility);
     // console.log("Allow Downloads:", allowDownloads);
-  
+
     const formData = new FormData();
-    formData.append("audioFile", audioFile);
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("visibility", visibility);
-    formData.append("allowDownloads", (allowDownloads==="yes").toString());
+    formData.append('audioFile', audioFile);
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('visibility', visibility);
+    formData.append('allowDownloads', (allowDownloads === 'yes').toString());
     if (audioTags.length > 0) {
-        formData.append("tags", JSON.stringify(audioTags));
+      formData.append('tags', JSON.stringify(audioTags));
     }
-    if (location.trim() !== "") {
-        formData.append("location", location);
+    if (location.trim() !== '') {
+      formData.append('location', location);
     }
     if (imageFile) {
-        formData.append("imageFile", imageFile);
+      formData.append('imageFile', imageFile);
     }
 
-  
     try {
       const port = import.meta.env.VITE_BACKEND_PORT || 3000;
       const response = await fetch(`http://localhost:${port}/api/upload/`, {
-        method: "POST",
+        method: 'POST',
         body: formData,
       });
-  
+
       const data = await response.json();
       if (data.success) {
-        alert("Your music file has been uploaded successfully!");
+        alert('Your music file has been uploaded successfully!');
         clear();
         // console.log("Title:", title);
         // console.log("Tags:", JSON.stringify(tags));
         // console.log("Audio File:", audioFile.name);
         window.location.reload();
       } else {
-        alert("Upload failed: " + data.error);
+        alert('Upload failed: ' + data.error);
       }
     } catch (error) {
-      console.error("Upload Failed:", error);
-      alert("Upload failed! Please try again.");
+      console.error('Upload Failed:', error);
+      alert('Upload failed! Please try again.');
     }
   };
-  
-
-
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -207,9 +208,9 @@ const UploadPage: React.FC = () => {
           {/* Tags */}
           <Typography variant="subtitle1">Select Tags:</Typography>
           <Stack direction="column" spacing={1} sx={{ mb: 2, flexWrap: 'wrap' }}>
-            <TagChips tags={MUSIC_STYLES} handleTagClick={handleTagClick} />
-            <TagChips tags={MUSIC_AMBIANCES} handleTagClick={handleTagClick} />
-            <TagChips tags={MUSIC_SCENARIOS} handleTagClick={handleTagClick} />
+            <TagChips tags={MUSIC_STYLES} handleTagClick={handleTagClick} initialState={audioTags} />
+            <TagChips tags={MUSIC_AMBIANCES} handleTagClick={handleTagClick} initialState={audioTags} />
+            <TagChips tags={MUSIC_SCENARIOS} handleTagClick={handleTagClick} initialState={audioTags} />
             {/* <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap' }}>
               {MUSIC_STYLES.map((tag) => (
                 <Chip

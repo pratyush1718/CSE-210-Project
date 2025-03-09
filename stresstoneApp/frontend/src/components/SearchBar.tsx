@@ -1,5 +1,4 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
-import axios from 'axios';
 import {
   TextField,
   CircularProgress,
@@ -23,13 +22,12 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { usePlayer } from '../contexts/PlayerContext';
+import { usePlayer } from '../stateManagement/PlayerContext';
 import LikeButton from './LikeButton';
 import { SearchSpec, SortOption, SoundTrack } from '../types';
 import { RESULTS_PER_PAGE } from '../constants';
 import { searchDispatcher } from '../controller/searchDispatcher';
-import { fetchAudio } from '../controller/contentDispatcher';
-
+import { fetchAudio, getImageURL } from '../controller/contentDispatcher';
 
 const SearchBar: React.FC = () => {
   const { setCurrentTrack, currentTrack, isPlaying, togglePlay } = usePlayer();
@@ -99,19 +97,16 @@ const SearchBar: React.FC = () => {
 
   const totalPages = Math.ceil(totalResults / RESULTS_PER_PAGE);
 
-  const port = import.meta.env.VITE_BACKEND_PORT;
-
   const handlePlay = (track: SoundTrack) => {
-    const playerTrack = fetchAudio(track)
+    const playerTrack = fetchAudio(track);
     if (playerTrack) {
       playerTrack.then((track) => {
-        setCurrentTrack(track)
+        setCurrentTrack(track);
         if (!isPlaying) {
-          togglePlay()
+          togglePlay();
         }
-      })
-    }
-    else {
+      });
+    } else {
       setError(`Failed to play track`);
     }
   };
@@ -176,7 +171,7 @@ const SearchBar: React.FC = () => {
                 {track.imageFileId ? (
                   <Avatar
                     alt={track.title}
-                    src={`http://localhost:${port}/api/audio/image/${track.imageFileId}`}
+                    src={getImageURL(track.imageFileId)}
                     variant="rounded"
                     sx={{ width: 60, height: 60 }}
                   />

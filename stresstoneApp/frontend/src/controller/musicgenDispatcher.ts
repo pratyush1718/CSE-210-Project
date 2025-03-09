@@ -1,6 +1,6 @@
-import { MusicGenSpec } from "../types";
+import { MusicGenSpec } from '../types';
 
-export async function musicgenDispatcher(userRequest: MusicGenSpec) : Promise<ArrayBuffer> {
+export async function musicgenDispatcher(userRequest: MusicGenSpec): Promise<ArrayBuffer> {
   const apiUrl = import.meta.env.VITE_MODEL_SERVICE_DOMAIN + '/text_to_music';
   // console.log(apiUrl)
   try {
@@ -21,7 +21,7 @@ export async function musicgenDispatcher(userRequest: MusicGenSpec) : Promise<Ar
     // parse into arraybuffer
     // Convert blob to ArrayBuffer
     const arrayBuffer = await audioBlob.arrayBuffer();
-    return arrayBuffer
+    return arrayBuffer;
   } catch (error) {
     console.error('Failed to generate music:', error);
     throw error;

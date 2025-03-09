@@ -22,8 +22,14 @@ export async function fetchAudio(track: SoundTrack) {
     } catch (error) {
       console.error('Error playing track:', error);
       // setError(`Failed to play track: ${error.message}`);
-      return null
+      return null;
     }
   }
-  return null
+  return null;
 }
+
+export const getImageURL = (imageFileId: string) => {
+  const port = import.meta.env.VITE_BACKEND_PORT;
+  const imageURL = `http://localhost:${port}/api/audio/image/${imageFileId}`;
+  return imageURL;
+};
