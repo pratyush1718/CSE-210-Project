@@ -72,12 +72,6 @@ const postsData: Post[] = [
 ];
 
 export default function Discuss() {
-  const { clear } = useUploadStore();
-
-  useEffect(() => {
-    clear();
-  }, []);
-
   const [posts, setPosts] = useState(postsData);
   const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
   const [dislikedPosts, setDislikedPosts] = useState<{ [key: number]: boolean }>({});
