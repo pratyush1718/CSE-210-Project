@@ -62,8 +62,8 @@ const SearchBar: React.FC = () => {
         const querySpec = {
           q: query,
           sort: sortOption,
-          page: currentPage,
-          limit: RESULTS_PER_PAGE,
+          page: `${currentPage}`,
+          limit: `${RESULTS_PER_PAGE}`,
         } as SearchSpec;
         const searchResult = searchDispatcher(querySpec);
         searchResult
