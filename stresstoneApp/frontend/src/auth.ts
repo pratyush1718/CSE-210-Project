@@ -22,7 +22,6 @@ export const signUp = async (email: string, password: string): Promise<UserCrede
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     console.log("User reigstered in firebase:", user);
-
     const port = import.meta.env.VITE_BACKEND_PORT || 3000;
     const idToken = await user.getIdToken();
 
@@ -35,7 +34,7 @@ export const signUp = async (email: string, password: string): Promise<UserCrede
       body: JSON.stringify({
         firebaseId: user.uid,
         email: user.email
-      }),
+        }),
     });
 
     if (response.ok) {

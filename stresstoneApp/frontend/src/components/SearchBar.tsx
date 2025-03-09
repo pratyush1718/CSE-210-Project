@@ -53,6 +53,7 @@ const SearchBar: React.FC = () => {
   const [sortOption, setSortOption] = useState<SortOption>('relevance');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalResults, setTotalResults] = useState<number>(0);
+  const port = import.meta.env.VITE_BACKEND_PORT || 3000;
 
   // For sort popover menu
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -74,7 +75,7 @@ const SearchBar: React.FC = () => {
       if (query.trim() !== '') {
         setLoading(true);
         axios
-          .get('http://localhost:3000/api/search', { 
+          .get(`http://localhost:${port}/api/search`, { 
             params: { 
               q: query, 
               sort: sortOption,
@@ -117,7 +118,7 @@ const SearchBar: React.FC = () => {
       // Ensure the URL is absolute
       let fullAudioUrl = track.audioUrl;
       if (track.audioUrl.startsWith('/')) {
-        fullAudioUrl = `http://localhost:3000${track.audioUrl}`;
+        fullAudioUrl = `http://localhost:${port}${track.audioUrl}`;
       }
       
       console.log("Attempting to play URL:", fullAudioUrl);
@@ -207,7 +208,7 @@ const SearchBar: React.FC = () => {
                 {track.imageFileId ? (
                   <Avatar 
                     alt={track.title}
-                    src={`http://localhost:3000/api/audio/image/${track.imageFileId}`}
+                    src={`http://localhost:${port}/api/audio/image/${track.imageFileId}`}
                     variant="rounded"
                     sx={{ width: 60, height: 60 }}
                   />
