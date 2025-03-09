@@ -23,13 +23,13 @@ interface MenuProps {
 }
 
 export default function Sider({ drawerWidth }: { drawerWidth: number }) {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const MenuMyStressTone: MenuProps[] = [
     {
       title: 'Home',
       icon: <HomeOutlined />,
-      onClick: () => navigate('/'), 
+      onClick: () => navigate('/'),
     },
     {
       title: 'My Playlist',
@@ -42,7 +42,7 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
     {
       title: 'Explore',
       icon: <SearchOutlined />,
-      onClick: () => navigate('/search'), 
+      onClick: () => navigate('/search'),
     },
     {
       title: 'Discuss',

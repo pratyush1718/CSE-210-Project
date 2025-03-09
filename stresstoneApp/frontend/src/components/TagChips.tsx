@@ -1,16 +1,25 @@
 import { Box, Chip, Tooltip } from '@mui/material';
 import { TagProps } from '../types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface TagChipsProps {
   tags: TagProps[];
   showTooltip?: boolean; // Controls whether tooltips are shown
+  initialState?: string[]; // Initial state of selected tags
   handleTagClick: (tag: string) => void;
 }
 
 export default function TagChips(props: TagChipsProps) {
-  const { tags, showTooltip, handleTagClick } = props;
+  const { tags, showTooltip, initialState, handleTagClick } = props;
   const [tagState, setTagState] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (initialState) {
+      // get intersection between tags and initial state
+      const intersection = tags.filter((tag) => initialState.includes(tag.type));
+      setTagState(intersection.map((tag) => tag.type));
+    }
+  }, [initialState, tags]);
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>

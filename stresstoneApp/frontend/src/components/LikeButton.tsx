@@ -53,6 +53,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ trackId, initialLikeCount, fire
   };
 
   return (
+
     <Tooltip title={liked ? "Unlike" : "Like"}>
       <IconButton
         color={liked ? "primary" : "default"}
