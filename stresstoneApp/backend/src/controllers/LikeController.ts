@@ -1,6 +1,5 @@
 // File: stresstoneApp/backend/src/controllers/LikeController.ts
 import { Request, Response } from 'express';
-import { ObjectId } from 'mongodb';
 import Like from '../models/Like';
 import SoundTrack from '../models/SoundTrack';
 import mongoose from 'mongoose';
@@ -55,7 +54,7 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
     // Check if like already exists using firebaseId
     const existingLike = await Like.findOne({
       firebaseId,
-      soundtrackId: new ObjectId(soundtrackId)
+      soundtrackId: new mongoose.Types.ObjectId(soundtrackId)
     });
 
     const session = await mongoose.startSession();
@@ -68,7 +67,7 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
         
         // Decrement like counter
         await SoundTrack.updateOne(
-          { _id: new ObjectId(soundtrackId) },
+          { _id: new mongoose.Types.ObjectId(soundtrackId) },
           { $inc: { likes: -1 } }
         ).session(session);
         
@@ -78,12 +77,12 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
         // Like: create a new like document with firebaseId
         await Like.create([{
           firebaseId,
-          soundtrackId: new ObjectId(soundtrackId)
+          soundtrackId: new mongoose.Types.ObjectId(soundtrackId)
         }], { session });
         
         // Increment like counter
         await SoundTrack.updateOne(
-          { _id: new ObjectId(soundtrackId) },
+          { _id: new mongoose.Types.ObjectId(soundtrackId) },
           { $inc: { likes: 1 } }
         ).session(session);
         
@@ -115,7 +114,7 @@ export const checkLikeStatus = async (req: Request, res: Response): Promise<void
     
     const like = await Like.findOne({
       firebaseId,
-      soundtrackId: new ObjectId(soundtrackId)
+      soundtrackId: new mongoose.Types.ObjectId(soundtrackId)
     });
     
     res.status(200).json({ 
@@ -160,6 +159,6 @@ export const getUserLikes = async (req: Request, res: Response): Promise<void> =
 
 // Helper: Get updated likes count
 async function getUpdatedLikesCount(soundtrackId: string): Promise<number> {
-  const track = await SoundTrack.findById(new ObjectId(soundtrackId));
+  const track = await SoundTrack.findById(new mongoose.Types.ObjectId(soundtrackId));
   return track?.likes || 0;
 }
