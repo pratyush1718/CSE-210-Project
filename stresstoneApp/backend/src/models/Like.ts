@@ -13,4 +13,4 @@ const LikeSchema = new Schema({
 // Create a compound index for uniqueness and efficient queries
 LikeSchema.index({ firebaseId: 1, soundtrackId: 1 }, { unique: true });
 
-export default model('Like', LikeSchema, 'Likes');
+export default model('Like', LikeSchema, 'likes');
