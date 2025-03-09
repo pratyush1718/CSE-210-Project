@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import './Carousel.css'; // Import styles
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import { ListItem, Avatar, ListItemAvatar } from '@mui/material';
-import { usePlayer } from '../contexts/PlayerContext';
-import { SoundTrack } from './SearchBar';
-import handlePlay from '/.SearchBar';
 
 const port = import.meta.env.VITE_BACKEND_PORT || 3000;
 
@@ -27,14 +24,8 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
 
   // Go to the previous item in the carousel
   const prevItem = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? items.length - 1 : prevIndex - 1
-    );
+    setCurrentIndex((prevIndex) => (prevIndex === 0 ? items.length - 1 : prevIndex - 1));
   };
-
-  interface PlayProps {
-    handlePlay: (track: SoundTrack) => void;
-  }
 
   const playSong = () => {
     // TO IMPLEMENT
