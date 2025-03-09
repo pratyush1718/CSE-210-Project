@@ -11,11 +11,15 @@ import {
   IconButton,
   Grid2 as Grid,
   Stack,
-} from '@mui/material';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES } from '../constants';
-import useUploadStore from '../stateManagement/useUploadState';
-import TagChips from '../components/TagChips';
+  Chip
+} from "@mui/material";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES } from "../assets/constants";
+import useUploadStore from "../stores/useUploadState";
+import { auth } from "../firebase";
+import { User } from "firebase/auth";
+import { uploadDispatcher } from "../controller/uploadDispatcher";
+import TagChips from "../components/TagChips";
 
 const UploadPage: React.FC = () => {
   const { title, setTitle, audioFile, setAudioFile, tags, clear } = useUploadStore();
@@ -25,6 +29,7 @@ const UploadPage: React.FC = () => {
   const [visibility, setVisibility] = useState('public');
   const [allowDownloads, setAllowDownloads] = useState('no');
   const [audioTags, setAudioTags] = useState(tags);
+  const user: User | null = auth.currentUser;
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, type: 'audio' | 'image') => {
     const file = event.target.files?.[0] || null;
@@ -43,6 +48,10 @@ const UploadPage: React.FC = () => {
   };
 
   const handleUpload = async () => {
+    if (!user) {
+        alert('User is not signed in.');
+        return;
+    }
     if (!audioFile || !title || !description) {
       alert('Please upload an audio file and fill in the required fields.');
       return;
@@ -63,11 +72,14 @@ const UploadPage: React.FC = () => {
     // console.log("Allow Downloads:", allowDownloads);
 
     const formData = new FormData();
-    formData.append('audioFile', audioFile);
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('visibility', visibility);
-    formData.append('allowDownloads', (allowDownloads === 'yes').toString());
+
+    formData.append("audioFile", audioFile);
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("visibility", visibility);
+    formData.append("allowDownloads", (allowDownloads==="yes").toString());
+    formData.append('creator', user.uid)
+
     if (audioTags.length > 0) {
       formData.append('tags', JSON.stringify(audioTags));
     }
@@ -78,27 +90,10 @@ const UploadPage: React.FC = () => {
       formData.append('imageFile', imageFile);
     }
 
-    try {
-      const port = import.meta.env.VITE_BACKEND_PORT || 3000;
-      const response = await fetch(`http://localhost:${port}/api/upload/`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        alert('Your music file has been uploaded successfully!');
+    const uploadSuccess = await uploadDispatcher(formData);
+    if (uploadSuccess) {
         clear();
-        // console.log("Title:", title);
-        // console.log("Tags:", JSON.stringify(tags));
-        // console.log("Audio File:", audioFile.name);
         window.location.reload();
-      } else {
-        alert('Upload failed: ' + data.error);
-      }
-    } catch (error) {
-      console.error('Upload Failed:', error);
-      alert('Upload failed! Please try again.');
     }
   };
 

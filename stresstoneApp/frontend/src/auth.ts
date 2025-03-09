@@ -23,6 +23,7 @@ export const signUp = async (email: string, password: string): Promise<UserCrede
     const user = userCredential.user;
     console.log('User reigstered in firebase:', user);
     const port = import.meta.env.VITE_BACKEND_PORT || 3000;
+
     const idToken = await user.getIdToken();
 
     const response = await fetch(`http://localhost:${port}/api/user/register`, {
@@ -57,6 +58,7 @@ export const signUp = async (email: string, password: string): Promise<UserCrede
     return 'unknown_error';
   }
 };
+
 
 export const getAuthToken = async (): Promise<string | null> => {
   const auth = getAuth();
