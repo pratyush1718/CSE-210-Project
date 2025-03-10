@@ -195,12 +195,6 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
               />
             </>
           )}
-          {/* Collapse/Expand Button */}
-          {/* <IconButton onClick={handleToggleExpand} sx={{ ml: 1 }}>
-            {isExpanded ? <ExpandMore /> : <ExpandLess />}
-          </IconButton> */}
-
-          
         </Box>
       </Toolbar>
 
