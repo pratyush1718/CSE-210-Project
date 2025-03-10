@@ -1,21 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Box, Fab, Typography, Card, CardContent, Avatar, IconButton, 
   Button, Tooltip, Modal, TextField, InputAdornment, Menu, MenuItem
 } from '@mui/material';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { ThumbUp, ThumbDown, Reply, Add, Close, Delete, Send } from '@mui/icons-material';
+import axios from 'axios';
+import getAuth from 'firebase/auth';  
+
+// Define interfaces based on your backend models
+interface User {
+  _id: string; 
+  email: string; 
+  firebaseId: string; 
+  username: string; 
+  tags: string[]; 
+  __v: number; 
+}
 
 interface Reply {
-  id: number;
-  user: string;
+  _id: string;
+  user: User;
   content: string;
   time: string;
 }
 
 interface Post {
-  id: number;
-  user: string;
+  _id: string;
+  user: User; 
   content: string;
   time: string;
   likeCount: number;
@@ -23,67 +35,54 @@ interface Post {
   replies: Reply[];
 }
 
-const postsData: Post[] = [
-  { 
-    id: 1, 
-    user: 'Kyrian', 
-    content: "Loving this new track by @Bella! It's so chill! Have you guys heard it yet?", 
-    time: "3 minutes ago", 
-    likeCount: 5, 
-    dislikeCount: 1, 
-    replies: [
-        { id: 1, user: 'Bella', content: "Thanks so much! I'm glad you like it!", time: "1 minute ago" },
-        { id: 2, user: 'Kyrian', content: "Of course! Keep up the great work!", time: "Just now" },
-    ],
-  },
-  { 
-    id: 2, 
-    user: 'Brian', 
-    content: "What should I make for my next track? Trying to decide between Christmas and fall vibes.", 
-    time: "10 minutes ago", 
-    likeCount: 3, 
-    dislikeCount: 2, 
-    replies: [
-        { id: 1, user: 'Angie', content: "I think a Christmas track would be really fun!", time: "5 minutes ago" },
-    ],
-  },
-  { 
-    id: 3, 
-    user: 'Bella', 
-    content: "Hey guys, new track is out! Make sure to check it out!", 
-    time: "23 hours ago", 
-    likeCount: 3, 
-    dislikeCount: 0, 
-    replies: []
-  },
-  { 
-    id: 4, 
-    user: 'Angie', 
-    content: "Been looking for some new tracks to decompress after work. Any recs?", 
-    time: "Feb 10, 2025", 
-    likeCount: 1, 
-    dislikeCount: 0, 
-    replies: [
-      { id: 1, user: 'Vanessa', content: "Ohh, I've been cooking something up. Just you wait!", time: "Feb 10, 2025" },
-      { id: 2, user: 'Simon', content: "Try out the Tone Creator! I've been making so many great sounds, I'll never run out things to listen to!", time: "Feb 10, 2025" },
-      { id: 3, user: 'Kyrian', content: "I've been listening to @Bella's new track on repeat! It's so calming.", time: "2 hours ago" },
-    ]
-  },
-];
+// API base URL - adjust to match your backend
+// const PORT = process.env.PORT || 3000;
+const PORT = 3000;
+const API_URL = `http://localhost:${PORT}/api`;
 
 export default function Discuss() {
-  const [posts, setPosts] = useState(postsData);
-  const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
-  const [dislikedPosts, setDislikedPosts] = useState<{ [key: number]: boolean }>({});
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
+  const [dislikedPosts, setDislikedPosts] = useState<{ [key: string]: boolean }>({});
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [newPostContent, setNewPostContent] = useState('');
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
   // Track visibility of reply boxes
-  const [replyEntryVisibility, setReplyEntryVisibility] = useState<{ [key: number]: boolean }>({});
-  const [replyContent, setReplyContent] = useState<{ [key: number]: string }>({});
-  const [repliesVisibility, setRepliesVisibility] = useState<{ [key: number]: boolean }>({});
+  const [replyEntryVisibility, setReplyEntryVisibility] = useState<{ [key: string]: boolean }>({});
+  const [replyContent, setReplyContent] = useState<{ [key: string]: string }>({});
+  const [repliesVisibility, setRepliesVisibility] = useState<{ [key: string]: boolean }>({});
+
+  // Mock user ID - in a real app, this would come from authentication
+  // const currentUserId = getAuth().currentUser.uid; 
+  
+  const currentUser = {
+    _id: 'random', // Use a placeholder user ID
+    name: 'You' // Display name for current user
+  };
+  // Fetch posts from the API
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/posts`);
+      console.log(response.data);
+      setPosts(response.data);
+      setError('');
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+      setError('Failed to load posts. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial data load
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -99,42 +98,53 @@ export default function Discuss() {
     setAnchorEl(null);
   };
 
-  const handleCreatePost = () => {
+  // Create a new post
+  const handleCreatePost = async () => {
     if (newPostContent.trim() === '') return;
 
-    const newPost: Post = {
-      id: posts.length + 1,
-      user: 'You',
-      content: newPostContent,
-      time: 'Just now',
-      likeCount: 0,
-      dislikeCount: 0,
-      replies: [],
-    };
-
-    setPosts([newPost, ...posts]);
-    setNewPostContent('');
-    handleClose();
+    try {
+      await axios.post(`${API_URL}/posts`, {
+        user: currentUser._id,
+        content: newPostContent,
+      });
+      
+      // Refresh posts to include the new one
+      fetchPosts();
+      setNewPostContent('');
+      handleClose();
+    } catch (err) {
+      console.error('Error creating post:', err);
+      setError('Failed to create post. Please try again.');
+    }
   };
 
-  const handleDeleteReply = (postId: number, replyId: number) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId
-          ? { ...post, replies: post.replies.filter((reply) => reply.id !== replyId) }
-          : post
-      )
-    );
+  // Delete a reply
+  const handleDeleteReply = async (postId: string, replyId: string) => {
+    try {
+      await axios.delete(`${API_URL}/replies/${replyId}`);
+      fetchPosts(); // Refresh posts to update UI
+    } catch (err) {
+      console.error('Error deleting reply:', err);
+      setError('Failed to delete reply. Please try again.');
+    }
   };
 
+  // Set up post for deletion
   const handleDeletePost = (post: Post) => {
     setPostToDelete(post);
     setDeleteOpen(true);
   };
 
-  const confirmDeletePost = () => {
+  // Confirm post deletion
+  const confirmDeletePost = async () => {
     if (postToDelete) {
-      setPosts(posts.filter((post) => post.id !== postToDelete.id));
+      try {
+        await axios.delete(`${API_URL}/posts/${postToDelete._id}`);
+        fetchPosts(); // Refresh posts to update UI
+      } catch (err) {
+        console.error('Error deleting post:', err);
+        setError('Failed to delete post. Please try again.');
+      }
     }
     setDeleteOpen(false);
     setPostToDelete(null);
@@ -145,10 +155,13 @@ export default function Discuss() {
     setPostToDelete(null);
   };
 
-  const handleLike = (postId: number) => {
+  // Handle likes (this would require backend support)
+  const handleLike = (postId: string) => {
+    // In a real implementation, you would call an API endpoint to update likes
+    // For now, we'll just update the UI
     setPosts((prevPosts) =>
       prevPosts.map((post) =>
-        post.id === postId
+        post._id === postId
           ? { ...post, likeCount: likedPosts[postId] ? post.likeCount - 1 : post.likeCount + 1 }
           : post,
       ),
@@ -160,10 +173,13 @@ export default function Discuss() {
     }));
   };
 
-  const handleDislike = (postId: number) => {
+  // Handle dislikes (this would require backend support)
+  const handleDislike = (postId: string) => {
+    // In a real implementation, you would call an API endpoint to update dislikes
+    // For now, we'll just update the UI
     setPosts((prevPosts) =>
       prevPosts.map((post) =>
-        post.id === postId
+        post._id === postId
           ? { ...post, dislikeCount: dislikedPosts[postId] ? post.dislikeCount - 1 : post.dislikeCount + 1 }
           : post,
       ),
@@ -176,7 +192,7 @@ export default function Discuss() {
   };
 
   // Handle showing reply box
-  const toggleReplyEntryBox = (postId: number) => {
+  const toggleReplyEntryBox = (postId: string) => {
     setReplyEntryVisibility((prev) => ({
       ...prev,
       [postId]: !prev[postId],
@@ -184,41 +200,73 @@ export default function Discuss() {
   };
 
   // Handle typing in the reply box
-  const handleReplyChange = (postId: number, content: string) => {
+  const handleReplyChange = (postId: string, content: string) => {
     setReplyContent((prev) => ({
       ...prev,
       [postId]: content,
     }));
   };
 
-  const toggleReplies = (postId: number) => {
+  // Toggle showing replies
+  const toggleReplies = (postId: string) => {
     setRepliesVisibility((prev) => ({
       ...prev,
       [postId]: !prev[postId],
     }));
   };
 
-  const handleCreateReply = (postId: number) => {
-    if (replyContent[postId]?.trim() === "") return;
-    const newReply: Reply = {
-      id: posts[postId - 1].replies.length + 1,
-      user: "You", 
-      content: replyContent[postId] || "",
-      time: "Just now",
-    };
+  // Create a new reply
+  const handleCreateReply = async (postId: string) => {
+    if (!replyContent[postId]?.trim()) return;
+    
+    try {
+      await axios.post(`${API_URL}/replies`, {
+        postId: postId,
+        user: currentUser._id,
+        content: replyContent[postId]
+      });
+      
+      // Refresh posts to include the new reply
+      fetchPosts();
+      
+      // Reset reply UI state
+      setReplyContent((prev) => ({
+        ...prev,
+        [postId]: "",
+      }));
+      toggleReplyEntryBox(postId);
+    } catch (err) {
+      console.error('Error creating reply:', err);
+      setError('Failed to create reply. Please try again.');
+    }
+  };
 
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId
-          ? { ...post, replies: [...post.replies, newReply] }
-          : post
-      )
-    );
-    setReplyContent((prev) => ({
-      ...prev,
-      [postId]: "",
-    }));
-    toggleReplyEntryBox(postId);
+  // Format date display
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSec = Math.round(diffMs / 1000);
+    const diffMin = Math.round(diffSec / 60);
+    const diffHour = Math.round(diffMin / 60);
+    const diffDay = Math.round(diffHour / 24);
+
+    if (diffSec < 60) return 'Just now';
+    if (diffMin < 60) return `${diffMin} minute${diffMin !== 1 ? 's' : ''} ago`;
+    if (diffHour < 24) return `${diffHour} hour${diffHour !== 1 ? 's' : ''} ago`;
+    if (diffDay < 7) return `${diffDay} day${diffDay !== 1 ? 's' : ''} ago`;
+    
+    return date.toLocaleDateString();
+  };
+
+  // Check if a post or reply is from the current user
+  const isCurrentUser = (user: User) => {
+    return user._id === currentUser._id;
+  };
+
+  // Display name for post/reply author
+  const getUserDisplayName = (user: User) => {
+    return isCurrentUser(user) ? 'You' : user.username;
   };
 
   return (
@@ -227,156 +275,178 @@ export default function Discuss() {
         Community Discussion
       </Typography>
 
-      {posts.map((post) => (
-        <Card key={post.id} sx={{ mb: 2, p: 2 }}>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar>{post.user.charAt(0)}</Avatar>
-              <Box>
-                <Typography variant="subtitle1" fontWeight="bold">
-                  {post.user}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {post.time}
-                </Typography>
-              </Box>
+      {/* Error message */}
+      {error && (
+        <Box sx={{ bgcolor: 'error.light', color: 'error.contrastText', p: 2, borderRadius: 1, mb: 2 }}>
+          {error}
+        </Box>
+      )}
+
+      {/* Loading indicator */}
+      {loading ? (
+        <Box sx={{ textAlign: 'center', p: 4 }}>
+          <Typography>Loading posts...</Typography>
+        </Box>
+      ) : (
+        <>
+          {/* Empty state */}
+          {posts.length === 0 && !loading && (
+            <Box sx={{ textAlign: 'center', p: 4, bgcolor: 'background.paper', borderRadius: 2 }}>
+              <Typography>No posts yet. Be the first to post!</Typography>
             </Box>
-            <Typography variant="body1" sx={{ mt: 1 }}>
-              {post.content}
-            </Typography>
+          )}
 
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1 }}>
-              <Tooltip title="Like">
-                <IconButton
-                  size="small"
-                  onClick={() => handleLike(post.id)}
-                  sx={{ color: likedPosts[post.id] ? 'blue' : 'inherit' }}
-                >
-                  <ThumbUp fontSize="small" />
-                  <Typography variant="body2" paddingLeft={1}>
-                    {post.likeCount}
-                  </Typography>
-                </IconButton>
-              </Tooltip>
+          {/* Posts list */}
+          {posts.map((post) => (
+            <Card key={post._id} sx={{ mb: 2, p: 2 }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Avatar>{getUserDisplayName(post.user).charAt(0)}</Avatar>
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      {getUserDisplayName(post.user)}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {formatDate(post.time)}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Typography variant="body1" sx={{ mt: 1 }}>
+                  {post.content}
+                </Typography>
 
-              <Tooltip title="Dislike">
-                <IconButton
-                  size="small"
-                  onClick={() => handleDislike(post.id)}
-                  sx={{ color: dislikedPosts[post.id] ? 'red' : 'inherit' }}
-                >
-                  <ThumbDown fontSize="small" />
-                  <Typography variant="body2" paddingLeft={1}>
-                    {post.dislikeCount}
-                  </Typography>
-                </IconButton>
-              </Tooltip>
-
-              <Tooltip title="Reply">
-                <IconButton 
-                size="small"
-                onClick={() => toggleReplyEntryBox(post.id)}
-                >
-                  <Reply fontSize="small" />
-                  <Typography variant="body2" paddingLeft={1}>{post.replies.length}</Typography>
-                </IconButton>
-              </Tooltip>
-
-              {post.replies.length > 0 && (
-                <Button 
-                size="small"
-                onClick={() => toggleReplies(post.id)}
-                >
-                  {repliesVisibility[post.id] ? "Hide Replies" : "View Replies"}
-                </Button>
-              )}
-
-              {post.user === 'You' && (
-                <Tooltip title="Delete Post">
-                  <IconButton size="small" onClick={() => handleDeletePost(post)}>
-                    <Delete fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              )}
-
-            </Box>
-
-            {/* Replies */}
-            {repliesVisibility[post.id] && (
-              <Box sx={{ mt: 2, ml: 2 }}>
-                {post.replies.map((reply, index) => {
-                  return (
-                    <Box
-                      key={reply.id}
-                      sx={{
-                        mt: 1,
-                        pb: 1,
-                        borderBottom: index !== post.replies.length - 1 ? "1px solid rgba(0, 0, 0, 0.1)" : "none",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1 }}>
+                  <Tooltip title="Like">
+                    <IconButton
+                      size="small"
+                      onClick={() => handleLike(post._id)}
+                      sx={{ color: likedPosts[post._id] ? 'blue' : 'inherit' }}
                     >
-                      <Box>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <Typography variant="subtitle1" fontWeight="bold">
-                            {reply.user}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            • {reply.time}
-                          </Typography>
-                        </Box>
-                        <Typography variant="body1">{reply.content}</Typography>
-                      </Box>
+                      <ThumbUp fontSize="small" />
+                      <Typography variant="body2" paddingLeft={1}>
+                        {post.likeCount}
+                      </Typography>
+                    </IconButton>
+                  </Tooltip>
 
-                      {/* Three-dot menu only if the user is "You" */}
-                      {reply.user === "You" && (
-                        <Box>
-                          <IconButton size="small" onClick={handleMenuOpen}>
-                            <MoreVertIcon />
-                          </IconButton>
-                          <Menu anchorEl={anchorEl} open={openMenu} onClose={handleMenuClose}>
-                            <MenuItem onClick={() => {/* Handle edit */ handleMenuClose(); }}>Edit</MenuItem>
-                            <MenuItem onClick={() => {/* Handle delete */ handleDeleteReply(post.id, reply.id); handleMenuClose(); }}>Delete</MenuItem>
-                          </Menu>
-                        </Box>
-                      )}
-                    </Box>
-                  );
-                })}
-              </Box>
-            )}
+                  <Tooltip title="Dislike">
+                    <IconButton
+                      size="small"
+                      onClick={() => handleDislike(post._id)}
+                      sx={{ color: dislikedPosts[post._id] ? 'red' : 'inherit' }}
+                    >
+                      <ThumbDown fontSize="small" />
+                      <Typography variant="body2" paddingLeft={1}>
+                        {post.dislikeCount}
+                      </Typography>
+                    </IconButton>
+                  </Tooltip>
 
-            {/* Reply Entry Box */}
-            {replyEntryVisibility[post.id] && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1}}>
-              <TextField
-                fullWidth
-                multiline
-                minRows={1} 
-                maxRows={6} 
-                variant="outlined"
-                placeholder="Write a reply..."
-                value={replyContent[post.id] || ""}
-                onChange={(e) => handleReplyChange(post.id, e.target.value)}
-                InputProps={{
-                  sx: { alignItems: "flex-end" },
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Tooltip title="Send" placement='top'>
-                        <IconButton size="small" onClick={() => {handleCreateReply(post.id)}}>
-                          <Send />
-                        </IconButton>
-                      </Tooltip>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Box>
-            )}
-          </CardContent>
-        </Card>
-      ))}
+                  <Tooltip title="Reply">
+                    <IconButton 
+                      size="small"
+                      onClick={() => toggleReplyEntryBox(post._id)}
+                    >
+                      <Reply fontSize="small" />
+                      <Typography variant="body2" paddingLeft={1}>{post.replies.length}</Typography>
+                    </IconButton>
+                  </Tooltip>
+
+                  {post.replies.length > 0 && (
+                    <Button 
+                      size="small"
+                      onClick={() => toggleReplies(post._id)}
+                    >
+                      {repliesVisibility[post._id] ? "Hide Replies" : "View Replies"}
+                    </Button>
+                  )}
+
+                  {isCurrentUser(post.user) && (
+                    <Tooltip title="Delete Post">
+                      <IconButton size="small" onClick={() => handleDeletePost(post)}>
+                        <Delete fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Box>
+
+                {/* Replies */}
+                {repliesVisibility[post._id] && (
+                  <Box sx={{ mt: 2, ml: 2 }}>
+                    {post.replies.map((reply, index) => {
+                      return (
+                        <Box
+                          key={reply._id}
+                          sx={{
+                            mt: 1,
+                            pb: 1,
+                            borderBottom: index !== post.replies.length - 1 ? "1px solid rgba(0, 0, 0, 0.1)" : "none",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Box>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                              <Typography variant="subtitle1" fontWeight="bold">
+                                {getUserDisplayName(reply.user)}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary">
+                                • {formatDate(reply.time)}
+                              </Typography>
+                            </Box>
+                            <Typography variant="body1">{reply.content}</Typography>
+                          </Box>
+
+                          {/* Three-dot menu only shown for current user's replies */}
+                          {isCurrentUser(reply.user) && (
+                            <Box>
+                              <IconButton size="small" onClick={handleMenuOpen}>
+                                <MoreVertIcon />
+                              </IconButton>
+                              <Menu anchorEl={anchorEl} open={openMenu} onClose={handleMenuClose}>
+                                <MenuItem onClick={() => { handleDeleteReply(post._id, reply._id); handleMenuClose(); }}>Delete</MenuItem>
+                              </Menu>
+                            </Box>
+                          )}
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                )}
+
+                {/* Reply Entry Box */}
+                {replyEntryVisibility[post._id] && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                    <TextField
+                      fullWidth
+                      multiline
+                      minRows={1} 
+                      maxRows={6} 
+                      variant="outlined"
+                      placeholder="Write a reply..."
+                      value={replyContent[post._id] || ""}
+                      onChange={(e) => handleReplyChange(post._id, e.target.value)}
+                      InputProps={{
+                        sx: { alignItems: "flex-end" },
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Tooltip title="Send" placement='top'>
+                              <IconButton size="small" onClick={() => {handleCreateReply(post._id)}}>
+                                <Send />
+                              </IconButton>
+                            </Tooltip>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </>
+      )}
 
       <Tooltip title="Create Post" placement="top">
         <Fab color="primary" sx={{ position: 'fixed', bottom: 130, right: 24 }} onClick={handleOpen}>
@@ -418,10 +488,7 @@ export default function Discuss() {
 
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
             <Button
-              onClick={() => {
-                handleCreatePost();
-                handleClose();
-              }}
+              onClick={handleCreatePost}
               color="primary"
             >
               Post

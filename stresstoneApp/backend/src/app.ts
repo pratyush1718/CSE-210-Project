@@ -9,6 +9,8 @@ import tagRouter from './routes/TagRouter';
 import discoveryRouter from './routes/DiscoveryRouter';
 import likeRouter from './routes/LikeRouter';
 import userRouter from './routes/UserRouter';
+import postRouter from './routes/postRouter';
+import replyRouter from './routes/replyRouter';
 
 dotenv.config();
 const app: Application = express();
@@ -46,6 +48,9 @@ app.use('/api/likes', likeRouter);
 
 // Mount user routes
 app.use('/api/user', userRouter);
+
+app.use("/api/posts", postRouter);
+app.use("/api/replies", replyRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
