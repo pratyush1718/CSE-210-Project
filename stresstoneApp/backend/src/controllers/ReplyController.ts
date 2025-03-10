@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
 import { Post, Reply } from "../models/Post";
+import User from '../models/User'
 
 // Create a new reply
 export const createReply = async (req: Request, res: Response) => {
     try {
-        const { postId, user, content } = req.body;
-
+        const { postId, userFirebaseId, content } = req.body;
+        const user = await User.findOne({ firebaseId: userFirebaseId }); 
+        if (!user) {
+            res.status(400).json({ message: "User not found." });
+            return; 
+        }
         const post = await Post.findById(postId);
         if (!post) {
             res.status(404).json({ message: "Post not found" });
