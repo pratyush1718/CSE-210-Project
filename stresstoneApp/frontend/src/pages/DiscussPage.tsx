@@ -39,7 +39,6 @@ interface Post {
 const PORT = import.meta.env.VITE_BACKEND_PORT  || 3000;
 const API_URL = `http://localhost:${PORT}/api`;
 
-const currentUserFirebase = auth.currentUser; 
 
 export default function Discuss() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -56,6 +55,8 @@ export default function Discuss() {
   const [replyEntryVisibility, setReplyEntryVisibility] = useState<{ [key: string]: boolean }>({});
   const [replyContent, setReplyContent] = useState<{ [key: string]: string }>({});
   const [repliesVisibility, setRepliesVisibility] = useState<{ [key: string]: boolean }>({});
+
+  const currentUserFirebase = auth.currentUser; 
   
   // Fetch posts from the API
   const fetchPosts = async () => {
