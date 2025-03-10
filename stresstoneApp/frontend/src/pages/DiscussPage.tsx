@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { 
-  Box, Fab, Typography, Card, CardContent, Avatar, IconButton, 
+  Box, Typography, Card, CardContent, Avatar, IconButton, 
   Button, Tooltip, Modal, TextField, InputAdornment, Menu, MenuItem
 } from '@mui/material';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { ThumbUp, ThumbDown, Reply, Add, Close, Delete, Send } from '@mui/icons-material';
+import { ThumbUp, ThumbDown, Reply, Close, Delete, Send } from '@mui/icons-material';
 import axios from 'axios';  
 import { auth } from '../firebase';
 
@@ -46,7 +46,6 @@ export default function Discuss() {
   const [error, setError] = useState('');
   const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
   const [dislikedPosts, setDislikedPosts] = useState<{ [key: string]: boolean }>({});
-  const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [newPostContent, setNewPostContent] = useState('');
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
@@ -77,9 +76,6 @@ export default function Discuss() {
   useEffect(() => {
     fetchPosts();
   }, []);
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const openMenu = Boolean(anchorEl);
@@ -112,7 +108,6 @@ export default function Discuss() {
       if (response.ok) {
         fetchPosts();
         setNewPostContent('');
-        handleClose();
       }
     } catch (err) {
       console.error('Error creating post:', err);
@@ -288,6 +283,40 @@ export default function Discuss() {
         </Box>
       )}
 
+      {/* Post creation box at the top of the feed */}
+      <Card sx={{ mb: 3, p: 2 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+            <Avatar sx={{ mt: 1 }}>
+              {currentUserFirebase?.email?.charAt(0) || '?'}
+            </Avatar>
+            <Box sx={{ width: '100%' }}>
+              <TextField
+                fullWidth
+                multiline
+                minRows={2}
+                maxRows={6}
+                variant="outlined"
+                placeholder="What's on your mind?"
+                value={newPostContent}
+                onChange={(e) => setNewPostContent(e.target.value)}
+                sx={{ mb: 1 }}
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  onClick={handleCreatePost}
+                  disabled={!newPostContent.trim()}
+                >
+                  Post
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+
       {/* Loading indicator */}
       {loading ? (
         <Box sx={{ textAlign: 'center', p: 4 }}>
@@ -453,55 +482,6 @@ export default function Discuss() {
           ))}
         </>
       )}
-
-      <Tooltip title="Create Post" placement="top">
-        <Fab color="primary" sx={{ position: 'fixed', bottom: 130, right: 24 }} onClick={handleOpen}>
-          <Add />
-        </Fab>
-      </Tooltip>
-
-      {/* Post Modal */}
-      <Modal open={open} onClose={handleClose}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 3,
-            borderRadius: 2,
-            width: 400,
-          }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6">Create Post</Typography>
-            <IconButton onClick={handleClose}>
-              <Close />
-            </IconButton>
-          </Box>
-
-          <TextField
-            fullWidth
-            multiline
-            rows={3}
-            variant="outlined"
-            placeholder="What's on your mind?"
-            value={newPostContent}
-            onChange={(e) => setNewPostContent(e.target.value)}
-          />
-
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
-            <Button
-              onClick={handleCreatePost}
-              color="primary"
-            >
-              Post
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
 
       {/* Delete Confirmation Modal */}
       <Modal open={deleteOpen} onClose={cancelDeletePost}>
