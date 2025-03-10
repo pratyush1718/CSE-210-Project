@@ -51,16 +51,17 @@ export const deletePost = async (req: Request, res: Response): Promise<void> => 
 // Get all posts
 export const getAllPosts = async (req: Request, res: Response): Promise<void> => {
     try {
-        // Retrieve all posts from the database
         const posts = await Post.find()
             .populate('user')
             .populate({
                 path: 'replies',
                 populate: {
                 path: 'user',
-                model: 'User' // Make sure this matches your User model name
-                }
-            }).sort({ time: -1 });
+                model: 'User'
+                },
+                options: { sort: { time: -1 } } 
+            })
+            .sort({ time: -1 });
 
         // Check if there are no posts
         if (posts.length === 0) {
