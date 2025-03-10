@@ -13,7 +13,7 @@ interface IPost extends Document {
     time: Date;
     likeCount: number;
     dislikeCount: number;
-    replies: IReply[];
+    replies: Types.ObjectId[]; // Array of ObjectIds for replies
 }
 
 const replySchema = new Schema<IReply>({
@@ -29,7 +29,7 @@ const postSchema = new Schema<IPost>({
     time: { type: Date, required: true },
     likeCount: { type: Number, default: 0 },
     dislikeCount: { type: Number, default: 0 },
-    replies: { type: [replySchema], default: [] }, 
+    replies: [{ type: Schema.Types.ObjectId, ref: "Reply" }], // Array of ObjectIds referencing Reply model
 });
 
 const Post = mongoose.model<IPost>("Post", postSchema);
