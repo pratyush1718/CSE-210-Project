@@ -7,7 +7,6 @@ export const createPost = async (req: Request, res: Response) => {
     try {
         const { userFirebaseId, content } = req.body;
         const user = await User.findOne({ firebaseId: userFirebaseId }); 
-        console.log(user);
         if (!user) {
             res.status(400).json({ message: "User not found." });
             return; 
@@ -61,7 +60,7 @@ export const getAllPosts = async (req: Request, res: Response): Promise<void> =>
                 path: 'user',
                 model: 'User' // Make sure this matches your User model name
                 }
-            });
+            }).sort({ time: -1 });
 
         // Check if there are no posts
         if (posts.length === 0) {
