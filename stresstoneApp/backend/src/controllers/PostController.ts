@@ -43,8 +43,8 @@ export const deletePost = async (req: Request, res: Response): Promise<void> => 
         // Delete the post itself
         await Post.deleteOne({ _id: postId }); 
         res.status(200).json({ message: "Post deleted successfully" });
-    } catch (error: any) {
-        res.status(500).json({ message: "Error deleting post", error: error.toString() });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting post", error });
     }
 };
 
