@@ -35,6 +35,9 @@ interface Post {
   replies: Reply[];
 }
 
+// const currentUser = getAuth; 
+// console.log(currentUser);
+
 // API base URL - adjust to match your backend
 const PORT = import.meta.env.VITE_BACKEND_PORT  || 3000;
 const API_URL = `http://localhost:${PORT}/api`;
@@ -54,9 +57,6 @@ export default function Discuss() {
   const [replyEntryVisibility, setReplyEntryVisibility] = useState<{ [key: string]: boolean }>({});
   const [replyContent, setReplyContent] = useState<{ [key: string]: string }>({});
   const [repliesVisibility, setRepliesVisibility] = useState<{ [key: string]: boolean }>({});
-
-  // Mock user ID - in a real app, this would come from authentication
-  // const currentUserId = getAuth().currentUser.uid; 
   
   const currentUser = {
     _id: 'random', // Use a placeholder user ID
@@ -67,7 +67,6 @@ export default function Discuss() {
     try {
       setLoading(true);
       const response = await axios.get(`${API_URL}/posts`);
-      console.log(response.data);
       setPosts(response.data);
       setError('');
     } catch (err) {
@@ -154,10 +153,8 @@ export default function Discuss() {
     setPostToDelete(null);
   };
 
-  // Handle likes (this would require backend support)
+  // Handle likes 
   const handleLike = (postId: string) => {
-    // In a real implementation, you would call an API endpoint to update likes
-    // For now, we'll just update the UI
     setPosts((prevPosts) =>
       prevPosts.map((post) =>
         post._id === postId
@@ -172,10 +169,8 @@ export default function Discuss() {
     }));
   };
 
-  // Handle dislikes (this would require backend support)
+  // Handle dislikes
   const handleDislike = (postId: string) => {
-    // In a real implementation, you would call an API endpoint to update dislikes
-    // For now, we'll just update the UI
     setPosts((prevPosts) =>
       prevPosts.map((post) =>
         post._id === postId
