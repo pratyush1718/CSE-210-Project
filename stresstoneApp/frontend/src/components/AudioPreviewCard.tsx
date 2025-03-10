@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { TonePreviewProps } from '../types';
 import AudioProgressTracker from './AudioProgressBar';
 
-const AudioPreviewCard: React.FC<TonePreviewProps> = ({ id, title, tags, audioData }) => {
+const AudioPreviewCard: React.FC<TonePreviewProps> = (props: TonePreviewProps) => {
+  const { tags, audioData } = props
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const togglePlay = () => {
