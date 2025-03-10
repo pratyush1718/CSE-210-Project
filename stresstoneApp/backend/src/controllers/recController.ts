@@ -1,10 +1,14 @@
 import { Request, Response } from "express";
 import User from "../models/User";
-import Content from "../models/Content";
+import SoundTrack from "../models/SoundTrack";
 import { Console } from "console";
  
-export const recommendContent = async(req: Request, res: Response) => {
+export const recommendContent = async(req: Request, res: Response) : Promise<void> => {
+    //console.log(req.body);
     const {firebaseId} = req.body;
+    //console.log("I am in recommendContent ");
+
+    //console.log(firebaseId);
 
     try {
         const user = await User.findOne({ firebaseId });
@@ -13,7 +17,10 @@ export const recommendContent = async(req: Request, res: Response) => {
             return;
         }
 
-        const contents = await Content.find();
+        const contents = await SoundTrack.find();
+
+        //console.log(contents);
+        //console.log(user);
 
         const scoredContent = contents.map((content) => {
             // uses cosine similarity
@@ -23,7 +30,6 @@ export const recommendContent = async(req: Request, res: Response) => {
             let magVectorA = 0;
             let magVectorB = 0;
 
-            // I made a mistake in my initial design.
             // User's definition of tags is an array of objects of Type Tag while Content's definition of tags is a string array.
             
             // This is a workaround for now, but this problem needs refactoring of code.
@@ -36,6 +42,9 @@ export const recommendContent = async(req: Request, res: Response) => {
             // if tag in corresponding list doesn't exist.
             const vectorA = allTags.map(tag => userTagsAsStr.filter(item => item === tag).length);
             const vectorB = allTags.map(tag => content.tags.filter(item => item === tag).length);
+
+            //console.log(vectorA);
+            //console.log(vectorB);
 
             // Accumulate in acc, val is the iterator and i is the index.
             // Iterate over Vector A and multiply by the matching index in B then add to acc.
@@ -51,7 +60,12 @@ export const recommendContent = async(req: Request, res: Response) => {
                 score = dotproduct / (magVectorA * magVectorB);
             }
 
-            // Simple log to show cosine similarity result.
+            // Simple log to show cosine similarity result. 
+            
+            // Weighting system using likes -- higher liked songs of preferred genre have higher scores.
+            if (content.likes > 0) {
+                score *= content.likes;
+            }
             console.log("Content: " + content.title + " Score: " + score + "\n");
 
             return { content, score };
@@ -63,13 +77,15 @@ export const recommendContent = async(req: Request, res: Response) => {
         // Slice top 10 results.
         const top10results = scoredContent.slice(0,10).map((item) => item.content);
 
+        //console.log(top10results);
+
         // Respond with top 10 results.
         res.status(200).json({recommendations: top10results});
         return;
     }
     catch (error) {
         console.error("Error:", error);
-        res.status(500).json({message: "An error ocurred ", error});
+        res.status(500).json({message: "An error ocurred", error});
         return;
     }
 };

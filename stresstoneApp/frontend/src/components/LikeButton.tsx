@@ -47,6 +47,11 @@ const LikeButton: React.FC<LikeButtonProps> = ({ trackId, initialLikeCount, fire
       );
       setLiked(response.data.liked);
       setLikeCount(response.data.likes);
+
+      await axios.post(
+        `http://localhost:${port}/api/tagRouter/userTag/content`, 
+        { firebaseId, trackId }
+      );
     } catch (error) {
       console.error('Error toggling like:', error);
     } finally {
