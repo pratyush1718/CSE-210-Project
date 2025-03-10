@@ -1,5 +1,5 @@
 // File: stresstoneApp/frontend/src/contexts/PlayerContext.tsx
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import { createContext, useState, useContext, ReactNode } from 'react';
 
 interface SoundTrack {
   _id: string;
