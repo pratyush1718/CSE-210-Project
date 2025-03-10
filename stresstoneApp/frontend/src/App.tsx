@@ -11,7 +11,7 @@ import Register from './components/Register';
 import UploadPage from './pages/UploadPage';
 import SearchPage from './pages/SearchPage.tsx';
 import ToneCreationPage from './pages/TonecreationPage.tsx';
-import DiscoveryQueue from './components/DiscoveryQueue';
+import DiscoveryQueue from './pages/DiscoveryQueue.tsx';
 import { PlayerProvider } from './stateManagement/PlayerContext.tsx';
 
 const siderWidth = 240;

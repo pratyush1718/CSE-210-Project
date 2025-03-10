@@ -13,6 +13,7 @@ import {
 } from '@mui/icons-material';
 import AudioProgressTracker from './AudioProgressBar';
 import { usePlayer } from '../stateManagement/PlayerContext';
+import { fetchTrackAudio } from '../constants';
 
 interface TonePlayerProps {
   onHeightChange: (height: number) => void; // Callback function to send height updates
@@ -47,36 +48,13 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
   useEffect(() => {
     if (currentTrack?.audioUrl) {
       setAudioData(null); // Clear previous audio data
-      fetchTrackAudio(currentTrack.audioUrl);
+      const audio = fetchTrackAudio(currentTrack.audioUrl);
+      audio.then((data) => {
+        setAudioData(data);
+      })
     }
   }, [currentTrack]);
 
-  const fetchTrackAudio = async (audioUrl: string) => {
-    console.log('Fetching audio from URL:', audioUrl);
-    try {
-      const response = await fetch(audioUrl);
-      console.log('Response status:', response.status);
-      // Log headers to check content type
-      response.headers.forEach((value, key) => {
-        console.log(`${key}: ${value}`);
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const buffer = await response.arrayBuffer();
-      console.log('Buffer received, size:', buffer.byteLength);
-
-      if (buffer.byteLength === 0) {
-        throw new Error('The fetched audio data is empty.');
-      }
-
-      setAudioData(buffer);
-    } catch (error) {
-      console.error('Error fetching audio:', error);
-    }
-  };
   /* End code change region */
 
   return (
