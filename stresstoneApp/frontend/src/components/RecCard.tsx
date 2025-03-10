@@ -1,16 +1,13 @@
-import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
 import { ExtendedTrackObjSpec, SoundTrack } from '../types';
 import { fetchAudio, getImageURL } from '../controller/contentDispatcher';
-import { Avatar, ListItemAvatar } from '@mui/material';
+import { Avatar } from '@mui/material';
 import { Download, MusicNote } from '@mui/icons-material';
 import LikeButton from './LikeButton';
 import { usePlayer } from '../stateManagement/PlayerContext';

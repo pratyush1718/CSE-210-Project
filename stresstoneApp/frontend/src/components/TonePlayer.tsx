@@ -29,7 +29,7 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
   const handleShuffle = () => setIsShuffle((prev) => !prev);
   const handleRepeat = () => setIsRepeat((prev) => !prev);
   const handlePlayPause = () => togglePlay();
-  const handlePlayEnd = (playstate: boolean) => setIsPlaying(playstate);
+  // const handlePlayEnd = (playstate: boolean) => setIsPlaying(playstate);
   const handleToggleExpand = () => {
     setIsExpanded((prev) => !prev);
   };
