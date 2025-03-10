@@ -97,11 +97,6 @@ export default function Discuss() {
     if (newPostContent.trim() === '') return;
 
     try {
-      // await axios.post(`${API_URL}/posts`, {
-      //   userFirebaseId: currentUser.firebaseId,
-      //   content: newPostContent,
-      // });
-
       const response = await fetch(`${API_URL}/posts`, {
         method: 'POST',
         headers: {
@@ -223,21 +218,29 @@ export default function Discuss() {
     if (!replyContent[postId]?.trim()) return;
     
     try {
-      await axios.post(`${API_URL}/replies`, {
-        postId: postId,
-        user: currentUserFirebase?.uid,
-        content: replyContent[postId]
+      const response = await fetch(`${API_URL}/replies`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          postId: postId, 
+          userFirebaseId: currentUserFirebase?.uid, 
+          content: replyContent[postId],
+          }),
       });
       
+      if (response.ok) {
+        fetchPosts();
+        
+        // Reset reply UI state
+        setReplyContent((prev) => ({
+          ...prev,
+          [postId]: "",
+        }));
+        toggleReplyEntryBox(postId);
+      }
       // Refresh posts to include the new reply
-      fetchPosts();
-      
-      // Reset reply UI state
-      setReplyContent((prev) => ({
-        ...prev,
-        [postId]: "",
-      }));
-      toggleReplyEntryBox(postId);
     } catch (err) {
       console.error('Error creating reply:', err);
       setError('Failed to create reply. Please try again.');
