@@ -1,7 +1,8 @@
 
 
 export const recommendDispatcher = async (userID: string) => {
-  const apiURL = 'http://localhost:' + import.meta.env.VITE_BACKEND_PORT + '/api/discovery/recommendations';
+  const port = import.meta.env.VITE_BACKEND_PORT || 3000;
+  const apiURL = 'http://localhost:' + port + '/api/discovery/recommendations';
 
   //console.log('Fetching recommendations from URL:', apiURL);
   //console.log('ID is ', userID);
