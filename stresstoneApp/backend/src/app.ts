@@ -9,8 +9,8 @@ import tagRouter from './routes/TagRouter';
 import discoveryRouter from './routes/DiscoveryRouter';
 import likeRouter from './routes/LikeRouter';
 import userRouter from './routes/UserRouter';
-import postRouter from './routes/postRouter';
-import replyRouter from './routes/replyRouter';
+import postRouter from './routes/PostRouter';
+import replyRouter from './routes/ReplyRouter';
 import PlaylistRouter from './routes/PlaylistRouter';
 
 dotenv.config();

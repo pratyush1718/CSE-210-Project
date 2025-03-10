@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createReply, deleteReply } from "../controllers/replyController";
+import { createReply, deleteReply } from "../controllers/ReplyController";
 
 const replyRouter: Router = Router();
 
