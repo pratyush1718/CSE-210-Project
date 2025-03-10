@@ -36,8 +36,7 @@ interface Post {
 }
 
 // API base URL - adjust to match your backend
-// const PORT = process.env.PORT || 3000;
-const PORT = 3000;
+const PORT = import.meta.env.VITE_BACKEND_PORT  || 3000;
 const API_URL = `http://localhost:${PORT}/api`;
 
 export default function Discuss() {
