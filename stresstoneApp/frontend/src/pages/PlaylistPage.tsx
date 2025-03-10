@@ -5,7 +5,7 @@ import Playlist from '../components/Playlist';
 import { playlistDispatcher } from '../controller/playlistDispatcher';
 
 const PlaylistPage: React.FC = () => {
-  // set items will set the id and imageURL and title, NOT IMPLEMENTED YET
+  // set items will set the id and imageURL and title, NOT IMPLEMENTED YET 
 
   const userID = auth.currentUser?.uid;
   const [items, setItems] = useState([]);

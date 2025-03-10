@@ -4,7 +4,7 @@ export const playlistDispatcher = async (userID: string) => {
     const port = import.meta.env.VITE_BACKEND_PORT || 3000;
     const apiURL = 'http://localhost:' + port + "/api/playlist/liked";
     //console.log('Fetching recommendations from URL:', apiURL);
-    //console.log('ID is ', userID);
+    //console.log('ID is ', userID); 
     try {
       const response = await fetch(apiURL, {
         method: 'POST',

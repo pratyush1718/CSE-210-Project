@@ -13,7 +13,7 @@ import SearchPage from './pages/SearchPage.tsx';
 import ToneCreationPage from './pages/TonecreationPage.tsx';
 import DiscoveryQueue from './pages/DiscoveryQueue.tsx';
 import { PlayerProvider } from './stateManagement/PlayerContext.tsx';
-import PlaylistPage from './pages/PlaylistPage.tsx';
+import PlaylistPage from './pages/PlaylistPage.tsx'; 
 
 const siderWidth = 240;
 const headerHeight = 64;

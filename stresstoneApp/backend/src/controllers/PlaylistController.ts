@@ -5,7 +5,7 @@ import { Console } from "console";
 import SoundTrack from "../models/SoundTrack";
  
 export const PlaylistController = async(req: Request, res: Response) : Promise<void> => {
-    //console.log("REACHED PLAYLIST CONTROLLER");
+    //console.log("REACHED PLAYLIST CONTROLLER"); 
 
     const {firebaseId} = req.body;
     const likedSongs = await Like.find({firebaseId : firebaseId});
