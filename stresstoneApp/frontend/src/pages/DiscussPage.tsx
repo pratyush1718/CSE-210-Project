@@ -121,7 +121,7 @@ export default function Discuss() {
   };
 
   // Delete a reply
-  const handleDeleteReply = async (postId: string, replyId: string) => {
+  const handleDeleteReply = async (_postId: string, replyId: string) => {
     try {
       await axios.delete(`${API_URL}/replies/${replyId}`);
       fetchPosts(); // Refresh posts to update UI
