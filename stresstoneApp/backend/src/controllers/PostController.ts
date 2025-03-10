@@ -79,7 +79,7 @@ export const likePost = async (req: Request, res: Response): Promise<void> => {
             return; 
         }
 
-        post.likeCount ++; 
+        post.likeCount++; 
         await post.save(); 
         res.status(200).json(post)
     } catch (error) {
@@ -96,7 +96,7 @@ export const dislikePost = async (req: Request, res: Response): Promise<void> =>
             return; 
         }
 
-        post.dislikeCount ++; 
+        post.dislikeCount++; 
         await post.save(); 
         res.status(200).json(post)
     } catch (error) {
@@ -113,7 +113,7 @@ export const unlikePost = async (req: Request, res: Response): Promise<void> => 
             return; 
         }
 
-        post.likeCount --; 
+        post.likeCount--; 
         await post.save(); 
         res.status(200).json(post)
     } catch (error) {
@@ -130,7 +130,7 @@ export const undislikePost = async (req: Request, res: Response): Promise<void> 
             return; 
         }
 
-        post.dislikeCount --; 
+        post.dislikeCount--; 
         await post.save(); 
         res.status(200).json(post)
     } catch (error) {
