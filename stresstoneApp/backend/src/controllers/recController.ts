@@ -46,6 +46,9 @@ export const recommendContent = async(req: Request, res: Response) : Promise<voi
             //console.log(vectorA);
             //console.log(vectorB);
 
+            //console.log(vectorA);
+            //console.log(vectorB);
+
             // Accumulate in acc, val is the iterator and i is the index.
             // Iterate over Vector A and multiply by the matching index in B then add to acc.
             // Result is dot product.
@@ -76,6 +79,8 @@ export const recommendContent = async(req: Request, res: Response) : Promise<voi
 
         // Slice top 10 results.
         const top10results = scoredContent.slice(0,10).map((item) => item.content);
+
+        //console.log(top10results);
 
         //console.log(top10results);
 
