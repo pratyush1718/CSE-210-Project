@@ -59,7 +59,7 @@ export const getAllPosts = async (req: Request, res: Response): Promise<void> =>
                 path: 'user',
                 model: 'User'
                 },
-                options: { sort: { time: -1 } } 
+                options: { sort: { time: 1 } } 
             })
             .sort({ time: -1 });
 
