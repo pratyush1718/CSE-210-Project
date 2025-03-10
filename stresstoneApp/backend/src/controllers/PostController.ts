@@ -1,10 +1,17 @@
 import { Request, Response } from "express";
 import { Post, Reply } from "../models/Post"; 
+import User from '../models/User';
 
 // Create a new post
 export const createPost = async (req: Request, res: Response) => {
     try {
-        const { user, content } = req.body;
+        const { userFirebaseId, content } = req.body;
+        const user = await User.findOne({ firebaseId: userFirebaseId }); 
+        console.log(user);
+        if (!user) {
+            res.status(400).json({ message: "User not found." });
+            return; 
+        }
         const newPost = new Post({
             user,
             content,
@@ -13,7 +20,6 @@ export const createPost = async (req: Request, res: Response) => {
             dislikeCount: 0,
             replies: [],
         });
-        
         await newPost.save();
         res.status(201).json({ message: "Post created successfully", post: newPost });
     } catch (error) {
