@@ -74,6 +74,22 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
         transition: 'min-height 0.3s ease-in-out',
       }}
     >
+      {/* Collapse/Expand Button */}
+      <IconButton
+        onClick={handleToggleExpand}
+        sx={{
+          position: 'absolute',
+          top: -28,
+          right: 16,
+          bgcolor: 'white',
+          boxShadow: '0 0 8px rgba(0,0,0,0.2)',
+          '&:hover': {
+            bgcolor: 'white',
+          }
+        }}
+      >
+      {isExpanded ? <ExpandMore /> : <ExpandLess />}
+      </IconButton>
       <Toolbar
         sx={{
           width: '100%',
@@ -180,9 +196,11 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
             </>
           )}
           {/* Collapse/Expand Button */}
-          <IconButton onClick={handleToggleExpand} sx={{ ml: 1 }}>
+          {/* <IconButton onClick={handleToggleExpand} sx={{ ml: 1 }}>
             {isExpanded ? <ExpandMore /> : <ExpandLess />}
-          </IconButton>
+          </IconButton> */}
+
+          
         </Box>
       </Toolbar>
 
