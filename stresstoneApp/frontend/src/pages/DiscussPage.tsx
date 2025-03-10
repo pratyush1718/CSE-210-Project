@@ -8,7 +8,6 @@ import { ThumbUp, ThumbDown, Reply, Add, Close, Delete, Send } from '@mui/icons-
 import axios from 'axios';  
 import { auth } from '../firebase';
 
-// Define interfaces based on your backend models
 interface User {
   _id: string; 
   email: string; 
@@ -264,7 +263,7 @@ export default function Discuss() {
 
   // Check if a post or reply is from the current user
   const isCurrentUser = (user: User) => {
-    return user.email === currentUserFirebase?.email;
+    return user.email == currentUserFirebase?.email;
   };
 
   // Display name for post/reply author
