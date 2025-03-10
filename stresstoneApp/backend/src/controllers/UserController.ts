@@ -20,3 +20,17 @@ export const registerUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export const getCurrentUser = async (req: Request, res: Response) => {
+  try {
+    const firebaseId = req.body; 
+    const user = await User.findOne( { firebaseId }); 
+    if (!user) { 
+      res.status(500).json({ message: "User not found." }); 
+    }
+    return user; 
+  } catch (error) {
+    console.log('User fetch error:', error); 
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
