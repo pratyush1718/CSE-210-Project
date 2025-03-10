@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DiscoveryQueueCard from './DiscoveryQueueCard';
 import {auth} from '../firebase'
 
-const App: React.FC = () => {
+const DiscoveryQueue: React.FC = () => {
   // set items will set the id and imageURL and title, NOT IMPLEMENTED YET
 
   const apiURL = "http://localhost:" + import.meta.env.VITE_BACKEND_PORT + "/api/discovery/recommendations";
@@ -87,4 +87,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default DiscoveryQueue;

@@ -6,7 +6,7 @@ import { Console } from "console";
 export const recommendContent = async(req: Request, res: Response) : Promise<void> => {
     //console.log(req.body);
     const {firebaseId} = req.body;
-    //console.log("I am in recommendContent ");
+    //console.log("I am in recommendContent");
 
     //console.log(firebaseId);
 
@@ -66,7 +66,7 @@ export const recommendContent = async(req: Request, res: Response) : Promise<voi
             if (content.likes > 0) {
                 score *= content.likes;
             }
-            console.log("Content: " + content.title + " Score: " + score + "\n");
+            //console.log("Content: " + content.title + " Score: " + score + "\n");
 
             return { content, score };
         });
