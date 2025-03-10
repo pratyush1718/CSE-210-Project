@@ -24,7 +24,7 @@ export const registerUser = async (req: Request, res: Response) => {
 export const getCurrentUser = async (req: Request, res: Response) => {
   try {
     const firebaseId = req.body; 
-    let user = await User.findOne( { firebaseId }); 
+    const user = await User.findOne( { firebaseId }); 
     if (!user) { 
       res.status(500).json({ message: "User not found." }); 
     }
