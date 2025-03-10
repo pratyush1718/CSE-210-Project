@@ -1,4 +1,5 @@
 import mongoose, {Schema, Document} from "mongoose"
+import SoundTrackSchema from "./SoundTrack";
 
 interface IUser extends Document {
     firebaseId: string; 

@@ -21,7 +21,7 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
   const fullWidthStyle = {
     gridColumn: '1 / span 2'
   };
-
+  
   return (
     <>
       <Typography variant="subtitle1" component="div">
@@ -38,6 +38,7 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
       </div>
     </>
   );
+  
 };
 
 export default Carousel;

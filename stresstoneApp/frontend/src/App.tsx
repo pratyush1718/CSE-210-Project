@@ -13,6 +13,7 @@ import SearchPage from './pages/SearchPage.tsx';
 import ToneCreationPage from './pages/TonecreationPage.tsx';
 import DiscoveryQueue from './pages/DiscoveryQueue.tsx';
 import { PlayerProvider } from './stateManagement/PlayerContext.tsx';
+import PlaylistPage from './pages/PlaylistPage.tsx'; 
 
 const siderWidth = 240;
 const headerHeight = 64;
@@ -70,6 +71,7 @@ function App() {
               <Routes>
                 {/* These routes are accessible only after login */}
                 <Route path="/" element={<DiscoveryQueue />} />
+                <Route path="/liked" element={<PlaylistPage />} />
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/discuss" element={<Discuss />} />
                 <Route path="/upload" element={<UploadPage />} />
