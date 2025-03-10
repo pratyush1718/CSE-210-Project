@@ -11,6 +11,7 @@ import likeRouter from './routes/LikeRouter';
 import userRouter from './routes/UserRouter';
 import postRouter from './routes/postRouter';
 import replyRouter from './routes/replyRouter';
+import PlaylistRouter from './routes/PlaylistRouter';
 
 dotenv.config();
 const app: Application = express();
@@ -45,6 +46,9 @@ app.use('/api/tagRouter', tagRouter);
 
 // Mount like routes
 app.use('/api/likes', likeRouter);
+
+// Mount playlist routes 
+app.use('/api/playlist', PlaylistRouter);
 
 // Mount user routes
 app.use('/api/user', userRouter);

@@ -1,44 +1,83 @@
-import React, { useState } from 'react';
-import './Carousel.css'; // Import styles
+import React from 'react';
+import { Skeleton, Typography } from '@mui/material';
+import RecCard from './RecCard';
+import { auth } from '../firebase';
+import { ExtendedTrackObjSpec } from '../types';
 
 interface CarouselProps {
-  items: { id: string; imageUrl: string; title: string }[];
+  items: ExtendedTrackObjSpec[];
 }
 
 const Carousel: React.FC<CarouselProps> = ({ items }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const user = auth.currentUser;
+  console.log("ITEMS" + items);
 
-  // Go to the next item in the carousel
-  const nextItem = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % items.length);
+  const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '16px'
   };
 
-  // Go to the previous item in the carousel
-  const prevItem = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === 0 ? items.length - 1 : prevIndex - 1));
+  const fullWidthStyle = {
+    gridColumn: '1 / span 2'
   };
-
-  const playSong = () => {
-    // TO IMPLEMENT
-  };
-
+  
   return (
-    <div className="carousel-container">
-      <button className="carousel-button prev" onClick={prevItem}>
-        &#8592;
-      </button>
-      <div className="carousel-items">
-        <div className="carousel-item">
-          <img src={items[currentIndex].imageUrl} alt={items[currentIndex].title} />
-          <button className="carousel-button play-button" onClick={playSong} />
-          <h3>{items[currentIndex].title}</h3>
-        </div>
+    <>
+      <Typography variant="subtitle1" component="div">
+        Recommended for you
+      </Typography>
+      <div style={gridStyle}>
+        {items.length > 0 ? (
+          items.map((musicInfo) => <RecCard key={musicInfo._id} musicInfo={musicInfo} uid={user?.uid || ''} />)
+        ) : (
+          <div style={fullWidthStyle}>
+            <Skeleton variant="rectangular" width="100%" height={118} />
+          </div>
+        )}
       </div>
-      <button className="carousel-button next" onClick={nextItem}>
-        &#8594;
-      </button>
-    </div>
+    </>
   );
+  
 };
 
 export default Carousel;
+
+
+// <div className="carousel-container">
+//       <button className="carousel-button prev" onClick={prevItem}>
+//         &#8592;
+//       </button>
+//       <div className="carousel-items">
+//         <div className="carousel-item">
+//           <ListItem
+//             sx={{
+//               display: 'flex',
+//               justifyContent: 'center', // Center horizontally
+//               alignItems: 'center', // Center vertically
+//               width: '100%', // Ensure the ListItem takes full width if needed
+//             }}
+//           >
+//             <ListItemAvatar>
+//               {items[currentIndex].imageFileId ? (
+//                 <Avatar
+//                   alt={items[currentIndex].title}
+//                   src={`http://localhost:${port}/api/audio/image/${items[currentIndex].imageFileId}`}
+//                   variant="rounded"
+//                   sx={{ width: 320, height: 320 }}
+//                 />
+//               ) : (
+//                 <Avatar alt="Music Icon" variant="rounded" sx={{ width: 320, height: 320, bgcolor: 'primary.light' }}>
+//                   <MusicNoteIcon sx={{ fontSize: 320 }} />
+//                 </Avatar>
+//               )}
+//             </ListItemAvatar>
+//           </ListItem>
+//           <button className="carousel-button play-button" onClick={playSong} />
+//           <h3>{items[currentIndex].title}</h3>
+//         </div>
+//       </div>
+//       <button className="carousel-button next" onClick={nextItem}>
+//         &#8594;
+//       </button>
+//     </div>

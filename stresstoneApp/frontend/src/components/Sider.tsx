@@ -34,7 +34,7 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
     {
       title: 'My Playlist',
       icon: <FavoriteBorderOutlined />,
-      onClick: () => {},
+      onClick: () => {navigate('/liked')},
     },
   ];
 

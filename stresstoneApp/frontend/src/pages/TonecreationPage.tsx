@@ -29,7 +29,7 @@ import { musicgenDispatcher } from '../controller/musicgenDispatcher';
 import { ToneLengthOptions, ToneLengthTypes, TonePreviewProps } from '../types';
 import useUploadStore from '../stateManagement/useUploadState';
 import TagChips from '../components/TagChips';
-import { MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES } from '../constants';
+import { createWavFile, MUSIC_AMBIANCES, MUSIC_SCENARIOS, MUSIC_STYLES } from '../constants';
 
 const ToneCreationPage: React.FC = () => {
   // State for multiple choice selections
@@ -125,10 +125,7 @@ const ToneCreationPage: React.FC = () => {
   const { setTitle, setAudioFile, setTags } = useUploadStore();
   const navigation = useNavigate();
 
-  const createWavFile = (audioData: ArrayBuffer) => {
-    const blob = new Blob([audioData], { type: 'audio/wav' });
-    return new File([blob], 'generated_audio.wav', { type: 'audio/wav' });
-  };
+
 
   const handleConfirmUpload = () => {
     // goto the upload page under the route /upload
