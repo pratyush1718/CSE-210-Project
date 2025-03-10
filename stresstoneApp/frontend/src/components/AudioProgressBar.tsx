@@ -105,33 +105,6 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   }, [isLooping]);
 
   useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.currentTime = currentTime;
-        // Add try/catch around play()
-        try {
-          const playPromise = audioRef.current.play();
-          if (playPromise !== undefined) {
-            playPromise.catch((error) => {
-              console.error('Play failed:', error);
-              // Inform parent component that play failed
-              if (onPlayStateChange) {
-                onPlayStateChange(false);
-              }
-            });
-          }
-        } catch (error) {
-          console.error('Play error:', error);
-        }
-        startUpdatingProgress();
-      } else {
-        audioRef.current.pause();
-        cancelAnimationFrame(animationFrameRef.current as number);
-      }
-    }
-  }, [isPlaying]);
-
-  useEffect(() => {
     if (audioRef.current && volume) {
       audioRef.current.volume = volume / 100;
     }
@@ -144,16 +117,33 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   }, [isPlaying, isLoaded]);
 
   const startUpdatingProgress = () => {
+    console.log('Starting progress updates');
+    
     const update = () => {
       if (audioRef.current && !isSeeking) {
-        setCurrentTime(audioRef.current.currentTime);
-        if (onProgressChange) {
-          onProgressChange((audioRef.current.currentTime / duration) * 100);
+        const newTime = audioRef.current.currentTime;
+        // Only update if time has changed to avoid unnecessary rerenders
+        if (newTime !== currentTime) {
+          setCurrentTime(newTime);
+          if (onProgressChange) {
+            onProgressChange((newTime / duration) * 100);
+          }
         }
+        // Schedule next update if still playing
+        if (!audioRef.current.paused) {
+          animationFrameRef.current = requestAnimationFrame(update);
+        }
+      } else {
+        // Continue updates even if we had a temporary hiccup
+        animationFrameRef.current = requestAnimationFrame(update);
       }
-      animationFrameRef.current = requestAnimationFrame(update);
     };
-    cancelAnimationFrame(animationFrameRef.current as number);
+    
+    // Cancel any existing animation frame before starting a new one
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+    
     animationFrameRef.current = requestAnimationFrame(update);
   };
 
@@ -184,16 +174,24 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
 
   const handleCanPlay = () => {
     console.log('Audio can play now');
+    setIsLoaded(true); // Make sure to mark as loaded
+    setIsLoading(false);
+
     if (isPlaying && audioRef.current?.paused) {
       console.log('Auto-playing after load');
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.error('Auto-play failed:', error);
-          if (onPlayStateChange) {
-            onPlayStateChange(false);
-          }
-        });
+        playPromise
+          .then(() => {
+            // Start updating progress AFTER play has succeeded
+            startUpdatingProgress();
+          })
+          .catch((error) => {
+            console.error('Auto-play failed:', error);
+            if (onPlayStateChange) {
+              onPlayStateChange(false);
+            }
+          });
       }
     }
   };
@@ -223,6 +221,47 @@ const AudioProgressTracker: React.FC<AudioProgressTrackerProps> = ({
   const getProgressPercentage = () => {
     return (currentTime / duration) * 100;
   };
+
+  useEffect(() => {
+    if (!audioRef.current || !isLoaded) return;
+
+    if (isPlaying) {
+      console.log('Attempting to play audio');
+      
+      try {
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('Play successful, starting progress updates');
+              startUpdatingProgress();
+            })
+            .catch((error) => {
+              console.error('Play failed:', error);
+              if (onPlayStateChange) {
+                onPlayStateChange(false);
+              }
+            });
+        }
+      } catch (error) {
+        console.error('Play error:', error);
+        if (onPlayStateChange) {
+          onPlayStateChange(false);
+        }
+      }
+    } else {
+      audioRef.current.pause();
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    }
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [isPlaying, isLoaded]);
 
   if (isLoading) {
     return (
