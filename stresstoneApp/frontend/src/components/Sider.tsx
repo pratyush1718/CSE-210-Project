@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWandMagicSparkles, faComments } from '@fortawesome/free-solid-svg-icons';
 
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 interface MenuProps {
   title: string;
@@ -24,17 +25,24 @@ interface MenuProps {
 
 export default function Sider({ drawerWidth }: { drawerWidth: number }) {
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState<string>('Home');
 
   const MenuMyStressTone: MenuProps[] = [
     {
       title: 'Home',
       icon: <HomeOutlined />,
-      onClick: () => navigate('/'),
+      onClick: () => {
+        navigate('/');
+        setCurrentPage('Home');
+      },
     },
     {
-      title: 'My Playlist',
+      title: 'My Favorites',
       icon: <FavoriteBorderOutlined />,
-      onClick: () => {navigate('/liked')},
+      onClick: () => {
+        navigate('/liked');
+        setCurrentPage('My Favorites');
+      },
     },
   ];
 
@@ -42,12 +50,18 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
     {
       title: 'Explore',
       icon: <SearchOutlined />,
-      onClick: () => navigate('/search'),
+      onClick: () => {
+        navigate('/search');
+        setCurrentPage('Explore');
+      },
     },
     {
       title: 'Discuss',
       icon: <FontAwesomeIcon icon={faComments} />,
-      onClick: () => navigate('/discuss'),
+      onClick: () => {
+        navigate('/discuss');
+        setCurrentPage('Discuss');
+      },
     },
   ];
 
@@ -55,18 +69,25 @@ export default function Sider({ drawerWidth }: { drawerWidth: number }) {
     {
       title: 'Tone Creation',
       icon: <FontAwesomeIcon icon={faWandMagicSparkles} />,
-      onClick: () => navigate('/toneCreation'),
+      onClick: () => {
+        navigate('/toneCreation');
+        setCurrentPage('Tone Creation');
+      },
     },
     {
       title: 'Upload',
       icon: <UploadFileOutlined />,
-      onClick: () => navigate('/upload'),
+      onClick: () => {
+        navigate('/upload');
+        setCurrentPage('Upload');
+      },
     },
   ];
 
   function renderListButton({ title, icon, onClick }: MenuProps) {
+    const backgroundColor = currentPage === title ? '#f5f5f5' : 'white';
     return (
-      <ListItemButton onClick={onClick}>
+      <ListItemButton onClick={onClick} sx={{ backgroundColor: backgroundColor }}>
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText primary={title} />
       </ListItemButton>

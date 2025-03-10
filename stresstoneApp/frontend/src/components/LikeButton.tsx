@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { IconButton, Badge, Tooltip } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import axios from 'axios';
+import { getLikeStatus, postLikeStatus, updateUserTags } from '../controller/preferenceDispatcher';
 
 interface LikeButtonProps {
   trackId: string;
@@ -15,43 +15,41 @@ const LikeButton: React.FC<LikeButtonProps> = ({ trackId, initialLikeCount, fire
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [loading, setLoading] = useState(false);
-  const port = import.meta.env.VITE_BACKEND_PORT || 3000;
 
   useEffect(() => {
     // Check initial like status using firebaseId
     const checkLikeStatus = async () => {
       if (!firebaseId) return;
-      
-      try {
-        const response = await axios.get(
-          `http://localhost:${port}/api/likes/${trackId}/status?firebaseId=${firebaseId}`
-        );
-        setLiked(response.data.liked);
-        setLikeCount(response.data.likes);
-      } catch (error) {
-        console.error('Error checking like status:', error);
-      }
+
+      const response = getLikeStatus(trackId, firebaseId);
+      response.then((data) => {
+        if (data) {
+          setLiked(data.liked);
+          setLikeCount(data.likes);
+        }
+      })
     };
 
     checkLikeStatus();
-  }, [trackId, firebaseId, port]);
+  }, [trackId, firebaseId]);
 
   const handleToggleLike = async () => {
     if (loading || !firebaseId) return;
     
     setLoading(true);
     try {
-      const response = await axios.post(
-        `http://localhost:${port}/api/likes/${trackId}`, 
-        { firebaseId }
-      );
-      setLiked(response.data.liked);
-      setLikeCount(response.data.likes);
+      const response = postLikeStatus(trackId, firebaseId);
+      response.then((data) => {
+        if (data) {
+          setLiked(data.liked);
+          setLikeCount(data.likes);
+        }
+      })
+      // setLiked(response.data.liked);
+      // setLikeCount(response.data.likes);
 
-      await axios.post(
-        `http://localhost:${port}/api/tagRouter/userTag/content`, 
-        { firebaseId, trackId }
-      );
+      // Update user tag for recommendation use
+      updateUserTags(trackId, firebaseId);
     } catch (error) {
       console.error('Error toggling like:', error);
     } finally {

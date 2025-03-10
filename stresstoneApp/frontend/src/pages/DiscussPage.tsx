@@ -1,44 +1,28 @@
 import { useState, useEffect } from 'react';
-import { 
-  Box, Typography, Card, CardContent, Avatar, IconButton, 
-  Button, Tooltip, Modal, TextField, InputAdornment, Menu, MenuItem
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Avatar,
+  IconButton,
+  Button,
+  Tooltip,
+  Modal,
+  TextField,
+  InputAdornment,
+  Menu,
+  MenuItem,
 } from '@mui/material';
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { ThumbUp, ThumbDown, Reply, Close, Delete, Send } from '@mui/icons-material';
-import axios from 'axios';  
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { ThumbUp, ThumbDown, Reply, Delete, Send } from '@mui/icons-material';
+import axios from 'axios';
 import { auth } from '../firebase';
+import { Post, User } from '../types';
+import { deletePost, deleteReply, getPosts, postPost, postReply } from '../controller/feedDispatcher';
 
-interface User {
-  _id: string; 
-  email: string; 
-  firebaseId: string; 
-  username: string; 
-  tags: string[]; 
-  __v: number; 
-}
-
-interface Reply {
-  _id: string;
-  user: User;
-  content: string;
-  time: string;
-}
-
-interface Post {
-  _id: string;
-  user: User; 
-  content: string;
-  time: string;
-  likeCount: number;
-  dislikeCount: number;
-  replies: Reply[];
-}
-
-
-// API base URL - adjust to match your backend
-const PORT = import.meta.env.VITE_BACKEND_PORT  || 3000;
+const PORT = import.meta.env.VITE_BACKEND_PORT || 3000;
 const API_URL = `http://localhost:${PORT}/api`;
-
 
 export default function Discuss() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -55,14 +39,18 @@ export default function Discuss() {
   const [replyContent, setReplyContent] = useState<{ [key: string]: string }>({});
   const [repliesVisibility, setRepliesVisibility] = useState<{ [key: string]: boolean }>({});
 
-  const currentUserFirebase = auth.currentUser; 
-  
+  const currentUserFirebase = auth.currentUser;
+
   // Fetch posts from the API
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/posts`);
-      setPosts(response.data);
+      const response = getPosts();
+      response.then((data) => {
+        if (data) {
+          setPosts(data);
+        }
+      });
       setError('');
     } catch (err) {
       console.error('Error fetching posts:', err);
@@ -92,38 +80,30 @@ export default function Discuss() {
   const handleCreatePost = async () => {
     if (newPostContent.trim() === '') return;
 
-    try {
-      const response = await fetch(`${API_URL}/posts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userFirebaseId: currentUserFirebase?.uid, 
-          content: newPostContent,
-          }),
+    const uid = currentUserFirebase?.uid;
+    if (uid) {
+      const response = postPost(uid, newPostContent);
+      response.then((isSuccess) => {
+        if (isSuccess) {
+          fetchPosts();
+          setNewPostContent('');
+        } else {
+          setError('Failed to create post. Please try again.');
+        }
       });
-
-      // Refresh posts to include the new one
-      if (response.ok) {
-        fetchPosts();
-        setNewPostContent('');
-      }
-    } catch (err) {
-      console.error('Error creating post:', err);
-      setError('Failed to create post. Please try again.');
     }
   };
 
   // Delete a reply
   const handleDeleteReply = async (_postId: string, replyId: string) => {
-    try {
-      await axios.delete(`${API_URL}/replies/${replyId}`);
-      fetchPosts(); // Refresh posts to update UI
-    } catch (err) {
-      console.error('Error deleting reply:', err);
-      setError('Failed to delete reply. Please try again.');
-    }
+    const response = deleteReply(replyId);
+    response.then((isSuccess) => {
+      if (isSuccess) {
+        fetchPosts();
+      } else {
+        setError('Failed to delete reply. Please try again.');
+      }
+    });
   };
 
   // Set up post for deletion
@@ -135,13 +115,14 @@ export default function Discuss() {
   // Confirm post deletion
   const confirmDeletePost = async () => {
     if (postToDelete) {
-      try {
-        await axios.delete(`${API_URL}/posts/${postToDelete._id}`);
-        fetchPosts(); // Refresh posts to update UI
-      } catch (err) {
-        console.error('Error deleting post:', err);
-        setError('Failed to delete post. Please try again.');
-      }
+      const response = deletePost(postToDelete._id);
+      response.then((isSuccess) => {
+        if (isSuccess) {
+          fetchPosts();
+        } else {
+          setError('Failed to delete post. Please try again.');
+        }
+      });
     }
     setDeleteOpen(false);
     setPostToDelete(null);
@@ -152,7 +133,7 @@ export default function Discuss() {
     setPostToDelete(null);
   };
 
-  // Handle likes 
+  // Handle likes
   const handleLike = (postId: string) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) =>
@@ -211,34 +192,23 @@ export default function Discuss() {
   // Create a new reply
   const handleCreateReply = async (postId: string) => {
     if (!replyContent[postId]?.trim()) return;
-    
-    try {
-      const response = await fetch(`${API_URL}/replies`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          postId: postId, 
-          userFirebaseId: currentUserFirebase?.uid, 
-          content: replyContent[postId],
-          }),
+
+    const uid = currentUserFirebase?.uid;
+    if (uid) {
+      const response = postReply(postId, uid, replyContent[postId]);
+      response.then((isSuccess) => {
+        if (isSuccess) {
+          fetchPosts();
+          // Reset reply UI state
+          setReplyContent((prev) => ({
+            ...prev,
+            [postId]: '',
+          }));
+          toggleReplyEntryBox(postId);
+        } else {
+          setError('Failed to create reply. Please try again.');
+        }
       });
-      
-      if (response.ok) {
-        fetchPosts();
-        
-        // Reset reply UI state
-        setReplyContent((prev) => ({
-          ...prev,
-          [postId]: "",
-        }));
-        toggleReplyEntryBox(postId);
-      }
-      // Refresh posts to include the new reply
-    } catch (err) {
-      console.error('Error creating reply:', err);
-      setError('Failed to create reply. Please try again.');
     }
   };
 
@@ -256,7 +226,7 @@ export default function Discuss() {
     if (diffMin < 60) return `${diffMin} minute${diffMin !== 1 ? 's' : ''} ago`;
     if (diffHour < 24) return `${diffHour} hour${diffHour !== 1 ? 's' : ''} ago`;
     if (diffDay < 7) return `${diffDay} day${diffDay !== 1 ? 's' : ''} ago`;
-    
+
     return date.toLocaleDateString();
   };
 
@@ -278,18 +248,14 @@ export default function Discuss() {
 
       {/* Error message */}
       {error && (
-        <Box sx={{ bgcolor: 'error.light', color: 'error.contrastText', p: 2, borderRadius: 1, mb: 2 }}>
-          {error}
-        </Box>
+        <Box sx={{ bgcolor: 'error.light', color: 'error.contrastText', p: 2, borderRadius: 1, mb: 2 }}>{error}</Box>
       )}
 
       {/* Post creation box at the top of the feed */}
       <Card sx={{ mb: 3, p: 2 }}>
         <CardContent>
           <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-            <Avatar sx={{ mt: 1 }}>
-              {currentUserFirebase?.email?.charAt(0) || '?'}
-            </Avatar>
+            <Avatar sx={{ mt: 1 }}>{currentUserFirebase?.email?.charAt(0) || '?'}</Avatar>
             <Box sx={{ width: '100%' }}>
               <TextField
                 fullWidth
@@ -303,9 +269,9 @@ export default function Discuss() {
                 sx={{ mb: 1 }}
               />
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button 
-                  variant="contained" 
-                  color="primary" 
+                <Button
+                  variant="contained"
+                  color="primary"
                   onClick={handleCreatePost}
                   disabled={!newPostContent.trim()}
                 >
@@ -378,21 +344,17 @@ export default function Discuss() {
                   </Tooltip>
 
                   <Tooltip title="Reply">
-                    <IconButton 
-                      size="small"
-                      onClick={() => toggleReplyEntryBox(post._id)}
-                    >
+                    <IconButton size="small" onClick={() => toggleReplyEntryBox(post._id)}>
                       <Reply fontSize="small" />
-                      <Typography variant="body2" paddingLeft={1}>{post.replies.length}</Typography>
+                      <Typography variant="body2" paddingLeft={1}>
+                        {post.replies.length}
+                      </Typography>
                     </IconButton>
                   </Tooltip>
 
                   {post.replies.length > 0 && (
-                    <Button 
-                      size="small"
-                      onClick={() => toggleReplies(post._id)}
-                    >
-                      {repliesVisibility[post._id] ? "Hide Replies" : "View Replies"}
+                    <Button size="small" onClick={() => toggleReplies(post._id)}>
+                      {repliesVisibility[post._id] ? 'Hide Replies' : 'View Replies'}
                     </Button>
                   )}
 
@@ -415,14 +377,14 @@ export default function Discuss() {
                           sx={{
                             mt: 1,
                             pb: 1,
-                            borderBottom: index !== post.replies.length - 1 ? "1px solid rgba(0, 0, 0, 0.1)" : "none",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
+                            borderBottom: index !== post.replies.length - 1 ? '1px solid rgba(0, 0, 0, 0.1)' : 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
                           }}
                         >
                           <Box>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               <Typography variant="subtitle1" fontWeight="bold">
                                 {getUserDisplayName(reply.user)}
                               </Typography>
@@ -440,7 +402,14 @@ export default function Discuss() {
                                 <MoreVertIcon />
                               </IconButton>
                               <Menu anchorEl={anchorEl} open={openMenu} onClose={handleMenuClose}>
-                                <MenuItem onClick={() => { handleDeleteReply(post._id, reply._id); handleMenuClose(); }}>Delete</MenuItem>
+                                <MenuItem
+                                  onClick={() => {
+                                    handleDeleteReply(post._id, reply._id);
+                                    handleMenuClose();
+                                  }}
+                                >
+                                  Delete
+                                </MenuItem>
                               </Menu>
                             </Box>
                           )}
@@ -456,18 +425,23 @@ export default function Discuss() {
                     <TextField
                       fullWidth
                       multiline
-                      minRows={1} 
-                      maxRows={6} 
+                      minRows={1}
+                      maxRows={6}
                       variant="outlined"
                       placeholder="Write a reply..."
-                      value={replyContent[post._id] || ""}
+                      value={replyContent[post._id] || ''}
                       onChange={(e) => handleReplyChange(post._id, e.target.value)}
                       InputProps={{
-                        sx: { alignItems: "flex-end" },
+                        sx: { alignItems: 'flex-end' },
                         endAdornment: (
                           <InputAdornment position="end">
-                            <Tooltip title="Send" placement='top'>
-                              <IconButton size="small" onClick={() => {handleCreateReply(post._id)}}>
+                            <Tooltip title="Send" placement="top">
+                              <IconButton
+                                size="small"
+                                onClick={() => {
+                                  handleCreateReply(post._id);
+                                }}
+                              >
                                 <Send />
                               </IconButton>
                             </Tooltip>
