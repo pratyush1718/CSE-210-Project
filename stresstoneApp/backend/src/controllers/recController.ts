@@ -61,6 +61,11 @@ export const recommendContent = async(req: Request, res: Response) : Promise<voi
             }
 
             // Simple log to show cosine similarity result. 
+            
+            // Weighting system using likes -- higher liked songs of preferred genre have higher scores.
+            if (content.likes > 0) {
+                score *= content.likes;
+            }
             console.log("Content: " + content.title + " Score: " + score + "\n");
 
             return { content, score };
