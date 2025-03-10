@@ -43,3 +43,33 @@ export interface SoundTrack {
   imageFileId?: string;
   audioUrl?: string;
 }
+
+// export interface RecommendSpec {
+//   _id: string;
+//   audioFileId: string;
+//   imageFileId: string;
+//   title: string;
+//   likes: number;
+// }
+
+export interface TrackObjSpec {
+  _id: string;
+  __v: number;
+  visibility: string;
+  title: string;
+  tags: string[];
+  location: string;
+  likes: number;
+  imageFileId?: string;
+  imageFileName: string | null;
+  description?: string;
+  creator?: string;
+  createdAt: string;
+  audioFileId: string;
+  audioFileName: string;
+  allowDownloads: boolean;
+}
+
+export interface ExtendedTrackObjSpec extends TrackObjSpec {
+  audioUrl?: string;
+}

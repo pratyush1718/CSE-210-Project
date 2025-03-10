@@ -174,3 +174,46 @@ export const PREDEFINED_TAGS = [
 ];
 
 export const RESULTS_PER_PAGE = 10;
+
+export const createWavFile = (audioData: ArrayBuffer) => {
+  const blob = new Blob([audioData], { type: 'audio/wav' });
+  return new File([blob], 'generated_audio.wav', { type: 'audio/wav' });
+};
+
+export const fetchTrackAudio = async (audioUrl: string) => {
+  console.log('Fetching audio from URL:', audioUrl);
+  try {
+    const response = await fetch(audioUrl);
+    console.log('Response status:', response.status);
+    // Log headers to check content type
+    response.headers.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const buffer = await response.arrayBuffer();
+    console.log('Buffer received, size:', buffer.byteLength);
+
+    if (buffer.byteLength === 0) {
+      throw new Error('The fetched audio data is empty.');
+    }
+
+    return buffer;
+  } catch (error) {
+    console.error('Error fetching audio:', error);
+    return null;
+  }
+};
+
+export const downloadAudio = (audioBuffer: ArrayBuffer) => {
+  const file = createWavFile(audioBuffer);
+  const url = URL.createObjectURL(file);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'generated_audio.wav';
+  link.click();
+  URL.revokeObjectURL(url);
+};
