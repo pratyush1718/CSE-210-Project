@@ -47,7 +47,6 @@ export const deletePost = async (req: Request, res: Response): Promise<void> => 
 export const getAllPosts = async (req: Request, res: Response): Promise<void> => {
     try {
         // Retrieve all posts from the database
-        // const posts = await Post.find().populate('user').populate('replies');  // Optionally populate references like 'user' and 'replies'
         const posts = await Post.find()
             .populate('user')
             .populate({
