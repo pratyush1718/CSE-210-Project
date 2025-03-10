@@ -74,10 +74,27 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
         transition: 'min-height 0.3s ease-in-out',
       }}
     >
+      {/* Collapse/Expand Button */}
+      <IconButton
+        onClick={handleToggleExpand}
+        sx={{
+          position: 'absolute',
+          top: -28,
+          right: 16,
+          bgcolor: 'white',
+          boxShadow: '0 0 8px rgba(0,0,0,0.2)',
+          '&:hover': {
+            bgcolor: 'white',
+          }
+        }}
+      >
+      {isExpanded ? <ExpandMore /> : <ExpandLess />}
+      </IconButton>
       <Toolbar
         sx={{
           width: '100%',
-          justifyContent: 'space-between',
+          display: 'grid',
+          gridTemplateColumns: '1fr auto 1fr',
           alignItems: 'center',
           height: isExpanded ? 'auto' : '64px',
           overflow: 'hidden',
@@ -88,7 +105,9 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
           sx={{
             display: 'flex',
             alignItems: 'center',
-            width: isExpanded ? 'auto' : '33%',
+            overflow: 'hidden',
+            maxWidth: '100%',
+            justifySelf: 'start',
           }}
         >
           <Avatar
@@ -98,12 +117,32 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
               width: isExpanded ? 60 : 40,
               height: isExpanded ? 60 : 40,
               marginRight: 2,
+              flexShrink: 0,
               transition: 'all 0.3s ease-in-out',
             }}
           />
-          <Box>
-            <Typography variant={isExpanded ? 'h6' : 'body1'}>{currentTrack?.title || 'No track selected'}</Typography>
-            {isExpanded && <Typography variant="body2">{currentTrack?.creator?.name || 'Unknown artist'}</Typography>}
+          <Box sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+            <Typography 
+              variant={isExpanded ? 'h6' : 'body1'} 
+              sx={{ 
+                overflow: 'hidden', 
+                textOverflow: 'ellipsis',
+                maxWidth: isExpanded ? '240px' : '180px',
+              }}
+            >
+              {currentTrack?.title || 'No track selected'}
+            </Typography>
+            {isExpanded && (
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  overflow: 'hidden', 
+                  textOverflow: 'ellipsis' 
+                }}
+              >
+                {currentTrack?.creator?.name || 'Unknown artist'}
+              </Typography>
+            )}
           </Box>
         </Box>
 
@@ -113,8 +152,8 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
             display: 'flex',
             alignItems: 'center',
             gap: 2,
-            width: isExpanded ? 'auto' : '33%',
             justifyContent: 'center',
+            justifySelf: 'center',
           }}
         >
           {isExpanded && (
@@ -153,7 +192,14 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
         </Box>
 
         {/* Right side: Volume Slider & Expand Button */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            justifySelf: 'end'
+          }}
+        >
           {isExpanded && (
             <>
               <VolumeUp />
@@ -179,10 +225,6 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
               />
             </>
           )}
-          {/* Collapse/Expand Button */}
-          <IconButton onClick={handleToggleExpand} sx={{ ml: 1 }}>
-            {isExpanded ? <ExpandMore /> : <ExpandLess />}
-          </IconButton>
         </Box>
       </Toolbar>
 
