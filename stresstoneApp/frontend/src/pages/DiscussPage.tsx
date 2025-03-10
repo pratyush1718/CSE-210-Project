@@ -5,8 +5,8 @@ import {
 } from '@mui/material';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { ThumbUp, ThumbDown, Reply, Add, Close, Delete, Send } from '@mui/icons-material';
-import axios from 'axios';
-import getAuth from 'firebase/auth';  
+import axios from 'axios';  
+import { auth } from '../firebase';
 
 // Define interfaces based on your backend models
 interface User {
@@ -35,12 +35,12 @@ interface Post {
   replies: Reply[];
 }
 
-// const currentUser = getAuth; 
-// console.log(currentUser);
 
 // API base URL - adjust to match your backend
 const PORT = import.meta.env.VITE_BACKEND_PORT  || 3000;
 const API_URL = `http://localhost:${PORT}/api`;
+
+const currentUserFirebase = auth.currentUser; 
 
 export default function Discuss() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -58,10 +58,6 @@ export default function Discuss() {
   const [replyContent, setReplyContent] = useState<{ [key: string]: string }>({});
   const [repliesVisibility, setRepliesVisibility] = useState<{ [key: string]: boolean }>({});
   
-  const currentUser = {
-    _id: 'random', // Use a placeholder user ID
-    name: 'You' // Display name for current user
-  };
   // Fetch posts from the API
   const fetchPosts = async () => {
     try {
@@ -101,15 +97,28 @@ export default function Discuss() {
     if (newPostContent.trim() === '') return;
 
     try {
-      await axios.post(`${API_URL}/posts`, {
-        user: currentUser._id,
-        content: newPostContent,
+      // await axios.post(`${API_URL}/posts`, {
+      //   userFirebaseId: currentUser.firebaseId,
+      //   content: newPostContent,
+      // });
+
+      const response = await fetch(`${API_URL}/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userFirebaseId: currentUserFirebase?.uid, 
+          content: newPostContent,
+          }),
       });
-      
+
       // Refresh posts to include the new one
-      fetchPosts();
-      setNewPostContent('');
-      handleClose();
+      if (response.ok) {
+        fetchPosts();
+        setNewPostContent('');
+        handleClose();
+      }
     } catch (err) {
       console.error('Error creating post:', err);
       setError('Failed to create post. Please try again.');
@@ -216,7 +225,7 @@ export default function Discuss() {
     try {
       await axios.post(`${API_URL}/replies`, {
         postId: postId,
-        user: currentUser._id,
+        user: currentUserFirebase?.uid,
         content: replyContent[postId]
       });
       
@@ -255,7 +264,7 @@ export default function Discuss() {
 
   // Check if a post or reply is from the current user
   const isCurrentUser = (user: User) => {
-    return user._id === currentUser._id;
+    return user.email === currentUserFirebase?.email;
   };
 
   // Display name for post/reply author
