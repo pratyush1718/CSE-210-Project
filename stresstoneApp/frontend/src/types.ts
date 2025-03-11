@@ -73,3 +73,34 @@ export interface TrackObjSpec {
 export interface ExtendedTrackObjSpec extends TrackObjSpec {
   audioUrl?: string;
 }
+
+export interface LikeSpec {
+  liked: boolean;
+  likes: number;
+}
+
+export interface User {
+  _id: string;
+  email: string;
+  firebaseId: string;
+  username: string;
+  tags: string[];
+  __v: number;
+}
+
+export interface Reply {
+  _id: string;
+  user: User;
+  content: string;
+  time: string;
+}
+
+export interface Post {
+  _id: string;
+  user: User;
+  content: string;
+  time: string;
+  likeCount: number;
+  dislikeCount: number;
+  replies: Reply[];
+}

@@ -40,11 +40,11 @@ async def text_to_music(text_prompt: TextToMusic):
     elif length == "test":
         tokens = 64
     else:
-        raise HTTPException(status_code=400, detail="Invalid length parameter")
+        raise HTTPException(status_code=422, detail="Invalid length parameter")
 
     music_stream = model.generate_music(prompt, tokens)
     if not music_stream:
-        raise HTTPException(status_code=400, detail="Music generation failed")
+        raise HTTPException(status_code=422, detail="Music generation failed")
 
     # Return the music stream as a response
     return StreamingResponse(io.BytesIO(music_stream.getbuffer()), media_type="audio/wav")

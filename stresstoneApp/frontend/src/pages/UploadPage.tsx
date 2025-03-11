@@ -78,6 +78,8 @@ const UploadPage: React.FC = () => {
     formData.append("visibility", visibility);
     formData.append("allowDownloads", (allowDownloads==="yes").toString());
     formData.append('creator', user.uid)
+    // @aaron this field is missing
+    // formData.append('_id', )
 
     if (audioTags.length > 0) {
       formData.append('tags', JSON.stringify(audioTags));
