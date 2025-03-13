@@ -14,6 +14,7 @@ import {
 import AudioProgressTracker from './AudioProgressBar';
 import { usePlayer } from '../stateManagement/PlayerContext';
 import { fetchTrackAudio } from '../constants';
+import { getImageURL } from '../controller/contentDispatcher';
 
 interface TonePlayerProps {
   onHeightChange: (height: number) => void; // Callback function to send height updates
@@ -112,7 +113,7 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
         >
           <Avatar
             alt={currentTrack?.title || 'Album Cover'}
-            src={currentTrack?.imageFileId ? `http://localhost:3000/api/audio/image/${currentTrack.imageFileId}` : ''}
+            src={currentTrack?.imageFileId ? getImageURL(currentTrack.imageFileId) : ''}
             sx={{
               width: isExpanded ? 60 : 40,
               height: isExpanded ? 60 : 40,
