@@ -16,13 +16,9 @@ import {
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { ThumbUp, ThumbDown, Reply, Delete, Send } from '@mui/icons-material';
-import axios from 'axios';
 import { auth } from '../firebase';
 import { Post, User } from '../types';
 import { deletePost, deleteReply, getPosts, postPost, postReply } from '../controller/feedDispatcher';
-
-const PORT = import.meta.env.VITE_BACKEND_PORT || 3000;
-const API_URL = `http://localhost:${PORT}/api`;
 
 export default function Discuss() {
   const [posts, setPosts] = useState<Post[]>([]);
