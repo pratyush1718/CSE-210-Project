@@ -14,15 +14,13 @@ import {
 import AudioProgressTracker from './AudioProgressBar';
 import { usePlayer } from '../stateManagement/PlayerContext';
 import { fetchTrackAudio } from '../constants';
+import { getImageURL } from '../controller/contentDispatcher';
 
 interface TonePlayerProps {
   onHeightChange: (height: number) => void; // Callback function to send height updates
 }
 
 export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
-  const PORT = import.meta.env.VITE_BACKEND_PORT || 3000;
-  const API_URL = `http://localhost:${PORT}/api`;
-
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [volume, setVolume] = useState(100);
@@ -115,7 +113,7 @@ export default function TonePlayer({ onHeightChange }: TonePlayerProps) {
         >
           <Avatar
             alt={currentTrack?.title || 'Album Cover'}
-            src={currentTrack?.imageFileId ? `${API_URL}/audio/image/${currentTrack.imageFileId}` : ''}
+            src={currentTrack?.imageFileId ? getImageURL(currentTrack.imageFileId) : ''}
             sx={{
               width: isExpanded ? 60 : 40,
               height: isExpanded ? 60 : 40,
